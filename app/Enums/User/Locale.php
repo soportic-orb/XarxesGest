@@ -10,6 +10,7 @@ enum Locale: string
     case Ukrainian = 'uk';
     case PortugueseBrazil = 'pt-BR';
     case Spanish = 'es';
+    case Catalan = 'ca';
     case French = 'fr';
     case German = 'de';
     case Italian = 'it';
@@ -32,6 +33,7 @@ enum Locale: string
             self::Ukrainian => 'Українська',
             self::PortugueseBrazil => 'Português',
             self::Spanish => 'Español',
+            self::Catalan => 'Català',
             self::French => 'Français',
             self::German => 'Deutsch',
             self::Italian => 'Italiano',
@@ -54,6 +56,7 @@ enum Locale: string
             self::Ukrainian => 'UA',
             self::PortugueseBrazil => 'BR',
             self::Spanish => 'ES',
+            self::Catalan => 'CAT',
             self::French => 'FR',
             self::German => 'DE',
             self::Italian => 'IT',
@@ -76,6 +79,7 @@ enum Locale: string
             self::Ukrainian => 'Ukrainian',
             self::PortugueseBrazil => 'Brazilian Portuguese',
             self::Spanish => 'Spanish',
+            self::Catalan => 'Catalan',
             self::French => 'French',
             self::German => 'German',
             self::Italian => 'Italian',

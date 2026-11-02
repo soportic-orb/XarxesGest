@@ -4,19 +4,24 @@ declare(strict_types=1);
 
 namespace App\Ai\Agents;
 
-use Laravel\Ai\Attributes\Temperature;
+use App\Ai\Concerns\ResolvesTemperature;
 use Laravel\Ai\Contracts\Agent;
 use Laravel\Ai\Promptable;
 
-#[Temperature(0.2)]
 class PostContentShortener implements Agent
 {
     use Promptable;
+    use ResolvesTemperature;
 
     public function __construct(
         public string $platformLabel,
         public int $limit,
     ) {}
+
+    public function temperature(): ?float
+    {
+        return $this->temperatureFor(0.2);
+    }
 
     public function instructions(): string
     {

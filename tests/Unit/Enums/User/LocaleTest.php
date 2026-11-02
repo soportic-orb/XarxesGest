@@ -37,6 +37,7 @@ test('englishName returns the English name of every locale', function (Locale $l
     [Locale::Ukrainian, 'Ukrainian'],
     [Locale::PortugueseBrazil, 'Brazilian Portuguese'],
     [Locale::Spanish, 'Spanish'],
+    [Locale::Catalan, 'Catalan'],
     [Locale::French, 'French'],
     [Locale::German, 'German'],
     [Locale::Italian, 'Italian'],

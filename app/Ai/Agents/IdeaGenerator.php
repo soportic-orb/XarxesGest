@@ -4,17 +4,17 @@ declare(strict_types=1);
 
 namespace App\Ai\Agents;
 
+use App\Ai\Concerns\ResolvesTemperature;
 use App\Enums\User\Locale;
 use Illuminate\Contracts\JsonSchema\JsonSchema;
-use Laravel\Ai\Attributes\Temperature;
 use Laravel\Ai\Contracts\Agent;
 use Laravel\Ai\Contracts\HasStructuredOutput;
 use Laravel\Ai\Promptable;
 
-#[Temperature(0.8)]
 class IdeaGenerator implements Agent, HasStructuredOutput
 {
     use Promptable;
+    use ResolvesTemperature;
 
     public function __construct(
         public Locale $locale,
@@ -22,6 +22,11 @@ class IdeaGenerator implements Agent, HasStructuredOutput
         public string $audience,
         public ?string $notes = null,
     ) {}
+
+    public function temperature(): ?float
+    {
+        return $this->temperatureFor(0.8);
+    }
 
     public function instructions(): string
     {

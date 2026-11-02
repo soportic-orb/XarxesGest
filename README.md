@@ -1,3 +1,5 @@
+> **XarxesGest** — fork de TryPost per a les marques de Soportic, autoallotjat a `xarxesgest.soportic.es`. Documentació pròpia a [`docs/README.md`](docs/README.md); canvis respecte de TryPost a [`NOTICE.md`](NOTICE.md).
+
 <p align="center">
   <img src="public/images/trypost/logo-dark.png" alt="TryPost" width="190">
 </p>
