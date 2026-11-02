@@ -164,7 +164,7 @@ return [
             ],
         ],
         'actions' => [
-            'try_again' => 'Torna-ho a provar',
+            'try_again' => 'Reintenta',
             'back' => 'Enrere',
             'connect_again' => 'Torna a connectar',
             'start_again' => 'Torna a començar',

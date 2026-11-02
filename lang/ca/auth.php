@@ -60,7 +60,7 @@ return [
     'github_email_unavailable' => 'No s\'ha pogut obtenir el teu correu electrònic de GitHub. Fes públic el teu correu de GitHub o concedeix l\'abast de correu electrònic i torna-ho a provar.',
 
     'login' => [
-        'title' => 'Inicia la sessió a TryPost',
+        'title' => 'Inicia sessió a TryPost',
         'page_title' => 'Inicia la sessió',
         'email' => 'Adreça electrònica',
         'password' => 'Contrasenya',
@@ -87,7 +87,7 @@ return [
         'log_in' => 'Inicia la sessió',
         'password_requirements' => [
             'min' => 'Almenys :count caràcters',
-            'mixed_case' => 'Lletres majúscules i minúscules',
+            'mixed_case' => 'Majúscules i minúscules',
             'number' => 'Almenys 1 número',
             'symbol' => 'Almenys 1 símbol',
         ],

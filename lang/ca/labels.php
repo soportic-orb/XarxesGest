@@ -4,7 +4,7 @@ declare(strict_types=1);
 
 return [
     'title' => 'Etiquetes',
-    'description' => 'Organitza i filtra les teves publicacions amb etiquetes.',
+    'description' => 'Organitza i filtra publicacions amb etiquetes.',
     'search' => 'Cerca etiquetes...',
     'new_label' => 'Nova etiqueta',
     'no_labels_yet' => 'Encara no hi ha etiquetes',

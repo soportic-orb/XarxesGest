@@ -46,9 +46,9 @@ return [
             'title' => 'Moure la publicació a una hora personalitzada',
             'description' => 'Estàs movent aquesta publicació de la seva hora a la cua, :from, a una hora personalitzada, :to.',
             'unqueued' => 'La publicació es publicarà a la nova hora que has triat, però no ocuparà cap lloc de la teva cua.',
-            'dont_show_again' => 'No ho tornis a mostrar',
+            'dont_show_again' => 'No ho mostris més',
             'cancel' => 'Cancel·la',
-            'confirm' => 'Mou a una hora personalitzada',
+            'confirm' => 'Fes servir aquesta hora',
         ],
         'error' => 'No s\'ha pogut moure aquesta publicació. Torna-ho a provar.',
         'errors' => [

@@ -18,7 +18,7 @@ return [
     ],
     'settings' => 'Configuració',
     'plans_billing' => 'Plans i facturació',
-    'log_out' => 'Tanca la sessió',
+    'log_out' => 'Tanca sessió',
     'help' => 'Ajuda',
     'language' => 'Idioma: :name',
     'theme' => 'Tema: :name',

@@ -4,7 +4,7 @@ declare(strict_types=1);
 
 return [
     'title' => 'Webhooks',
-    'description' => 'Rep actualitzacions en temps real quan canviïn les teves publicacions.',
+    'description' => 'Avisos en temps real dels canvis a publicacions.',
     'new' => 'Crea un webhook',
     'empty_title' => 'Encara no hi ha cap webhook',
     'empty_description' => 'Crea un webhook per rebre notificacions d\'esdeveniments en temps real.',
@@ -38,7 +38,7 @@ return [
         'description' => 'Configura un punt final per rebre notificacions de webhook.',
         'endpoint' => 'URL del punt final',
         'endpoint_placeholder' => 'https://example.com/webhooks',
-        'endpoint_help' => 'Enviarem una petició POST amb una càrrega JSON a aquesta URL.',
+        'endpoint_help' => 'Enviarem una petició POST amb JSON a aquesta URL.',
         'events' => 'Esdeveniments',
         'events_count_selected' => ':count de :total seleccionats',
         'submit' => 'Crea el webhook',

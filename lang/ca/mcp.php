@@ -12,7 +12,7 @@ return [
     'config_label' => 'Configuració',
     'tabs' => [
         'connected' => 'Aplicacions connectades',
-        'connect' => 'Connecta una aplicació',
+        'connect' => 'Connecta una app',
     ],
     'connect_other' => 'Connecta',
     'other_hint' => 'Qualsevol aplicació compatible amb MCP.',

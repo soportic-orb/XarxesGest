@@ -4,7 +4,7 @@ declare(strict_types=1);
 
 return [
     'title' => 'Signatures',
-    'description' => 'Text reutilitzable per afegir a les teves publicacions.',
+    'description' => 'Textos reutilitzables per a publicacions.',
     'save_failed' => 'No s\'ha pogut desar la signatura. Torna-ho a provar.',
     'search' => 'Cerca signatures...',
     'new' => 'Nova signatura',

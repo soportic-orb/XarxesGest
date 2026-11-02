@@ -4,7 +4,7 @@ declare(strict_types=1);
 
 return [
     'title' => 'Canals',
-    'description' => 'Gestiona els canals connectats d\'aquest workspace.',
+    'description' => 'Gestiona els canals d\'aquest workspace.',
     'connect' => 'Connecta un canal',
     'settings' => 'Configuració del canal',
     'publish' => 'Publica',
@@ -218,7 +218,7 @@ return [
 
     'goal_dialog' => [
         'title' => 'Quantes vegades a la setmana vols publicar?',
-        'description' => 'Afegirem horaris de publicació a la teva cua perquè s\'ajustin al teu objectiu.',
+        'description' => 'Crearem els horaris de la cua segons el teu objectiu.',
         'options' => [
             'steady' => 'Mantenir un ritme constant',
             'presence' => 'Crear presència',

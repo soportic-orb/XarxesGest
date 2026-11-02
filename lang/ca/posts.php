@@ -38,7 +38,7 @@ return [
         ],
         'link_preview' => [
             'remove' => 'Elimina la vista prèvia de l\'enllaç',
-            'replace_with_media' => 'Substitueix la vista prèvia de l\'enllaç per contingut multimèdia',
+            'replace_with_media' => 'Substitueix la vista prèvia per mèdia',
             'no_image' => 'Aquest enllaç no té cap imatge per utilitzar.',
         ],
         'media_sources' => [
@@ -195,8 +195,8 @@ return [
             'title' => 'Edita el contingut multimèdia',
             'description' => 'Retalla, ajusta, descriu i etiqueta les imatges d\'aquesta publicació.',
             'edit_tab' => 'Edita',
-            'alt_tab' => 'Text alternatiu',
-            'tags_tab' => 'Etiqueta persones',
+            'alt_tab' => 'Text alt',
+            'tags_tab' => 'Etiquetes',
             'crop_tab' => 'Retalla',
             'appearance_tab' => 'Aparença',
             'crop_heading' => 'Retalla i transforma',
@@ -370,7 +370,7 @@ return [
                 'requires_facebook' => 'La música requereix un compte d\'Instagram connectat mitjançant Facebook.',
                 'link_title' => 'Connecta amb Facebook per publicar reels amb música',
                 'link_body' => 'Per publicar reels d\'Instagram amb música, vincula Instagram a la teva pàgina de Facebook. Desarem la publicació com a esborrany abans de vincular-la. Torna-la a obrir des d\'Esborranys per afegir-hi la música.',
-                'maybe_later' => 'Potser més tard',
+                'maybe_later' => 'Ara no',
                 'save_and_link' => 'Desa i vincula',
                 'save_and_link_blocked' => 'Aquesta publicació encara no es pot desar. Espera que acabin les pujades i corregeix el que està ressaltat; després torna-ho a provar.',
                 'save_and_link_pending' => 'Aquesta publicació està pendent d\'aprovació. Aprova-la o mou-la a esborranys abans de vincular Facebook.',
@@ -519,7 +519,7 @@ return [
                 'offer' => 'Promociona una venda o una oferta. S\'afegeix automàticament un botó \'Mostra l\'oferta\' a la publicació.',
                 'event' => 'Promociona un esdeveniment. Els esdeveniments que compleixen els criteris de Google també poden aparèixer a la pestanya Resum del teu Perfil d\'empresa.',
             ],
-            'add_more_details' => 'Afegeix més detalls',
+            'add_more_details' => 'Més detalls',
             'add_time' => 'Afegeix hora',
             'cta_label' => 'Botó',
             'cta_none' => 'Cap',
@@ -739,7 +739,7 @@ return [
 
     'content_types' => [
         'instagram_feed' => [
-            'label' => 'Publicació del feed',
+            'label' => 'Post del feed',
             'description' => 'Apareix al feed i al perfil',
         ],
         'instagram_reel' => [
@@ -791,7 +791,7 @@ return [
             'description' => 'Publicació de text amb contingut multimèdia opcional',
         ],
         'threads_ghost_post' => [
-            'label' => 'Publicació fantasma',
+            'label' => 'Post fantasma',
             'description' => 'Publicació només de text que s\'arxiva al cap de 24 hores',
         ],
         'pinterest_pin' => [
@@ -995,7 +995,7 @@ return [
             'move_up' => 'Mou amunt',
             'move_down' => 'Mou avall',
             'duplicate' => 'Duplica la publicació',
-            'share_link' => 'Comparteix l\'enllaç en una publicació',
+            'share_link' => 'Comparteix en una publicació',
             'copy_link' => 'Copia l\'enllaç',
             'move_to_drafts' => 'Mou a Esborranys',
             'delete' => 'Elimina la publicació',
@@ -1006,7 +1006,7 @@ return [
                 'body' => 'Per afegir publicacions a la cua, defineix els horaris de publicació d\'aquest canal. Cada publicació a la cua surt al següent horari lliure.',
                 'body_member' => 'Per afegir publicacions a la cua, un administrador del workspace ha de definir els horaris de publicació d\'aquest canal.',
                 'not_now' => 'Ara no',
-                'action' => 'Defineix els horaris de publicació',
+                'action' => 'Defineix horaris',
             ],
             'more' => 'Més accions',
             'open_on_network' => 'Obre la publicació a :network',
@@ -1050,7 +1050,7 @@ return [
         'approve' => 'Aprova',
         'schedule' => 'Programa',
         'reject' => 'Rebutja',
-        'revert' => 'Retira la sol·licitud d\'aprovació',
+        'revert' => 'Retira la petició d\'aprovació',
         'requested' => 'Aprovació sol·licitada',
         'errors' => [
             'not_pending' => 'Aquesta publicació ja no està pendent d\'aprovació.',

@@ -21,12 +21,12 @@ return [
     'ft7d' => [
         'price' => 'Gratis',
         'period' => 'durant 7 dies',
-        'checkout_button' => 'Comença la prova gratuïta',
+        'checkout_button' => 'Comença la prova',
     ],
     'ft7dnc' => [
         'price' => 'Gratis',
         'period' => 'durant 7 dies',
-        'checkout_button' => 'Comença la prova gratuïta',
+        'checkout_button' => 'Comença la prova',
         'terms' => 'No cal targeta de crèdit',
     ],
 ];

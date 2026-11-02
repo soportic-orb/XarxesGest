@@ -119,7 +119,7 @@ return [
         'preview' => 'La teva publicació s\'ha publicat correctament.',
         'heading' => 'La teva publicació s\'ha publicat',
         'body' => 'La teva publicació al workspace :workspace s\'ha publicat correctament.',
-        'button' => 'Mostra a la xarxa social',
+        'button' => 'Mostra a la xarxa',
         'open_in_app' => 'Obre a TryPost',
     ],
 

@@ -102,7 +102,7 @@ return [
         'save' => 'Desa',
         'tabs' => [
             'profile' => 'Perfil',
-            'login' => 'Contrasenya i inici de sessió',
+            'login' => 'Contrasenya i accés',
             'sessions' => 'Sessions',
         ],
         'sessions' => [
@@ -233,7 +233,7 @@ return [
             'member' => 'Membre',
         ],
         'access' => [
-            'admin_description' => 'Pot gestionar els membres i la configuració del workspace',
+            'admin_description' => 'Gestiona membres i configuració',
             'publishing' => 'Publicació',
             'publishes_directly' => 'Publica directament',
             'needs_approval' => 'Necessita aprovació',
@@ -281,7 +281,7 @@ return [
     'api_keys' => [
         'title' => 'Claus d\'API',
         'page_title' => 'Claus d\'API',
-        'description' => 'Accedeix al teu workspace mitjançant l\'API.',
+        'description' => 'Accedeix al teu workspace amb l\'API.',
         'create' => 'Genera una clau d\'API',
         'copy' => 'Copia',
         'generated_dialog' => [

@@ -171,12 +171,12 @@ return [
             ],
             'presets' => [
                 'content_impact' => [
-                    'label' => 'Impacte del contingut',
+                    'label' => 'Impacte',
                     'title' => 'Publicacions i seguidors',
                     'about' => 'Mostra si la teva activitat de publicació fa créixer l\'audiència.',
                 ],
                 'audience_growth' => [
-                    'label' => 'Creixement de l\'audiència',
+                    'label' => 'Creixement',
                     'title' => 'Seguidors al llarg del temps',
                     'about' => 'Mostra si la teva audiència creix.',
                 ],
@@ -186,7 +186,7 @@ return [
                     'about' => 'Mostra quantes de les persones que descobreixen el teu perfil et segueixen realment.',
                 ],
                 'follower_growth_rate' => [
-                    'label' => 'Taxa de creixement de seguidors',
+                    'label' => 'Creixement de seguidors',
                     'title' => 'Taxa de creixement',
                     'about' => 'Mostra a quina velocitat han crescut els teus seguidors cada mes durant els últims 12 mesos.',
                 ],
@@ -421,7 +421,7 @@ return [
         'download' => 'Descarrega',
         'copy' => 'Copia la imatge',
         'copied' => 'Imatge copiada',
-        'create_post' => 'Crea una publicació',
+        'create_post' => 'Crea publicació',
         'mark' => 'Fet amb TryPost',
         'copy_failed' => 'No s\'ha pogut copiar la imatge. Descarrega-la.',
         'post_failed' => 'No s\'ha pogut preparar la publicació. Torna-ho a provar.',
