@@ -1,0 +1,93 @@
+<?php
+
+declare(strict_types=1);
+
+return [
+    'beta' => '测试版',
+
+    'back' => '返回',
+
+    'unsaved_changes' => [
+
+        'title' => '放弃更改？',
+
+        'description' => '此帖子的更改尚未保存。如果现在离开，这些更改将会丢失。',
+
+        'discard' => '放弃',
+
+    ],
+
+    'confirm_modal' => [
+        'type' => '输入',
+        'to_confirm' => '以确认。',
+        'copy_to_clipboard' => '复制到剪贴板',
+        'delete_keyword' => '删除',
+    ],
+
+    'photo_upload' => [
+        'upload' => '上传',
+        'uploading' => '上传中…',
+        'remove' => '移除照片',
+        'hint' => '推荐：正方形图片，最大 2 MB。',
+        'crop_title' => '裁剪图片',
+        'crop_description' => '选择要保留的区域。',
+        'crop_hint' => '拖动以移动，拖动边角可调整大小。',
+        'crop_save' => '保存',
+        'crop_cancel' => '取消',
+        'crop_error' => '无法加载此图片。请尝试其他文件。',
+    ],
+
+    'timezone' => [
+        'select' => '选择时区',
+        'search' => '搜索时区…',
+        'empty' => '未找到时区',
+    ],
+
+    'just_now' => '刚刚',
+
+    'date_picker' => [
+        'label' => '日期选择器',
+        'select' => '选择日期',
+    ],
+
+    'date_range_picker' => [
+        'placeholder' => '选择日期范围',
+        'today' => '今天',
+        'yesterday' => '昨天',
+        'last_7_days' => '过去 7 天',
+        'last_30_days' => '过去 30 天',
+        'last_3_months' => '过去 3 个月',
+        'last_6_months' => '过去 6 个月',
+        'last_12_months' => '过去 12 个月',
+        'this_month' => '本月',
+        'last_month' => '上月',
+        'year_to_date' => '今年至今',
+        'last_year' => '去年',
+    ],
+
+    'cancel' => '取消',
+    'clear' => '清除',
+    'close' => '关闭',
+    'more' => '更多',
+    'learn_more' => '了解更多',
+    'play' => '播放',
+    'loading' => '加载中…',
+    'loading_more' => '加载更多…',
+
+    'actions' => [
+        'copy' => '复制',
+        'copied' => '已复制',
+        'copy_failed' => '复制到剪贴板失败',
+    ],
+
+    'media_lightbox' => [
+        'title' => '媒体预览',
+        'previous' => '上一个',
+        'next' => '下一个',
+        'zoom_in' => '放大',
+        'zoom_out' => '缩小',
+        'counter' => ':current / :total',
+        'go_to' => '显示第 :number 项',
+        'open' => '打开预览',
+    ],
+];

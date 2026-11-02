@@ -1,0 +1,199 @@
+<?php
+
+declare(strict_types=1);
+
+return [
+    'bluesky' => [
+        'title' => 'Bluesky を接続',
+        'description' => '接続するには認証情報を入力してください',
+        'email' => 'ハンドルまたはメールアドレス',
+        'email_placeholder' => 'yourhandle.bsky.social',
+        'app_password' => 'アプリパスワード',
+        'app_password_placeholder' => 'xxxx-xxxx-xxxx-xxxx',
+        'app_password_hint' => 'セキュリティのため<strong>アプリパスワード</strong>を使用してください。<a href="https://bsky.app/settings/app-passwords" target="_blank" class="underline">bsky.app/settings</a> で作成できます。',
+        'submit' => 'Bluesky を接続',
+        'submitting' => '接続中...',
+        'invalid_credentials' => '認証情報が無効です。',
+        'connection_error' => 'Blueskyへの接続中にエラーが発生しました。もう一度お試しください。',
+    ],
+
+    'mastodon' => [
+        'title' => 'Mastodon を接続',
+        'description' => 'Mastodon のインスタンスを入力してください',
+        'instance_url' => 'インスタンス URL',
+        'instance_placeholder' => 'https://mastodon.social',
+        'instance_hint' => '例：mastodon.social、techhub.social',
+        'submit' => 'Mastodon で続ける',
+        'submitting' => '接続中...',
+        'instance_unreachable' => 'このMastodonインスタンスに接続できませんでした。',
+        'connection_error' => 'Mastodonインスタンスへの接続中にエラーが発生しました。',
+    ],
+
+    'telegram' => [
+        'title' => 'Telegram を接続',
+        'description' => 'チャンネルまたはグループを連携',
+        'steps' => '手順',
+        'step_admin' => ':bot を Telegram のチャンネルまたはグループの管理者として追加してください。',
+        'open_bot' => 'Telegram で開く',
+        'step_command' => 'このコマンドをチャンネルまたはグループに投稿してください:',
+        'waiting' => 'チャンネルの接続を待っています…',
+        'copy_command' => 'コマンドをコピー',
+        'expired' => 'このコマンドは有効期限が切れています。新しいコマンドを生成してもう一度お試しください。',
+        'new_command' => '新しいコマンドを生成',
+        'error_generic' => '接続を開始できませんでした。もう一度お試しください。',
+        'network_taken' => 'このワークスペースにはすでに Telegram チャンネルが接続されています。先に接続を解除してください。',
+        'wrong_chat' => '再接続するチャンネルでコマンドを投稿してください。',
+        'busy' => '別の接続がまだ完了していません。少し待ってからコマンドを再送信してください。',
+        'help' => [
+            'channel_admins' => 'チャンネルに管理者を追加する',
+            'group_admins' => 'グループに管理者を追加する',
+            'bot_privacy' => 'グループでボットが読めるメッセージ',
+        ],
+    ],
+
+    'instagram_connect' => [
+        'title' => 'Instagram アカウントをどの方法で接続しますか？',
+        'description' => '利用できる機能は、Instagram アカウントの種類と選択した接続方法によって異なります。',
+        'professional_title' => 'プロアカウント',
+        'professional_types' => '（ビジネス・クリエイター）',
+        'facebook_types' => '（Facebook ページにリンク）',
+        'badge' => '自動投稿',
+        'features' => [
+            'automatic' => [
+                'title' => '自動投稿',
+                'description' => '予約するだけで自動で投稿',
+            ],
+            'metrics' => [
+                'title' => '投稿済みのメトリクス',
+                'description' => '過去の投稿のパフォーマンスを確認',
+            ],
+            'music' => [
+                'title' => 'リールに音楽',
+                'description' => 'Instagram のライブラリから曲を追加',
+            ],
+        ],
+        'connect' => 'Instagram に接続',
+        'convert_hint' => '必要に応じて、Instagram からプロアカウントへの簡単な切り替えを案内されます。',
+        'help' => [
+            'account_type' => 'Instagram アカウントの種類を確認する',
+            'convert' => 'Instagram アカウントをプロアカウントに切り替える',
+        ],
+    ],
+
+    'instagram_facebook_requirements' => [
+        'title' => 'Facebook 経由で Instagram を接続',
+        'subtitle' => '知っておくべきこと 👇',
+        'heading' => '必要条件',
+        'items' => [
+            'account_type' => [
+                'lead' => 'ビジネスまたはクリエイターアカウント',
+                'rest' => 'の Instagram であること（個人アカウントは不可）。',
+            ],
+            'page' => [
+                'lead' => 'Facebook ページにリンクされていること',
+                'rest' => '（Facebook の個人プロフィールは不可）。Meta で Instagram を Facebook にリンクする必要がありますか？',
+            ],
+            'admin' => [
+                'lead' => 'Facebook ページの管理者としてログインしていること',
+                'rest' => '（「フルコントロール」権限）。',
+            ],
+            'permissions' => [
+                'lead' => 'すべてのページと Instagram アカウントですべての権限を選択すること',
+                'rest' => '（TryPost に接続しないものも含め、接続時に選択）。',
+            ],
+        ],
+        'learn_how' => '方法を見る。',
+        'note' => 'これらの条件のいずれかを満たしていない場合、接続は機能しません。',
+        'connect' => 'Facebook 経由で接続',
+    ],
+
+    'flash' => [
+        'disconnected_paused_repurposes' => 'アカウントを切断しました。:count 件の自動化を停止しました。|アカウントを切断しました。:count 件の自動化を停止しました。',
+        'disconnected' => 'アカウントの接続を解除しました！',
+        'session_expired' => 'セッションの有効期限が切れました。もう一度お試しください。',
+        'workspace_not_found' => 'ワークスペースが見つかりません。',
+        'already_connected' => 'このプラットフォームはすでに接続されています。',
+        'no_youtube_channels' => 'YouTube チャンネルが見つかりません。先にチャンネルを作成してください。',
+    ],
+
+    'connect' => [
+        'label' => 'チャンネルを接続',
+        'close' => '閉じる',
+        'title_single' => 'アカウントを接続',
+        'title_select' => 'アカウントを選択',
+        'subtitle_single' => 'TryPost が :network で投稿するアカウントを選んでください。',
+        'subtitle_select' => 'TryPost が :network で投稿するアカウントを選んでください。',
+        'selected' => ':count件選択中',
+        'select_all' => 'すべて選択',
+        'connected' => '接続済み',
+        'all_connected' => ':network のアカウントはすべて接続済みです。',
+        'finish' => '接続を完了',
+        'switch' => [
+            'button' => 'アカウントを切り替え',
+            'button_short' => '切り替え',
+            'title' => '別のアカウントを接続',
+            'description' => ':site で使いたいアカウントに切り替えてから、下の「:network に接続」をクリックしてください。',
+            'connect' => ':network に接続',
+        ],
+        'types' => [
+            'profile' => 'プロフィール',
+            'page' => 'ページ',
+            'channel' => 'チャンネル',
+            'location' => 'ビジネス拠点',
+            'server' => 'サーバー',
+        ],
+        'help' => [
+            'label' => 'ヘルプ',
+            'missing' => 'アカウントが表示されない場合は、管理権限を確認し、すべての権限を許可してもう一度お試しください。',
+        ],
+        'states' => [
+            'cancelled' => [
+                'title' => '接続をキャンセルしました',
+                'description' => '何も接続されていません。準備ができたらもう一度お試しください。',
+            ],
+            'missing_permission' => [
+                'title' => '権限が必要です',
+                'description' => 'TryPost が投稿を公開するには権限が必要です。もう一度接続し、その権限をオンのままにしてください。',
+            ],
+            'expired' => [
+                'title' => 'この接続は期限切れです',
+                'description' => '安全のため、接続は15分で期限切れになります。最初からやり直してアカウントを接続してください。',
+            ],
+            'error' => [
+                'title' => '接続できませんでした',
+            ],
+        ],
+        'actions' => [
+            'try_again' => '再試行',
+            'back' => '戻る',
+            'connect_again' => 'もう一度接続',
+            'start_again' => '最初から',
+        ],
+        'errors' => [
+            'bluesky_email_unconfirmed' => 'Blueskyの設定でメールアドレスを確認してから、アカウントを再接続してください。TryPostで動画を投稿するには、メールアドレスの確認が必要です。',
+            'error_connecting' => 'アカウントの接続中にエラーが発生しました。もう一度お試しください。',
+            'network_taken' => 'このワークスペースにはすでにこのネットワークのアカウントが接続されています。先に接続を解除してください。',
+            'wrong_account' => '別のアカウントです。再接続するアカウントを認証してください。',
+            'all_connected' => 'このログインのアカウントはすべて接続済みです。',
+            'identity_connected' => 'このアカウントはすでに接続されています。',
+            'busy' => '別の接続がまだ完了していません。少し待ってからもう一度お試しください。',
+            'session_expired' => 'セッションの有効期限が切れました。もう一度お試しください。',
+            'workspace_not_found' => 'ワークスペースが見つかりません。',
+            'invalid_state' => '不正な状態です。もう一度お試しください。',
+            'failed_to_authenticate' => '認証に失敗しました。',
+            'failed_to_get_profile' => 'プロフィールの取得に失敗しました。',
+            'page_not_found' => 'ページが見つかりません。',
+            'channel_not_found' => 'チャンネルが見つかりません。',
+            'pages_read_incomplete' => 'ページをすべて読み取れませんでした。少し時間をおいて再度お試しください。',
+            'publish_permission_missing' => 'TryPost が投稿を公開するには権限が必要です。もう一度接続し、その権限のチェックを外さないでください。',
+            'cancelled' => '接続をキャンセルしました。',
+            'pages_missing_permission' => 'ページは見つかりましたが、投稿できるものがありません。ページ自体での役割と、すべての権限が必要です。',
+            'no_facebook_pages' => 'Facebook ページが見つかりません。少なくとも 1 つのページの管理者である必要があります。',
+            'no_facebook_instagram_pages' => 'Instagram アカウントが連携された Facebook ページが見つかりません。',
+            'no_youtube_channels' => 'YouTube チャンネルが見つかりません。先にチャンネルを作成してください。',
+            'not_linkedin_admin' => 'あなたが管理者になっている LinkedIn ページはありません。',
+            'no_google_business_locations' => 'Google ビジネス プロフィールのビジネス拠点が見つかりません。まずビジネスを確認してください。',
+            'location_not_found' => 'ビジネス拠点が見つかりません。',
+        ],
+    ],
+];

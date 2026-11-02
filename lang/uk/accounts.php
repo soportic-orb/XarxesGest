@@ -1,0 +1,199 @@
+<?php
+
+declare(strict_types=1);
+
+return [
+    'bluesky' => [
+        'title' => 'Підключити Bluesky',
+        'description' => 'Введіть облікові дані для підключення',
+        'email' => 'Імʼя користувача або email',
+        'email_placeholder' => 'yourhandle.bsky.social',
+        'app_password' => 'Пароль додатка',
+        'app_password_placeholder' => 'xxxx-xxxx-xxxx-xxxx',
+        'app_password_hint' => 'З міркувань безпеки використовуйте <strong>пароль додатка</strong>. Створіть його на <a href="https://bsky.app/settings/app-passwords" target="_blank" class="underline">bsky.app/settings</a>.',
+        'submit' => 'Підключити Bluesky',
+        'submitting' => 'Підключення...',
+        'invalid_credentials' => 'Недійсні облікові дані.',
+        'connection_error' => 'Помилка підключення до Bluesky. Спробуйте ще раз.',
+    ],
+
+    'mastodon' => [
+        'title' => 'Підключити Mastodon',
+        'description' => 'Введіть інстанс Mastodon',
+        'instance_url' => 'URL інстансу',
+        'instance_placeholder' => 'https://mastodon.social',
+        'instance_hint' => 'Наприклад: mastodon.social або techhub.social.',
+        'submit' => 'Продовжити з Mastodon',
+        'submitting' => 'Підключення...',
+        'instance_unreachable' => 'Не вдалося підключитися до цього сервера Mastodon.',
+        'connection_error' => 'Помилка підключення до сервера Mastodon.',
+    ],
+
+    'telegram' => [
+        'title' => 'Підключити Telegram',
+        'description' => 'Під’єднайте канал або групу',
+        'steps' => 'Кроки',
+        'step_admin' => 'Додайте :bot як адміністратора до каналу або групи Telegram.',
+        'open_bot' => 'Відкрити в Telegram',
+        'step_command' => 'Опублікуйте цю команду в каналі або групі:',
+        'waiting' => 'Очікуємо підключення каналу…',
+        'copy_command' => 'Копіювати команду',
+        'expired' => 'Термін дії цієї команди минув. Створіть нову, щоб спробувати ще раз.',
+        'new_command' => 'Створити нову команду',
+        'error_generic' => 'Не вдалося розпочати підключення. Спробуйте ще раз.',
+        'network_taken' => 'У цьому робочому просторі вже підключено канал Telegram. Спочатку від’єднайте його.',
+        'wrong_chat' => 'Надішліть команду в канал, який ви перепідключаєте.',
+        'busy' => 'Інше підключення ще завершується. Надішліть команду ще раз за мить.',
+        'help' => [
+            'channel_admins' => 'Додавання адміністраторів до каналу',
+            'group_admins' => 'Додавання адміністраторів до групи',
+            'bot_privacy' => 'Що боти можуть читати в групах',
+        ],
+    ],
+
+    'instagram_connect' => [
+        'title' => 'Як ви хочете підключити акаунт Instagram?',
+        'description' => 'Можливості залежать від типу вашого акаунта Instagram і вибраного способу підключення.',
+        'professional_title' => 'Професійний',
+        'professional_types' => '(Бізнес і Автор)',
+        'facebook_types' => '(пов’язаний зі сторінкою Facebook)',
+        'badge' => 'Автоматична публікація',
+        'features' => [
+            'automatic' => [
+                'title' => 'Автоматична публікація',
+                'description' => 'Ви плануєте, ми публікуємо',
+            ],
+            'metrics' => [
+                'title' => 'Метрики опублікованих дописів',
+                'description' => 'Переглядайте результати минулих дописів',
+            ],
+            'music' => [
+                'title' => 'Музика в Reels',
+                'description' => 'Додайте трек із бібліотеки Instagram',
+            ],
+        ],
+        'connect' => 'Підключитися до Instagram',
+        'convert_hint' => 'За потреби Instagram запропонує легко перейти на професійний акаунт.',
+        'help' => [
+            'account_type' => 'Як дізнатися тип акаунта Instagram',
+            'convert' => 'Як перевести акаунт Instagram у професійний',
+        ],
+    ],
+
+    'instagram_facebook_requirements' => [
+        'title' => 'Підключіть Instagram через Facebook',
+        'subtitle' => 'Ось що потрібно знати 👇',
+        'heading' => 'Вимоги',
+        'items' => [
+            'account_type' => [
+                'lead' => 'Бізнес-акаунт або акаунт автора',
+                'rest' => 'в Instagram, а не особистий профіль.',
+            ],
+            'page' => [
+                'lead' => 'Пов’язаний зі сторінкою Facebook,',
+                'rest' => 'а не з особистим профілем Facebook. Потрібно пов’язати Instagram із Facebook у Meta?',
+            ],
+            'admin' => [
+                'lead' => 'Вхід виконано як адміністратор сторінки Facebook',
+                'rest' => 'з «повним контролем».',
+            ],
+            'permissions' => [
+                'lead' => 'Вибрано всі дозволи для всіх сторінок і акаунтів Instagram',
+                'rest' => 'під час підключення, навіть для тих, які ви не підключатимете до TryPost.',
+            ],
+        ],
+        'learn_how' => 'Як це зробити.',
+        'note' => 'Підключення не працюватиме, якщо не виконано хоча б одну з цих вимог.',
+        'connect' => 'Підключити через Facebook',
+    ],
+
+    'flash' => [
+        'disconnected_paused_repurposes' => 'Обліковий запис відключено. Призупинено :count автоматизацію.|Обліковий запис відключено. Призупинено автоматизацій: :count.',
+        'disconnected' => 'Акаунт успішно від’єднано!',
+        'session_expired' => 'Сесію завершено. Спробуйте ще раз.',
+        'workspace_not_found' => 'Робочий простір не знайдено.',
+        'already_connected' => 'Ця платформа вже підключена.',
+        'no_youtube_channels' => 'Каналів YouTube не знайдено. Спочатку створіть канал.',
+    ],
+
+    'connect' => [
+        'label' => 'Підключити канал',
+        'close' => 'Закрити',
+        'title_single' => 'Підключіть акаунт',
+        'title_select' => 'Виберіть акаунти',
+        'subtitle_single' => 'Виберіть акаунт, у якому TryPost публікуватиме в :network.',
+        'subtitle_select' => 'Виберіть акаунти, у яких TryPost публікуватиме в :network.',
+        'selected' => 'Вибрано: :count',
+        'select_all' => 'Вибрати всі',
+        'connected' => 'Підключено',
+        'all_connected' => 'Усі ваші акаунти :network уже підключені.',
+        'finish' => 'Завершити',
+        'switch' => [
+            'button' => 'Змінити акаунт',
+            'button_short' => 'Змінити',
+            'title' => 'Підключити інший акаунт',
+            'description' => 'Відкрийте :site, перейдіть на потрібний акаунт, а потім натисніть «Підключити :network» нижче.',
+            'connect' => 'Підключити :network',
+        ],
+        'types' => [
+            'profile' => 'Профіль',
+            'page' => 'Сторінка',
+            'channel' => 'Канал',
+            'location' => 'Філія',
+            'server' => 'Сервер',
+        ],
+        'help' => [
+            'label' => 'Допомога',
+            'missing' => 'Немає потрібного акаунта? Переконайтеся, що керуєте ним, спробуйте ще раз і надайте всі дозволи.',
+        ],
+        'states' => [
+            'cancelled' => [
+                'title' => 'Підключення скасовано',
+                'description' => 'Нічого не підключено. Можна спробувати знову будь-коли.',
+            ],
+            'missing_permission' => [
+                'title' => 'Потрібен дозвіл',
+                'description' => 'TryPost потрібен дозвіл на публікацію ваших дописів. Підключіться знову й залиште цей дозвіл увімкненим.',
+            ],
+            'expired' => [
+                'title' => 'Термін підключення минув',
+                'description' => 'З міркувань безпеки підключення діє 15 хвилин. Почніть знову, щоб підключити акаунт.',
+            ],
+            'error' => [
+                'title' => 'Не вдалося підключити',
+            ],
+        ],
+        'actions' => [
+            'try_again' => 'Повторити',
+            'back' => 'Назад',
+            'connect_again' => 'Підключити знову',
+            'start_again' => 'Почати знову',
+        ],
+        'errors' => [
+            'bluesky_email_unconfirmed' => 'Підтвердьте електронну пошту в налаштуваннях Bluesky, а потім підключіть обліковий запис знову. Для публікації відео через TryPost потрібна підтверджена пошта.',
+            'error_connecting' => 'Помилка підключення акаунта. Спробуйте ще раз.',
+            'network_taken' => 'У цьому робочому просторі вже є акаунт для цієї мережі. Спочатку від’єднайте його.',
+            'wrong_account' => 'Це інший акаунт. Авторизуйте той, який ви перепідключаєте.',
+            'all_connected' => 'Усі акаунти цього входу вже підключені.',
+            'identity_connected' => 'Цей акаунт уже підключено.',
+            'busy' => 'Інше підключення ще завершується. Спробуйте ще раз за мить.',
+            'session_expired' => 'Сесію завершено. Спробуйте ще раз.',
+            'workspace_not_found' => 'Робочий простір не знайдено.',
+            'invalid_state' => 'Недійсний стан. Спробуйте ще раз.',
+            'failed_to_authenticate' => 'Не вдалося автентифікуватися.',
+            'failed_to_get_profile' => 'Не вдалося отримати профіль.',
+            'page_not_found' => 'Сторінку не знайдено.',
+            'channel_not_found' => 'Канал не знайдено.',
+            'pages_read_incomplete' => 'Не вдалося прочитати всі ваші сторінки. Спробуйте ще раз за хвилину.',
+            'publish_permission_missing' => 'TryPost потрібен дозвіл на публікацію ваших дописів. Підключіться знову й залиште цей дозвіл позначеним.',
+            'cancelled' => 'Підключення скасовано.',
+            'pages_missing_permission' => 'Ми знайшли сторінки, але публікувати нема де. Потрібна роль на самій сторінці та всі дозволи.',
+            'no_facebook_pages' => 'Сторінок Facebook не знайдено. Ви маєте бути адміністратором хоча б однієї сторінки.',
+            'no_facebook_instagram_pages' => 'Не знайдено сторінок Facebook із підключеними акаунтами Instagram.',
+            'no_youtube_channels' => 'Каналів YouTube не знайдено. Спочатку створіть канал.',
+            'not_linkedin_admin' => 'Ви не є адміністратором жодної сторінки LinkedIn.',
+            'no_google_business_locations' => 'Філій у Google Business Profile не знайдено. Спочатку підтвердьте свій бізнес.',
+            'location_not_found' => 'Філію не знайдено.',
+        ],
+    ],
+];

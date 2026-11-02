@@ -1,0 +1,698 @@
+<?php
+
+declare(strict_types=1);
+
+use App\Enums\Post\CreatedVia;
+use App\Enums\SocialAccount\Platform;
+use App\Mcp\Servers\TryPostServer;
+use App\Mcp\Tools\Post\CreatePostsTool;
+use App\Mcp\Tools\Post\CreatePostTool;
+use App\Mcp\Tools\Post\DeletePostTool;
+use App\Mcp\Tools\Post\GetPostTool;
+use App\Mcp\Tools\Post\ListPostsTool;
+use App\Mcp\Tools\Post\UpdatePostTool;
+use App\Models\Media;
+use App\Models\Post;
+use App\Models\SocialAccount;
+use App\Models\User;
+use App\Models\Workspace;
+use App\Models\WorkspaceLabel;
+use Illuminate\Support\Facades\Storage;
+use Illuminate\Testing\Fluent\AssertableJson;
+
+beforeEach(function () {
+    Storage::fake();
+    $this->user = User::factory()->create();
+    $this->workspace = Workspace::factory()->create(['user_id' => $this->user->id]);
+    $this->workspace->members()->attach($this->user->id, membershipPivot('member'));
+    $this->user->update(['current_workspace_id' => $this->workspace->id]);
+
+    $this->socialAccount = SocialAccount::factory()->create([
+        'workspace_id' => $this->workspace->id,
+        'platform' => Platform::LinkedIn,
+    ]);
+});
+
+test('list posts returns wrapped posts array with PostResource shape', function () {
+    Post::factory()->count(3)->create([
+        'workspace_id' => $this->workspace->id,
+        'user_id' => $this->user->id,
+    ]);
+
+    $response = TryPostServer::actingAs($this->user)
+        ->tool(ListPostsTool::class, []);
+
+    $response->assertOk()
+        ->assertStructuredContent(function (AssertableJson $json) {
+            $json->has('posts', 3, function (AssertableJson $post) {
+                $post->hasAll(['id', 'post_group_id', 'author', 'content', 'media', 'status', 'schedule_mode', 'scheduled_at', 'published_at', 'approval_requested_by', 'approval_requested_at', 'approved_by', 'approved_at', 'recurrence', 'origin', 'publish_status', 'platform', 'content_type', 'meta', 'platform_url', 'error_message', 'display_name', 'display_username', 'display_avatar', 'social_account', 'labels', 'created_at', 'updated_at'])
+                    ->missing('platforms')
+                    ->missing('user_id')
+                    ->missing('workspace_id');
+            })->where('total', 3)->where('current_page', 1)->where('last_page', 1)->has('per_page');
+        });
+});
+
+test('list posts only returns own workspace posts', function () {
+    Post::factory()->create(['workspace_id' => $this->workspace->id, 'user_id' => $this->user->id]);
+
+    $otherWorkspace = Workspace::factory()->create();
+    Post::factory()->create(['workspace_id' => $otherWorkspace->id, 'user_id' => $this->user->id]);
+
+    $response = TryPostServer::actingAs($this->user)
+        ->tool(ListPostsTool::class, []);
+
+    $response->assertOk()
+        ->assertStructuredContent(function (AssertableJson $json) {
+            $json->has('posts', 1)->etc();
+        });
+});
+
+test('list posts filters by content search', function () {
+    $matching = Post::factory()->create([
+        'workspace_id' => $this->workspace->id,
+        'user_id' => $this->user->id,
+        'content' => 'Hello marketing world',
+    ]);
+    Post::factory()->create([
+        'workspace_id' => $this->workspace->id,
+        'user_id' => $this->user->id,
+        'content' => 'Something else entirely',
+    ]);
+
+    $response = TryPostServer::actingAs($this->user)
+        ->tool(ListPostsTool::class, ['search' => 'marketing']);
+
+    $response->assertOk()
+        ->assertStructuredContent(function (AssertableJson $json) use ($matching) {
+            $json->has('posts', 1, function (AssertableJson $post) use ($matching) {
+                $post->where('id', $matching->id)->etc();
+            })->etc();
+        });
+});
+
+test('list posts search is case insensitive', function () {
+    Post::factory()->create([
+        'workspace_id' => $this->workspace->id,
+        'user_id' => $this->user->id,
+        'content' => 'MARKETING CAMPAIGN',
+    ]);
+    Post::factory()->create([
+        'workspace_id' => $this->workspace->id,
+        'user_id' => $this->user->id,
+        'content' => 'Something else entirely',
+    ]);
+
+    $response = TryPostServer::actingAs($this->user)
+        ->tool(ListPostsTool::class, ['search' => 'marketing']);
+
+    $response->assertOk()
+        ->assertStructuredContent(function (AssertableJson $json) {
+            $json->has('posts', 1)->etc();
+        });
+});
+
+test('get post returns PostResource shape', function () {
+    $post = Post::factory()->create([
+        'workspace_id' => $this->workspace->id,
+        'user_id' => $this->user->id,
+        'content' => 'Hello world',
+    ]);
+
+    $response = TryPostServer::actingAs($this->user)
+        ->tool(GetPostTool::class, ['post_id' => $post->id]);
+
+    $response->assertOk()
+        ->assertStructuredContent(function (AssertableJson $json) use ($post) {
+            $json->where('id', $post->id)
+                ->where('content', 'Hello world')
+                ->missing('user_id')
+                ->missing('workspace_id')
+                ->etc();
+        });
+});
+
+test('get post 404 from another workspace', function () {
+    $otherWorkspace = Workspace::factory()->create();
+    $post = Post::factory()->create(['workspace_id' => $otherWorkspace->id, 'user_id' => $this->user->id]);
+
+    $response = TryPostServer::actingAs($this->user)
+        ->tool(GetPostTool::class, ['post_id' => $post->id]);
+
+    $response->assertHasErrors(['Post not found.']);
+});
+
+test('create post with content and date', function () {
+    $response = TryPostServer::actingAs($this->user)
+        ->tool(CreatePostTool::class, [
+            'content' => 'My new post',
+            'scheduled_at' => '2037-12-31T15:30:00Z',
+            'social_account_id' => $this->socialAccount->id,
+            'content_type' => 'linkedin_post',
+        ]);
+
+    $response->assertOk()
+        ->assertStructuredContent(function (AssertableJson $json) {
+            $json->where('content', 'My new post')
+                ->where('status', 'draft')
+                ->where('scheduled_at', '2037-12-31 15:30:00')
+                ->etc();
+        });
+
+    $post = Post::where('workspace_id', $this->workspace->id)->first();
+    expect($post)->not->toBeNull();
+    expect($post->created_via)->toBe(CreatedVia::Mcp);
+});
+
+test('create post creates unscheduled draft without a schedule', function (string $case) {
+    $payload = match ($case) {
+        'empty' => [
+            'social_account_id' => $this->socialAccount->id,
+            'content_type' => 'linkedin_post',
+        ],
+        'omitted' => [
+            'content' => 'Draft without schedule',
+            'social_account_id' => $this->socialAccount->id,
+            'content_type' => 'linkedin_post',
+        ],
+        'null' => [
+            'content' => 'Draft without schedule',
+            'social_account_id' => $this->socialAccount->id,
+            'content_type' => 'linkedin_post',
+            'scheduled_at' => null,
+        ],
+    };
+
+    TryPostServer::actingAs($this->user)
+        ->tool(CreatePostTool::class, $payload)
+        ->assertOk()
+        ->assertStructuredContent(fn (AssertableJson $json) => $json
+            ->where('status', 'draft')
+            ->where('scheduled_at', null)
+            ->etc());
+
+    expect(Post::where('workspace_id', $this->workspace->id)
+        ->latest('created_at')
+        ->firstOrFail()
+        ->scheduled_at)->toBeNull();
+})->with([
+    'empty args' => ['empty'],
+    'omitted schedule' => ['omitted'],
+    'explicit null schedule' => ['null'],
+]);
+
+test('create post stores the chosen social account on the post', function () {
+    $response = TryPostServer::actingAs($this->user)
+        ->tool(CreatePostTool::class, [
+            'content' => 'with an account',
+            'social_account_id' => $this->socialAccount->id,
+            'content_type' => 'linkedin_post',
+        ]);
+
+    $response->assertOk();
+
+    $post = Post::where('workspace_id', $this->workspace->id)->sole();
+    expect($post->social_account_id)->toBe($this->socialAccount->id)
+        ->and($post->platform)->toBe(Platform::LinkedIn)
+        ->and($post->content_type->value)->toBe('linkedin_post');
+});
+
+test('the single MCP create tool adopts a temporary upload submitted by id', function () {
+    $asset = Media::factory()->stored()->temporaryUpload($this->workspace)->create();
+
+    TryPostServer::actingAs($this->user)->tool(CreatePostTool::class, [
+        'media' => [['id' => $asset->id]],
+        'social_account_id' => $this->socialAccount->id,
+        'content_type' => 'linkedin_post',
+    ])->assertOk();
+
+    $post = Post::query()->where('workspace_id', $this->workspace->id)->sole();
+
+    expect($post->ownedMedia()->sole()->id)->toBe($asset->id)
+        ->and(data_get($post->media, '0.id'))->toBe($asset->id);
+});
+
+test('the single MCP create tool rejects the removed platforms input', function () {
+    $secondAccount = SocialAccount::factory()->linkedin()->create([
+        'workspace_id' => $this->workspace->id,
+    ]);
+
+    TryPostServer::actingAs($this->user)->tool(CreatePostTool::class, [
+        'social_account_id' => $this->socialAccount->id,
+        'content_type' => 'linkedin_post',
+        'platforms' => [
+            ['social_account_id' => $this->socialAccount->id, 'content_type' => 'linkedin_post'],
+            ['social_account_id' => $secondAccount->id, 'content_type' => 'linkedin_post'],
+        ],
+    ])->assertHasErrors();
+
+    expect(Post::query()->where('workspace_id', $this->workspace->id)->count())->toBe(0);
+});
+
+test('the MCP batch tool creates ordered independent posts', function () {
+    $secondAccount = SocialAccount::factory()->linkedin()->create([
+        'workspace_id' => $this->workspace->id,
+    ]);
+
+    TryPostServer::actingAs($this->user)->tool(CreatePostsTool::class, [
+        'status' => 'draft',
+        'content' => 'Base',
+        'destinations' => [
+            ['social_account_id' => $secondAccount->id, 'content_type' => 'linkedin_post', 'content' => 'Second first'],
+            ['social_account_id' => $this->socialAccount->id, 'content_type' => 'linkedin_post'],
+        ],
+    ])->assertOk()->assertStructuredContent(function (AssertableJson $json) {
+        $json->has('posts', 2)
+            ->where('posts.0.content', 'Second first')
+            ->where('posts.1.content', 'Base')
+            ->etc();
+    });
+
+    expect(Post::query()->where('workspace_id', $this->workspace->id)->count())->toBe(2);
+});
+
+test('the MCP batch tool rejects a foreign account without creating a partial batch', function () {
+    $foreignWorkspace = Workspace::factory()->create();
+    $foreignAccount = SocialAccount::factory()->linkedin()->create([
+        'workspace_id' => $foreignWorkspace->id,
+    ]);
+
+    TryPostServer::actingAs($this->user)->tool(CreatePostsTool::class, [
+        'status' => 'draft',
+        'destinations' => [
+            ['social_account_id' => $this->socialAccount->id, 'content_type' => 'linkedin_post'],
+            ['social_account_id' => $foreignAccount->id, 'content_type' => 'linkedin_post'],
+        ],
+    ])->assertHasErrors();
+
+    expect(Post::query()->where('workspace_id', $this->workspace->id)->count())->toBe(0);
+});
+
+test('the MCP edit tool rejects a replacement social account', function () {
+    $post = Post::factory()->forAccount($this->socialAccount)->create([
+        'user_id' => $this->user->id,
+    ]);
+    $otherAccount = SocialAccount::factory()->linkedin()->create(['workspace_id' => $this->workspace->id]);
+
+    TryPostServer::actingAs($this->user)->tool(UpdatePostTool::class, [
+        'post_id' => $post->id,
+        'social_account_id' => $otherAccount->id,
+    ])->assertHasErrors();
+
+    expect($post->fresh()->social_account_id)->toBe($this->socialAccount->id);
+});
+
+test('create post rejects scheduled_at in the past', function () {
+    $response = TryPostServer::actingAs($this->user)
+        ->tool(CreatePostTool::class, ['scheduled_at' => '2020-01-01T00:00:00Z']);
+
+    $response->assertHasErrors();
+});
+
+test('create post rejects a content_type not in the enum', function () {
+    $response = TryPostServer::actingAs($this->user)
+        ->tool(CreatePostTool::class, [
+            'social_account_id' => $this->socialAccount->id,
+            'content_type' => 'made_up_type',
+        ]);
+
+    $response->assertHasErrors();
+});
+
+test('create post rejects instagram_carousel — carousel is not a stored content_type', function () {
+    $response = TryPostServer::actingAs($this->user)
+        ->tool(CreatePostTool::class, [
+            'social_account_id' => $this->socialAccount->id,
+            'content_type' => 'instagram_carousel',
+        ]);
+
+    $response->assertHasErrors();
+});
+
+test('update post rejects instagram_carousel — carousel is not a stored content_type', function () {
+    $post = Post::factory()->forAccount($this->socialAccount)->create([
+        'user_id' => $this->user->id,
+    ]);
+
+    $response = TryPostServer::actingAs($this->user)
+        ->tool(UpdatePostTool::class, [
+            'post_id' => $post->id,
+            'content_type' => 'instagram_carousel',
+        ]);
+
+    $response->assertHasErrors();
+});
+
+test('create post rejects a content_type that does not match the social account platform', function () {
+    // x_post on a LinkedIn account — ContentTypeMatchesPlatform should reject.
+    $response = TryPostServer::actingAs($this->user)
+        ->tool(CreatePostTool::class, [
+            'social_account_id' => $this->socialAccount->id,
+            'content_type' => 'x_post',
+        ]);
+
+    $response->assertHasErrors();
+});
+
+test('create post rejects a label_id from another workspace', function () {
+    $otherWorkspace = Workspace::factory()->create();
+    $foreignLabel = WorkspaceLabel::factory()->create(['workspace_id' => $otherWorkspace->id]);
+
+    $response = TryPostServer::actingAs($this->user)
+        ->tool(CreatePostTool::class, [
+            'social_account_id' => $this->socialAccount->id,
+            'content_type' => 'linkedin_post',
+            'label_ids' => [$foreignLabel->id],
+        ]);
+
+    $response->assertHasErrors();
+});
+
+test('create post rejects a deleted label', function () {
+    $label = WorkspaceLabel::factory()->create(['workspace_id' => $this->workspace->id]);
+    $label->delete();
+
+    TryPostServer::actingAs($this->user)
+        ->tool(CreatePostTool::class, [
+            'social_account_id' => $this->socialAccount->id,
+            'content_type' => 'linkedin_post',
+            'label_ids' => [$label->id],
+        ])
+        ->assertHasErrors();
+});
+
+test('delete post removes from db', function () {
+    $post = Post::factory()->create([
+        'workspace_id' => $this->workspace->id,
+        'user_id' => $this->user->id,
+    ]);
+
+    $response = TryPostServer::actingAs($this->user)
+        ->tool(DeletePostTool::class, ['post_id' => $post->id]);
+
+    $response->assertOk()
+        ->assertStructuredContent(['deleted' => true]);
+
+    expect(Post::find($post->id))->toBeNull();
+});
+
+test('delete post 404 from another workspace', function () {
+    $otherWorkspace = Workspace::factory()->create();
+    $post = Post::factory()->create(['workspace_id' => $otherWorkspace->id, 'user_id' => $this->user->id]);
+
+    $response = TryPostServer::actingAs($this->user)
+        ->tool(DeletePostTool::class, ['post_id' => $post->id]);
+
+    $response->assertHasErrors(['Post not found.']);
+});
+
+test('get post validates post_id required', function () {
+    $response = TryPostServer::actingAs($this->user)
+        ->tool(GetPostTool::class, []);
+
+    $response->assertHasErrors();
+});
+
+test('delete post validates post_id required', function () {
+    $response = TryPostServer::actingAs($this->user)
+        ->tool(DeletePostTool::class, []);
+
+    $response->assertHasErrors();
+});
+
+test('create post persists platform meta (link_preview)', function () {
+    $response = TryPostServer::actingAs($this->user)
+        ->tool(CreatePostTool::class, [
+            'social_account_id' => $this->socialAccount->id,
+            'content_type' => 'linkedin_post',
+            'meta' => ['link_preview' => false],
+        ]);
+
+    $response->assertOk();
+
+    $post = Post::where('workspace_id', $this->workspace->id)->sole();
+    expect($post->social_account_id)->toBe($this->socialAccount->id)
+        ->and($post->meta['link_preview'])->toBeFalse();
+});
+
+test('create post no longer stores an aspect_ratio meta', function () {
+    TryPostServer::actingAs($this->user)
+        ->tool(CreatePostTool::class, [
+            'social_account_id' => $this->socialAccount->id,
+            'content_type' => 'linkedin_post',
+            'meta' => ['aspect_ratio' => '4:5'],
+        ])
+        ->assertOk();
+
+    $post = Post::where('workspace_id', $this->workspace->id)->sole();
+    expect(data_get($post->meta, 'aspect_ratio'))->toBeNull();
+});
+
+test('create post rejects an invalid link_preview', function () {
+    $response = TryPostServer::actingAs($this->user)
+        ->tool(CreatePostTool::class, [
+            'social_account_id' => $this->socialAccount->id,
+            'content_type' => 'linkedin_post',
+            'meta' => ['link_preview' => 'nope'],
+        ]);
+
+    $response->assertHasErrors();
+});
+
+test('update post rejects an invalid link_preview', function () {
+    $post = Post::factory()->forAccount($this->socialAccount)->create([
+        'user_id' => $this->user->id,
+    ]);
+
+    $response = TryPostServer::actingAs($this->user)
+        ->tool(UpdatePostTool::class, [
+            'post_id' => $post->id,
+            'meta' => ['link_preview' => 'nope'],
+        ]);
+
+    $response->assertHasErrors();
+});
+
+test('create post returns the platform meta in the response (read-back)', function () {
+    TryPostServer::actingAs($this->user)
+        ->tool(CreatePostTool::class, [
+            'social_account_id' => $this->socialAccount->id,
+            'content_type' => 'linkedin_post',
+            'meta' => ['link_preview' => false],
+        ])
+        ->assertOk()
+        ->assertStructuredContent(fn (AssertableJson $json) => $json->where('meta.link_preview', false)->etc());
+});
+
+test('update post rejects scheduled status without a future scheduled_at', function (?string $existingScheduledAt) {
+    $post = Post::factory()->create([
+        'workspace_id' => $this->workspace->id,
+        'user_id' => $this->user->id,
+        'scheduled_at' => $existingScheduledAt,
+    ]);
+
+    TryPostServer::actingAs($this->user)
+        ->tool(UpdatePostTool::class, [
+            'post_id' => $post->id,
+            'status' => 'scheduled',
+        ])
+        ->assertHasErrors();
+
+    TryPostServer::actingAs($this->user)
+        ->tool(UpdatePostTool::class, [
+            'post_id' => $post->id,
+            'status' => 'scheduled',
+            'scheduled_at' => now()->subHour()->toIso8601String(),
+        ])
+        ->assertHasErrors();
+
+    expect($post->fresh()->status->value)->toBe('draft');
+})->with([
+    'missing schedule' => [null],
+    'past schedule' => [now()->subDay()->toDateTimeString()],
+]);
+
+test('update post accepts scheduled status reusing an existing future scheduled_at', function () {
+    $scheduledAt = now()->addDay()->startOfSecond();
+    $post = Post::factory()->forAccount($this->socialAccount)->create([
+        'content' => 'Ready to schedule',
+        'user_id' => $this->user->id,
+        'scheduled_at' => $scheduledAt,
+    ]);
+
+    TryPostServer::actingAs($this->user)
+        ->tool(UpdatePostTool::class, [
+            'post_id' => $post->id,
+            'status' => 'scheduled',
+        ])
+        ->assertOk()
+        ->assertStructuredContent(fn (AssertableJson $json) => $json
+            ->where('status', 'scheduled')
+            ->etc());
+
+    expect($post->fresh()->scheduled_at->toDateTimeString())->toBe($scheduledAt->toDateTimeString());
+});
+
+test('update post schedules an unscheduled draft with an explicit future scheduled_at', function () {
+    $scheduledAt = now()->addDay()->startOfSecond();
+    $post = Post::factory()->forAccount($this->socialAccount)->create([
+        'content' => 'Ready to schedule',
+        'user_id' => $this->user->id,
+        'scheduled_at' => null,
+    ]);
+
+    TryPostServer::actingAs($this->user)
+        ->tool(UpdatePostTool::class, [
+            'post_id' => $post->id,
+            'status' => 'scheduled',
+            'scheduled_at' => $scheduledAt->toIso8601String(),
+        ])
+        ->assertOk()
+        ->assertStructuredContent(fn (AssertableJson $json) => $json
+            ->where('status', 'scheduled')
+            ->etc());
+
+    expect($post->fresh()->scheduled_at->toDateTimeString())->toBe($scheduledAt->toDateTimeString());
+});
+
+test('update post keeps an unscheduled draft when saving as draft without scheduled_at', function () {
+    $post = Post::factory()->create([
+        'workspace_id' => $this->workspace->id,
+        'user_id' => $this->user->id,
+        'scheduled_at' => null,
+        'content' => 'Original',
+    ]);
+
+    TryPostServer::actingAs($this->user)
+        ->tool(UpdatePostTool::class, [
+            'post_id' => $post->id,
+            'status' => 'draft',
+            'content' => 'Still a draft',
+        ])
+        ->assertOk()
+        ->assertStructuredContent(fn (AssertableJson $json) => $json
+            ->where('status', 'draft')
+            ->where('scheduled_at', null)
+            ->etc());
+
+    expect($post->fresh()->scheduled_at)->toBeNull()
+        ->and($post->fresh()->content)->toBe('Still a draft');
+});
+
+test('update post accepts a valid platform meta and persists it', function () {
+    $post = Post::factory()->forAccount($this->socialAccount)->create([
+        'user_id' => $this->user->id,
+    ]);
+
+    TryPostServer::actingAs($this->user)
+        ->tool(UpdatePostTool::class, [
+            'post_id' => $post->id,
+            'meta' => ['link_preview' => false],
+        ])
+        ->assertOk();
+
+    expect($post->fresh()->meta['link_preview'])->toBeFalse();
+});
+
+test('members who need approval can list and get posts via mcp', function () {
+    $requester = User::factory()->create(['account_id' => $this->user->account_id]);
+    $this->workspace->members()->attach($requester->id, membershipPivot('approval'));
+    $requester->update(['current_workspace_id' => $this->workspace->id]);
+
+    $post = Post::factory()->create([
+        'workspace_id' => $this->workspace->id,
+        'user_id' => $this->user->id,
+        'content' => 'Visible to members who need approval',
+    ]);
+
+    TryPostServer::actingAs($requester)
+        ->tool(ListPostsTool::class, [])
+        ->assertOk()
+        ->assertStructuredContent(function (AssertableJson $json) {
+            $json->has('posts', 1)->etc();
+        });
+
+    TryPostServer::actingAs($requester)
+        ->tool(GetPostTool::class, ['post_id' => $post->id])
+        ->assertOk()
+        ->assertStructuredContent(function (AssertableJson $json) use ($post) {
+            $json->where('id', $post->id)
+                ->where('content', 'Visible to members who need approval')
+                ->etc();
+        });
+});
+
+test('a user outside the workspace cannot create update or delete posts via mcp', function () {
+    $outsider = workspaceOutsider($this->workspace);
+
+    $post = Post::factory()->create([
+        'workspace_id' => $this->workspace->id,
+        'user_id' => $this->user->id,
+        'content' => 'Protected',
+    ]);
+
+    TryPostServer::actingAs($outsider)
+        ->tool(CreatePostTool::class, ['content' => 'Nope'])
+        ->assertHasErrors(['This action is unauthorized.']);
+
+    TryPostServer::actingAs($outsider)
+        ->tool(UpdatePostTool::class, [
+            'post_id' => $post->id,
+            'content' => 'Changed',
+        ])
+        ->assertHasErrors(['This action is unauthorized.']);
+
+    TryPostServer::actingAs($outsider)
+        ->tool(DeletePostTool::class, ['post_id' => $post->id])
+        ->assertHasErrors(['This action is unauthorized.']);
+
+    expect($post->fresh()->content)->toBe('Protected');
+});
+
+test('the mcp server exposes no ai tools', function () {
+    $tools = (new ReflectionClass(TryPostServer::class))->getDefaultProperties()['tools'];
+
+    expect(collect($tools)->map(fn (string $tool): string => class_basename($tool))->all())
+        ->not->toContain('AssistPostContentTool')
+        ->not->toContain('GenerateMediaAltTextTool');
+});
+
+test('get post returns the network origin of an imported post', function () {
+    $post = Post::factory()->imported()->create(['workspace_id' => $this->workspace->id]);
+
+    TryPostServer::actingAs($this->user)
+        ->tool(GetPostTool::class, ['post_id' => $post->id])
+        ->assertOk()
+        ->assertStructuredContent(fn (AssertableJson $json) => $json->where('origin', 'network')->etc());
+});
+
+test('the MCP edit tool edits a draft whose kept time has passed', function () {
+    $post = Post::factory()->forAccount($this->socialAccount)->create([
+        'user_id' => $this->user->id,
+        'status' => 'draft',
+        'scheduled_at' => now()->subDay(),
+    ]);
+
+    TryPostServer::actingAs($this->user)->tool(UpdatePostTool::class, [
+        'post_id' => $post->id,
+        'content' => 'New text',
+    ])->assertOk()->assertHasNoErrors();
+
+    expect($post->fresh()->content)->toBe('New text');
+});
+
+test('a malformed account or destination id is a validation error, never a database error', function () {
+    $post = Post::factory()->forAccount($this->socialAccount)->draft()->create(['user_id' => $this->user->id]);
+
+    TryPostServer::actingAs($this->user)
+        ->tool(CreatePostTool::class, ['content' => 'Hello', 'social_account_id' => 'not-a-uuid', 'content_type' => 'linkedin_post'])
+        ->assertHasErrors(['must be a valid UUID'])
+        ->assertDontSee('SQLSTATE');
+
+    TryPostServer::actingAs($this->user)
+        ->tool(UpdatePostTool::class, ['post_id' => $post->id, 'label_ids' => ['not-a-uuid']])
+        ->assertHasErrors(['must be a valid UUID'])
+        ->assertDontSee('SQLSTATE');
+
+    expect(Post::query()->count())->toBe(1);
+});

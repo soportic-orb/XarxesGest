@@ -1,0 +1,477 @@
+<?php
+
+declare(strict_types=1);
+
+use App\Enums\Media\Source;
+use App\Enums\Post\CreatedVia;
+use App\Enums\PostPlatform\ContentType;
+use App\Enums\SocialAccount\Platform;
+use App\Enums\TikTok\PrivacyLevel;
+use App\Enums\Webhook\EventType as WebhookEvent;
+use App\Jobs\Analytics\BootstrapAccountAnalytics;
+use App\Jobs\Analytics\CollectAccountDailySnapshot;
+use App\Jobs\DispatchWebhook;
+use App\Models\Post;
+use App\Models\SocialAccount;
+use App\Models\User;
+use App\Models\Webhook;
+use App\Models\Workspace;
+use App\Models\WorkspaceLabel;
+use App\Services\Http\HostResolver;
+use App\Services\WebhookService;
+use Illuminate\Http\Client\ConnectionException;
+use Illuminate\Support\Facades\Http;
+use Illuminate\Support\Facades\Queue;
+use Illuminate\Support\Facades\Storage;
+
+beforeEach(function () {
+    Queue::fake([BootstrapAccountAnalytics::class, CollectAccountDailySnapshot::class]);
+
+    $this->user = User::factory()->create();
+    $this->workspace = Workspace::factory()->create(['user_id' => $this->user->id]);
+    $this->service = app(WebhookService::class);
+});
+
+test('ping sends a signed POST request to the endpoint', function () {
+    Http::fake([
+        'https://example.com/hook' => Http::response([], 200),
+    ]);
+
+    $secret = 'whsec_test_secret';
+
+    $this->service->ping('https://example.com/hook', $secret);
+
+    Http::assertSent(function ($request) use ($secret) {
+        $body = $request->data();
+        $raw = $request->body();
+
+        return $request->url() === 'https://example.com/hook'
+            && $request->method() === 'POST'
+            && $body['type'] === 'webhook.test'
+            && str_contains($raw, '"data":{}')
+            && isset($body['id'], $body['created_at'])
+            && $request->hasHeader('X-Webhook-Signature')
+            && $request->header('X-Webhook-Signature')[0] === hash_hmac('sha256', $raw, $secret);
+    });
+});
+
+test('ping throws when endpoint is unreachable', function () {
+    Http::fake([
+        'https://example.com/unreachable' => Http::throw(fn () => throw new ConnectionException('Connection refused')),
+    ]);
+
+    $this->service->ping('https://example.com/unreachable', 'whsec_test_secret');
+})->throws(RuntimeException::class, 'The endpoint is not reachable.');
+
+test('ping throws when endpoint returns non-200', function () {
+    Http::fake([
+        'https://example.com/hook' => Http::response([], 500),
+    ]);
+
+    $this->service->ping('https://example.com/hook', 'whsec_test_secret');
+})->throws(RuntimeException::class, 'The endpoint returned HTTP 500.');
+
+test('ping rejects private network endpoints', function () {
+    $this->service->ping('http://127.0.0.1/hook', 'whsec_test_secret');
+})->throws(RuntimeException::class, 'This endpoint is not allowed.');
+
+test('assertEndpointAllowed rejects private network endpoints', function () {
+    $this->service->assertEndpointAllowed('http://127.0.0.1/hook');
+})->throws(RuntimeException::class, 'This endpoint is not allowed.');
+
+test('dispatch dispatches DispatchWebhook for matching webhooks', function () {
+    Queue::fake();
+
+    Webhook::factory()->create([
+        'workspace_id' => $this->workspace->id,
+        'events' => [WebhookEvent::PostPublished->value, WebhookEvent::PostFailed->value],
+    ]);
+
+    $this->service->dispatch($this->workspace, WebhookEvent::PostPublished, ['foo' => 'bar']);
+
+    Queue::assertPushed(DispatchWebhook::class);
+});
+
+test('dispatch does not dispatch for webhooks without matching events', function () {
+    Queue::fake();
+
+    Webhook::factory()->create([
+        'workspace_id' => $this->workspace->id,
+        'events' => [WebhookEvent::PostFailed->value],
+    ]);
+
+    $this->service->dispatch($this->workspace, WebhookEvent::PostPublished, ['foo' => 'bar']);
+
+    Queue::assertNotPushed(DispatchWebhook::class);
+});
+
+test('dispatch does not dispatch for disabled webhooks', function () {
+    Queue::fake();
+
+    Webhook::factory()->disabled()->create([
+        'workspace_id' => $this->workspace->id,
+        'events' => [WebhookEvent::PostPublished->value],
+    ]);
+
+    $this->service->dispatch($this->workspace, WebhookEvent::PostPublished, ['foo' => 'bar']);
+
+    Queue::assertNotPushed(DispatchWebhook::class);
+});
+
+test('dispatch does not dispatch for paused webhooks', function () {
+    Queue::fake();
+
+    Webhook::factory()->paused()->create([
+        'workspace_id' => $this->workspace->id,
+        'events' => [WebhookEvent::PostCreated->value, WebhookEvent::PostPublished->value],
+    ]);
+
+    $this->service->dispatch($this->workspace, WebhookEvent::PostCreated, ['foo' => 'bar']);
+
+    Queue::assertNotPushed(DispatchWebhook::class);
+});
+
+test('dispatch does not match wildcard events', function () {
+    Queue::fake();
+
+    Webhook::factory()->create([
+        'workspace_id' => $this->workspace->id,
+        'events' => ['*'],
+    ]);
+
+    $this->service->dispatch($this->workspace, WebhookEvent::PostPublished, ['foo' => 'bar']);
+
+    Queue::assertNotPushed(DispatchWebhook::class);
+});
+
+test('postPayload includes the post lifecycle fields', function () {
+    $post = Post::factory()->published()->createQuietly([
+        'workspace_id' => $this->workspace->id,
+        'user_id' => $this->user->id,
+        'content' => 'Hello world',
+        'created_via' => CreatedVia::Web,
+    ]);
+
+    $payload = $this->service->postPayload($post);
+
+    expect($payload)->toEqual([
+        'id' => $post->id,
+        'workspace_id' => $post->workspace_id,
+        'user_id' => $this->user->id,
+        'status' => 'published',
+        'created_via' => CreatedVia::Web->value,
+        'content' => 'Hello world',
+        'scheduled_at' => null,
+        'published_at' => $post->published_at?->toIso8601String(),
+        'created_at' => $post->created_at?->toIso8601String(),
+        'updated_at' => $post->updated_at?->toIso8601String(),
+        'author' => [
+            'id' => $this->user->id,
+            'name' => $this->user->name,
+        ],
+        'workspace' => [
+            'id' => $this->workspace->id,
+            'name' => $this->workspace->name,
+        ],
+        'labels' => [],
+        'media' => [],
+        'publish_status' => 'published',
+        'social_account_id' => null,
+        'platform' => null,
+        'content_type' => null,
+        'platform_post_id' => $post->platform_post_id,
+        'platform_url' => $post->platform_url,
+        'error_message' => null,
+        'display_name' => null,
+        'display_username' => null,
+        'display_avatar' => null,
+        'meta' => [],
+        'social_account' => null,
+    ]);
+});
+
+test('postPayload matches the published webhook example', function () {
+    $instagram = SocialAccount::factory()->instagram()->recycle($this->workspace)->create([
+        'display_name' => 'TryPost',
+        'username' => 'trypost',
+        'avatar_url' => 'avatars/ig.jpg',
+        'access_token' => 'secret-access-token',
+        'refresh_token' => 'secret-refresh-token',
+    ]);
+
+    $post = Post::factory()->forAccount($instagram, ContentType::InstagramFeed)->published()->createQuietly([
+        'user_id' => $this->user->id,
+        'content' => '<p>Launch day. TryPost is live.</p>',
+        'meta' => ['is_ai_generated' => true],
+        'created_via' => CreatedVia::Web,
+        'media' => [
+            [
+                'id' => 'm_01',
+                'path' => 'medias/9f2c-hero.jpg',
+                'url' => 'https://cdn.example.com/medias/9f2c-hero.jpg',
+                'mime_type' => 'image/jpeg',
+                'original_filename' => 'hero.jpg',
+                'source' => Source::Unsplash->value,
+                'source_meta' => ['photographer' => 'Ada'],
+                'meta' => [
+                    'width' => 1080,
+                    'height' => 1350,
+                    'alt_text' => 'Product screenshot on a laptop',
+                ],
+            ],
+            [
+                'id' => 'm_02',
+                'path' => 'medias/9f2c-clip.mp4',
+                'url' => 'https://cdn.example.com/medias/9f2c-clip.mp4',
+                'mime_type' => 'video/mp4',
+                'original_filename' => 'clip.mp4',
+                'source' => Source::Ai->value,
+                'source_meta' => null,
+                'meta' => [
+                    'width' => 1080,
+                    'height' => 1920,
+                    'duration' => 18.4,
+                ],
+            ],
+        ],
+    ]);
+
+    $label = WorkspaceLabel::factory()->recycle($this->workspace)->create([
+        'name' => 'Launch',
+        'color' => '#7C3AED',
+    ]);
+    $post->labels()->attach($label);
+
+    $payload = $this->service->postPayload($post->fresh());
+
+    expect($payload)
+        ->toHaveKeys([
+            'id',
+            'workspace_id',
+            'user_id',
+            'status',
+            'created_via',
+            'content',
+            'scheduled_at',
+            'published_at',
+            'created_at',
+            'updated_at',
+            'author',
+            'workspace',
+            'labels',
+            'media',
+            'publish_status',
+            'social_account_id',
+            'platform',
+            'content_type',
+            'platform_post_id',
+            'platform_url',
+            'error_message',
+            'display_name',
+            'display_username',
+            'display_avatar',
+            'meta',
+            'social_account',
+        ])
+        ->and($payload['id'])->toBe($post->id)
+        ->and($payload['workspace_id'])->toBe($this->workspace->id)
+        ->and($payload['user_id'])->toBe($this->user->id)
+        ->and($payload['status'])->toBe('published')
+        ->and($payload['created_via'])->toBe(CreatedVia::Web->value)
+        ->and($payload['content'])->toBe('<p>Launch day. TryPost is live.</p>')
+        ->and($payload['author'])->toEqual([
+            'id' => $this->user->id,
+            'name' => $this->user->name,
+        ])
+        ->and($payload['author'])->not->toHaveKey('email')
+        ->and($payload['workspace'])->toEqual([
+            'id' => $this->workspace->id,
+            'name' => $this->workspace->name,
+        ])
+        ->and($payload['labels'])->toEqual([
+            [
+                'id' => $label->id,
+                'name' => 'Launch',
+                'color' => '#7C3AED',
+            ],
+        ])
+        ->and($payload['media'])->toEqual([
+            [
+                'id' => 'm_01',
+                'path' => 'medias/9f2c-hero.jpg',
+                'url' => 'https://cdn.example.com/medias/9f2c-hero.jpg',
+                'type' => 'image',
+                'mime_type' => 'image/jpeg',
+                'original_filename' => 'hero.jpg',
+                'source' => 'unsplash',
+                'source_meta' => ['photographer' => 'Ada'],
+                'meta' => [
+                    'width' => 1080,
+                    'height' => 1350,
+                    'alt_text' => 'Product screenshot on a laptop',
+                ],
+            ],
+            [
+                'id' => 'm_02',
+                'path' => 'medias/9f2c-clip.mp4',
+                'url' => 'https://cdn.example.com/medias/9f2c-clip.mp4',
+                'type' => 'video',
+                'mime_type' => 'video/mp4',
+                'original_filename' => 'clip.mp4',
+                'source' => 'ai',
+                'source_meta' => null,
+                'meta' => [
+                    'width' => 1080,
+                    'height' => 1920,
+                    'duration' => 18.4,
+                ],
+            ],
+        ])
+        ->and($payload)->not->toHaveKey('platforms')
+        ->and($payload)->not->toHaveKey('error_context')
+        ->and($payload['publish_status'])->toBe('published')
+        ->and($payload['social_account_id'])->toBe($instagram->id)
+        ->and($payload['platform'])->toBe(Platform::Instagram->value)
+        ->and($payload['content_type'])->toBe(ContentType::InstagramFeed->value)
+        ->and($payload['platform_post_id'])->toBe($post->platform_post_id)
+        ->and($payload['platform_url'])->toBe($post->platform_url)
+        ->and($payload['error_message'])->toBeNull()
+        ->and($payload['display_name'])->toBe('TryPost')
+        ->and($payload['display_username'])->toBe('trypost')
+        ->and($payload['display_avatar'])->toBe(Storage::url('avatars/ig.jpg'))
+        ->and($payload['meta'])->toEqual(['is_ai_generated' => true])
+        ->and($payload['social_account'])->toEqual([
+            'id' => $instagram->id,
+            'platform' => Platform::Instagram->value,
+            'display_name' => 'TryPost',
+            'username' => 'trypost',
+            'status' => 'connected',
+        ])
+        ->and(json_encode($payload))->not->toContain('secret-access-token')
+        ->and(json_encode($payload))->not->toContain('secret-refresh-token')
+        ->and(json_encode($payload))->not->toContain('access_token')
+        ->and(json_encode($payload))->not->toContain('refresh_token');
+});
+
+test('postPayload includes the failed publication error', function () {
+    $account = SocialAccount::factory()->tiktok()->recycle($this->workspace)->create();
+    $post = Post::factory()->forAccount($account, ContentType::TikTokVideo)->failed()->createQuietly([
+        'user_id' => $this->user->id,
+        'meta' => ['privacy_level' => PrivacyLevel::PublicToEveryone->value],
+        'error_context' => ['retry_count' => 2],
+    ]);
+
+    $payload = $this->service->postPayload($post->fresh());
+
+    expect($payload['social_account_id'])->toBe($account->id)
+        ->and($payload['publish_status'])->toBe('failed')
+        ->and($payload['error_message'])->toBe('Failed to publish')
+        ->and($payload)->not->toHaveKey('error_context')
+        ->and(data_get($payload, 'meta.privacy_level'))->toBe(PrivacyLevel::PublicToEveryone->value);
+});
+
+test('postPayload accepts integer media ids from generated attachments', function () {
+    $post = Post::factory()->published()->createQuietly([
+        'workspace_id' => $this->workspace->id,
+        'user_id' => $this->user->id,
+        'media' => [
+            [
+                'id' => 42,
+                'path' => 'medias/generated.png',
+                'url' => 'https://cdn.example.com/medias/generated.png',
+                'mime_type' => 'image/png',
+            ],
+        ],
+    ]);
+
+    $payload = $this->service->postPayload($post);
+
+    expect(data_get($payload, 'media.0.id'))->toBe('42')
+        ->and(data_get($payload, 'media.0.type'))->toBe('image');
+});
+
+test('postPayload author is null when the post has no user', function () {
+    $post = Post::factory()->published()->createQuietly([
+        'workspace_id' => $this->workspace->id,
+        'user_id' => null,
+        'content' => 'Orphan post',
+    ]);
+
+    $payload = $this->service->postPayload($post);
+
+    expect($payload['user_id'])->toBeNull()
+        ->and($payload['author'])->toBeNull();
+});
+
+test('postPayload keeps display fields when the social account is gone', function () {
+    $post = Post::factory()->published()->createQuietly([
+        'workspace_id' => $this->workspace->id,
+        'user_id' => $this->user->id,
+        'social_account_id' => null,
+        'platform' => Platform::X,
+        'content_type' => ContentType::XPost,
+        'platform_name' => 'TryPost',
+        'platform_username' => 'trypost',
+        'platform_avatar' => null,
+    ]);
+
+    $payload = $this->service->postPayload($post->fresh());
+
+    expect($payload['platform'])->toBe(Platform::X->value)
+        ->and($payload['social_account_id'])->toBeNull()
+        ->and($payload['social_account'])->toBeNull()
+        ->and($payload['display_name'])->toBe('TryPost')
+        ->and($payload['display_username'])->toBe('trypost');
+});
+
+function webhookServiceDns(array $answers): void
+{
+    $calls = [];
+
+    test()->mock(HostResolver::class)
+        ->shouldReceive('addresses')
+        ->andReturnUsing(function (string $host) use ($answers, &$calls): array {
+            $index = $calls[$host] = ($calls[$host] ?? -1) + 1;
+            $replies = $answers[$host] ?? [[]];
+
+            return $replies[min($index, count($replies) - 1)];
+        });
+}
+
+test('ping posts to the vetted address only, even when the host rebinds', function () {
+    webhookServiceDns(['hooks.example.test' => [['93.184.216.34'], ['127.0.0.1']]]);
+    $pins = [];
+    Http::fake(function ($request, array $options) use (&$pins) {
+        $pins[] = data_get($options, 'curl.'.CURLOPT_RESOLVE);
+
+        return Http::response([], 200);
+    });
+
+    app(WebhookService::class)->ping('https://hooks.example.test/hook', 'whsec_test');
+
+    expect($pins)->toBe([['hooks.example.test:443:93.184.216.34']]);
+});
+
+test('ping does not follow a redirect', function () {
+    Http::fake([
+        'https://93.184.216.34/hook' => Http::response('', 302, ['Location' => 'https://93.184.216.35/hook']),
+        'https://93.184.216.35/*' => Http::response([], 200),
+    ]);
+
+    expect(fn () => $this->service->ping('https://93.184.216.34/hook', 'whsec_test'))->toThrow(RuntimeException::class);
+
+    Http::assertNotSent(fn ($request) => str_contains($request->url(), '93.184.216.35'));
+});
+
+test('ping streams the response instead of buffering its body', function () {
+    $options = null;
+    Http::fake(function ($request, array $requestOptions) use (&$options) {
+        $options = $requestOptions;
+
+        return Http::response(str_repeat('a', 3 * 1024 * 1024), 200);
+    });
+
+    $this->service->ping('https://93.184.216.34/hook', 'whsec_test');
+
+    expect(data_get($options, 'stream'))->toBeTrue();
+});

@@ -1,0 +1,33 @@
+<x-main>
+  <x-message>
+    <x-heading>
+      @{{ __('mail.workspace_invite.heading') }}
+    </x-heading>
+
+    <p class="m-0 leading-6">
+      {!! __('mail.workspace_invite.intro', ['workspace' => e($workspaceName)]) !!}
+    </p>
+
+    <p class="m-0 mt-4 leading-6">
+      @if($isAdmin)
+        {!! __('mail.workspace_invite.role', ['role' => '<strong>'.e(__('mail.workspace_invite.roles.admin')).'</strong>']) !!}
+      @elseif($requiresApproval)
+        {!! __('mail.workspace_invite.role', ['role' => '<strong>'.e(__('mail.workspace_invite.roles.needs_approval')).'</strong>']) !!}
+      @else
+        {!! __('mail.workspace_invite.role', ['role' => '<strong>'.e(__('mail.workspace_invite.roles.member')).'</strong>']) !!}
+      @endif
+    </p>
+
+    <x-spacer height="24px" />
+
+    <x-button href="@{{ $url }}">
+      @{{ __('mail.workspace_invite.button') }}
+    </x-button>
+
+    <x-spacer height="24px" />
+
+    <p class="m-0 leading-6 text-muted-foreground text-sm">
+      @{{ __('mail.workspace_invite.expiry') }}
+    </p>
+  </x-message>
+</x-main>

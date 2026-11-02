@@ -1,0 +1,89 @@
+<?php
+
+declare(strict_types=1);
+
+namespace App\Actions\User;
+
+use App\Actions\Workspace\CreateWorkspace;
+use App\Enums\Account\LifecycleStage;
+use App\Enums\PostHog\UserEvent;
+use App\Enums\User\Locale;
+use App\Enums\User\TimeFormat;
+use App\Enums\User\WeekStart;
+use App\Jobs\PostHog\SyncUser;
+use App\Models\Account;
+use App\Models\User;
+use App\Services\PostHogService;
+use App\Support\Timezone;
+use Illuminate\Support\Facades\DB;
+
+class CreateUser
+{
+    /**
+     * @param  array{name: string, email: string, password?: string, google_id?: string, github_id?: string, email_verified_at?: \DateTimeInterface|null, is_invite?: bool, registration_ip?: string|null, locale?: string|null, timezone?: string|null, week_starts_on?: string|null, time_format?: string|null}  $data
+     * @param  array<string, string>  $attributionParameters  UTM parameters and ad click IDs (gclid, fbclid, etc.) captured before signup
+     */
+    public static function execute(array $data, array $attributionParameters = []): User
+    {
+        $isInviteRegistration = (bool) data_get($data, 'is_invite', false);
+
+        $user = DB::transaction(function () use ($data, $attributionParameters, $isInviteRegistration): User {
+            $accountAttributes = [
+                'name' => data_get($data, 'name')."'s Account",
+            ];
+
+            if (PostHogService::isEnabled()) {
+                $accountAttributes['lifecycle_stage'] = LifecycleStage::SignedUp;
+                $accountAttributes['lifecycle_stage_changed_at'] = now();
+            }
+
+            $account = Account::query()->forceCreate($accountAttributes);
+
+            $locale = Locale::tryFrom((string) data_get($data, 'locale')) ?? Locale::DEFAULT;
+
+            $user = User::create(array_merge([
+                'name' => data_get($data, 'name'),
+                'email' => data_get($data, 'email'),
+                'password' => data_get($data, 'password'),
+                'google_id' => data_get($data, 'google_id'),
+                'github_id' => data_get($data, 'github_id'),
+                'email_verified_at' => data_get($data, 'email_verified_at', $isInviteRegistration ? now() : null),
+                'account_id' => $account->id,
+                'registration_ip' => data_get($data, 'registration_ip'),
+                'locale' => $locale,
+                'time_format' => TimeFormat::tryFrom((string) data_get($data, 'time_format')) ?? TimeFormat::forLocale($locale),
+                'week_starts_on' => WeekStart::tryFrom((string) data_get($data, 'week_starts_on')) ?? WeekStart::DEFAULT,
+                'timezone' => Timezone::normalize(data_get($data, 'timezone')),
+            ], $attributionParameters));
+
+            $account->update(['owner_id' => $user->id]);
+
+            if (! $isInviteRegistration) {
+                CreateWorkspace::execute($user, ['name' => data_get($data, 'name')."'s Workspace"]);
+            }
+
+            return $user;
+        });
+
+        if (PostHogService::shouldTrack()) {
+            SyncUser::dispatch((string) $user->id);
+
+            if (! $isInviteRegistration) {
+                $authProvider = match (true) {
+                    (bool) $user->google_id => 'google',
+                    (bool) $user->github_id => 'github',
+                    default => 'email',
+                };
+
+                app(PostHogService::class)->capture(
+                    (string) $user->id,
+                    UserEvent::SignedUp->value,
+                    ['auth_provider' => $authProvider],
+                    $user->account,
+                );
+            }
+        }
+
+        return $user;
+    }
+}

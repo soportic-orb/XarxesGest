@@ -1,0 +1,55 @@
+<?php
+
+declare(strict_types=1);
+
+return [
+    'title' => '署名',
+    'description' => '投稿に追加できる定型文です。',
+    'save_failed' => '署名を保存できませんでした。もう一度お試しください。',
+    'search' => '署名を検索...',
+    'new' => '新しい署名',
+    'empty_title' => 'まだ署名がありません',
+    'empty_description' => '署名を作成して、ハッシュタグ、リンク、再利用したいテキストを投稿にすばやく追加しましょう',
+    'no_search_results' => '検索に一致する署名がありません',
+    'try_different_search' => '別のキーワードを試すか、検索をクリアしてください。',
+    'table' => [
+        'name' => '名前',
+        'content' => '内容',
+        'created_at' => '作成日',
+    ],
+
+    'row_actions' => '署名の操作',
+    'actions' => [
+        'edit' => '署名を編集',
+        'delete' => '署名を削除',
+    ],
+
+    'create' => [
+        'title' => '署名を作成',
+        'description' => 'ハッシュタグ、リンク、締めの一言など、よく追加するテキストを保存します。',
+        'name' => '名前',
+        'name_placeholder' => '例: マーケティング、旅行、締めの一言',
+        'content' => '内容',
+        'content_placeholder' => "#マーケティング #ソーシャルメディア\n詳しくは: https://yourbrand.com",
+        'submit' => '署名を作成',
+        'submitting' => '作成中...',
+    ],
+
+    'edit' => [
+        'title' => '署名を編集',
+        'description' => 'この署名の名前や、投稿に追加するテキストを変更します。',
+        'name' => '名前',
+        'name_placeholder' => '例: マーケティング、旅行、締めの一言',
+        'content' => '内容',
+        'content_placeholder' => "#マーケティング #ソーシャルメディア\n詳しくは: https://yourbrand.com",
+        'submit' => '変更を保存',
+        'submitting' => '保存中...',
+    ],
+
+    'delete' => [
+        'title' => '署名を削除',
+        'description' => 'この署名を削除してもよろしいですか？この操作は取り消せません。',
+        'confirm' => '削除',
+        'cancel' => 'キャンセル',
+    ],
+];

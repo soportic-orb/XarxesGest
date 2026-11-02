@@ -1,0 +1,112 @@
+<?php
+
+declare(strict_types=1);
+
+namespace App\Actions\Repurpose;
+
+use App\Enums\Repurpose\Status;
+use App\Enums\SocialAccount\Status as AccountStatus;
+use App\Jobs\PostHog\TrackRepurposeActivated;
+use App\Models\Repurpose;
+use App\Models\SocialAccount;
+use App\Services\PostHogService;
+use App\Support\PostPlatformMetaRules;
+use App\Support\Repurpose\RepurposeTransition;
+use Illuminate\Database\Eloquent\Collection;
+use Illuminate\Validation\ValidationException;
+
+class ActivateRepurpose
+{
+    public static function execute(Repurpose $repurpose): Repurpose
+    {
+        $activated = RepurposeTransition::apply(
+            $repurpose,
+            [Status::Draft, Status::Disabled],
+            __('repurposes.errors.only_idle_activates'),
+            function (Repurpose $locked): void {
+                self::assertSourceUsable($locked);
+                self::assertHasUsableDestination($locked);
+                self::assertDestinationsCarryRequiredMeta($locked);
+
+                $locked->update([
+                    'status' => Status::Active,
+                    'activated_at' => now(),
+                    'paused_reason' => null,
+                    'next_poll_at' => null,
+                    'last_error' => null,
+                ]);
+            },
+        );
+
+        rescue(function () use ($activated): void {
+            TrackRepurposeActivated::dispatchIf(PostHogService::isEnabled(), (string) $activated->id, auth()->id());
+        });
+
+        return $activated;
+    }
+
+    public static function assertSourceUsable(Repurpose $repurpose): void
+    {
+        $account = $repurpose->loadMissing('sourceAccount')->sourceAccount;
+
+        if ($account === null) {
+            throw ValidationException::withMessages([
+                'source_social_account_id' => __('repurposes.errors.source_missing'),
+            ]);
+        }
+
+        if ($account->status !== AccountStatus::Connected) {
+            throw ValidationException::withMessages([
+                'source_social_account_id' => __('repurposes.errors.source_unusable'),
+            ]);
+        }
+    }
+
+    public static function assertHasUsableDestination(Repurpose $repurpose): void
+    {
+        if ($repurpose->destinations === []) {
+            throw ValidationException::withMessages([
+                'destinations' => __('repurposes.errors.destinations_required'),
+            ]);
+        }
+
+        if (self::usableAccounts($repurpose)->isEmpty()) {
+            throw ValidationException::withMessages([
+                'destinations' => __('repurposes.errors.destination_unavailable'),
+            ]);
+        }
+    }
+
+    public static function assertDestinationsCarryRequiredMeta(Repurpose $repurpose): void
+    {
+        $accounts = self::usableAccounts($repurpose);
+
+        foreach ($repurpose->destinations as $destination) {
+            $account = $accounts->get(data_get($destination, 'social_account_id'));
+
+            if ($account === null) {
+                continue;
+            }
+
+            $violation = PostPlatformMetaRules::requiredMetaViolation($account, data_get($destination, 'meta'), data_get($destination, 'content_type'));
+
+            if ($violation !== null) {
+                throw ValidationException::withMessages(['destinations' => $violation[1]]);
+            }
+        }
+    }
+
+    /**
+     * @return Collection<string, SocialAccount>
+     */
+    private static function usableAccounts(Repurpose $repurpose): Collection
+    {
+        return SocialAccount::query()
+            ->where('workspace_id', $repurpose->workspace_id)
+            ->findMany(array_map(
+                fn (array $destination): mixed => data_get($destination, 'social_account_id'),
+                $repurpose->destinations,
+            ))
+            ->keyBy('id');
+    }
+}

@@ -1,0 +1,53 @@
+<?php
+
+declare(strict_types=1);
+
+return [
+    'title' => '¿Qué te describe mejor?',
+    'continue' => 'Continuar',
+    'subscription_required_title' => 'Esperando al propietario de la cuenta',
+    'subscription_required_description' => 'Esta cuenta aún no tiene una suscripción activa. Pide al propietario que complete el checkout: tendrás acceso total en cuanto esté activa.',
+    'subscription_required_owner' => 'El propietario de tu cuenta es :name.',
+    'subscription_required_auto' => 'Esta página se actualiza automáticamente, no hace falta recargar.',
+    'progress' => 'Progreso de bienvenida',
+    'step_of' => 'Paso :step de :total',
+    'back' => 'Volver',
+    'steps' => [
+        'persona' => 'Sobre ti',
+        'goals' => 'Tus objetivos',
+        'software' => 'Herramienta actual',
+        'plan' => 'Plan',
+    ],
+    'personas' => [
+        'creator' => 'Creador de contenido',
+        'freelancer' => 'Freelancer',
+        'developer' => 'Desarrollador',
+        'startup' => 'Startup',
+        'agency' => 'Agencia',
+        'small_business' => 'Pequeña empresa',
+        'marketer' => 'Profesional de marketing',
+        'online_store' => 'Tienda online',
+        'other' => 'Otro',
+    ],
+    'goals_title' => '¿Cuál es tu objetivo?',
+    'goals' => [
+        'save_time' => 'Publicar en todas partes a la vez',
+        'use_mcp' => 'Publicar vía MCP (Claude, ChatGPT)',
+        'plan_calendar' => 'Planificar en un calendario',
+        'stay_on_brand' => 'Mantener la coherencia de marca',
+        'grow_audience' => 'Hacer crecer mi audiencia',
+        'drive_sales' => 'Más tráfico y ventas',
+        'manage_clients' => 'Gestionar marcas o clientes',
+        'other' => 'Otra cosa',
+    ],
+    'software_title' => '¿Qué herramienta usas hoy?',
+    'software' => [
+        'none' => 'Aún no uso ninguna',
+        'other' => 'Otra',
+    ],
+    'plan_title' => 'Activa tu cuenta',
+    'plan_description' => 'Conecta tus redes y programa tu primer post hoy.',
+    'plan_terms' => 'Luego, :price/mes. Cancela cuando quieras',
+    'plan_checkout_button' => 'Activar mi cuenta',
+    'plan_cancel_anytime' => 'Cancela cuando quieras',
+];
