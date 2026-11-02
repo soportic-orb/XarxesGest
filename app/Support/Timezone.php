@@ -24,10 +24,11 @@ class Timezone
             return $value;
         }
 
-        if (! in_array($value, DateTimeZone::listIdentifiers(DateTimeZone::ALL_WITH_BC), true)) {
-            return self::DEFAULT;
-        }
-
+        // Ask ICU directly instead of gating on DateTimeZone::ALL_WITH_BC:
+        // distros that ship the legacy links in a separate package (Ubuntu
+        // 24.04+ moved them to tzdata-legacy) drop aliases such as
+        // Asia/Calcutta from PHP's list, while ICU still maps them. Unknown
+        // identifiers return false and fall back to the default below.
         $mapped = IntlTimeZone::getIanaID($value);
 
         return is_string($mapped) && in_array($mapped, $canonical, true)
