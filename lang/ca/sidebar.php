@@ -1,0 +1,56 @@
+<?php
+
+declare(strict_types=1);
+
+return [
+    'workspaces' => 'Workspaces',
+    'select_workspace' => 'Selecciona un workspace',
+    'create_workspace' => 'Crea un workspace',
+    'new' => 'Nou',
+    'create' => 'Crea',
+    'new_menu' => [
+        'post' => 'Publicació',
+        'post_description' => 'Publica contingut en un canal',
+        'idea' => 'Idea',
+        'idea_description' => 'Guarda una idea de contingut',
+        'channel' => 'Connecta un canal nou',
+        'member' => 'Convida un membre de l\'equip',
+    ],
+    'settings' => 'Configuració',
+    'plans_billing' => 'Plans i facturació',
+    'log_out' => 'Tanca la sessió',
+    'help' => 'Ajuda',
+    'language' => 'Idioma: :name',
+    'theme' => 'Tema: :name',
+    'manage_team' => 'Gestiona l\'equip',
+    'channels_count' => '{1} :count canal|[0,*] :count canals',
+    'groups' => [
+        'posts' => 'Publica',
+        'others' => 'Altres',
+    ],
+    'channels' => 'Canals',
+    'connect_channels' => 'Connecta canals',
+    'search_channels' => 'Cerca canals',
+    'channel_submenu' => 'Submenú de :name',
+    'toggle' => 'Mostra o amaga la barra lateral',
+    'collapse' => 'Replega la barra lateral',
+    'expand' => 'Desplega la barra lateral',
+    'mobile_title' => 'Navegació',
+    'mobile_description' => 'Navegació principal de l\'aplicació.',
+    'repurposes' => 'Reutilitza',
+    'posts' => [
+        'all' => 'Totes',
+    ],
+    'support' => [
+        'menu' => 'Ajuda i suport',
+        'help_center' => 'Centre d\'ajuda',
+        'feature_requests' => 'Sol·licituds de funcions',
+        'github' => 'GitHub',
+        'status' => 'Estat de l\'aplicació',
+        'chat' => 'Suport per xat',
+        'changelog' => 'Novetats',
+        'referral' => 'Guanya un 30% amb referits',
+        'discord' => 'Comunitat de Discord',
+        'community' => 'Comunitat',
+    ],
+];
