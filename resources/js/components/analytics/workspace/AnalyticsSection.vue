@@ -1,0 +1,68 @@
+<script setup lang="ts">
+import ComparedRange from '@/components/analytics/ComparedRange.vue';
+import InfoTip from '@/components/analytics/workspace/InfoTip.vue';
+import date from '@/date';
+import type { WorkspaceAnalyticsReport } from '@/types/analytics';
+
+
+defineProps<{
+    title: string;
+    info?: string;
+    infoTestid?: string;
+    subtitle?: string;
+    subtitleTestid?: string;
+    range?: WorkspaceAnalyticsReport['range'];
+    /** The period the section's changes compare against, shown next to `range`. */
+    previousRange?: WorkspaceAnalyticsReport['range'];
+    flush?: boolean;
+}>();
+</script>
+
+<template>
+    <section
+        class="min-w-0 overflow-hidden rounded-xl border border-border bg-card"
+        data-testid="analytics-section"
+    >
+        <div
+            class="flex flex-wrap items-center justify-between gap-x-3 gap-y-2 px-4 pt-4 pb-4 sm:px-5"
+        >
+            <div class="flex min-w-0 flex-1 basis-48 flex-col gap-1">
+                <div class="-my-0.5 flex min-w-0 items-center gap-1">
+                    <h2
+                        class="font-heading text-base leading-6 font-medium text-foreground"
+                        data-testid="analytics-section-title"
+                    >
+                        {{ title }}
+                    </h2>
+                    <InfoTip v-if="info" :text="info" :test-id="infoTestid" />
+                </div>
+                <div
+                    v-if="subtitle || range || $slots.subtitle"
+                    class="text-xs text-muted-foreground"
+                    :data-testid="subtitleTestid"
+                >
+                    <slot name="subtitle">
+                        <ComparedRange
+                            v-if="range && previousRange"
+                            :range="range"
+                            :previous="previousRange"
+                        />
+                        <template v-else-if="range">
+                            {{ date.formatDayMonthYearRange(range) }}
+                        </template>
+                        <template v-else>{{ subtitle }}</template>
+                    </slot>
+                </div>
+            </div>
+            <div
+                v-if="$slots.actions"
+                class="flex items-center justify-end gap-2 max-sm:flex-1 sm:ms-auto"
+            >
+                <slot name="actions" />
+            </div>
+        </div>
+        <div :class="flush ? 'min-w-0' : 'min-w-0 px-4 pb-4 sm:px-5 sm:pb-5'">
+            <slot />
+        </div>
+    </section>
+</template>

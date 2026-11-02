@@ -1,0 +1,199 @@
+<?php
+
+declare(strict_types=1);
+
+return [
+    'bluesky' => [
+        'title' => 'Conectar Bluesky',
+        'description' => 'Digite suas credenciais para conectar',
+        'email' => 'Usuário ou e-mail',
+        'email_placeholder' => 'seuhandle.bsky.social',
+        'app_password' => 'Senha de app',
+        'app_password_placeholder' => 'xxxx-xxxx-xxxx-xxxx',
+        'app_password_hint' => 'Por segurança, use uma <strong>senha de app</strong>. Crie uma em <a href="https://bsky.app/settings/app-passwords" target="_blank" class="underline">bsky.app/settings</a>.',
+        'submit' => 'Conectar Bluesky',
+        'submitting' => 'Conectando...',
+        'invalid_credentials' => 'Credenciais inválidas.',
+        'connection_error' => 'Erro ao conectar ao Bluesky. Tente novamente.',
+    ],
+
+    'mastodon' => [
+        'title' => 'Conectar Mastodon',
+        'description' => 'Digite a instância do seu Mastodon',
+        'instance_url' => 'URL da instância',
+        'instance_placeholder' => 'https://mastodon.social',
+        'instance_hint' => 'Por exemplo: mastodon.social ou techhub.social.',
+        'submit' => 'Continuar com Mastodon',
+        'submitting' => 'Conectando...',
+        'instance_unreachable' => 'Não foi possível conectar a esta instância do Mastodon.',
+        'connection_error' => 'Erro ao conectar à instância do Mastodon.',
+    ],
+
+    'telegram' => [
+        'title' => 'Conectar Telegram',
+        'description' => 'Vincule um canal ou grupo',
+        'steps' => 'Passos',
+        'step_admin' => 'Adicione :bot como administrador do seu canal ou grupo do Telegram.',
+        'open_bot' => 'Abrir no Telegram',
+        'step_command' => 'Publique este comando no canal ou grupo:',
+        'waiting' => 'Aguardando o canal conectar…',
+        'copy_command' => 'Copiar comando',
+        'expired' => 'Este comando expirou. Gere um novo para tentar de novo.',
+        'new_command' => 'Gerar novo comando',
+        'error_generic' => 'Não foi possível iniciar a conexão. Tente novamente.',
+        'network_taken' => 'Este workspace já tem um canal de Telegram conectado. Desconecte-o primeiro.',
+        'wrong_chat' => 'Publique o comando no canal que você está reconectando.',
+        'busy' => 'Outra conexão ainda está sendo concluída. Envie o comando novamente em instantes.',
+        'help' => [
+            'channel_admins' => 'Adicionar administradores a um canal',
+            'group_admins' => 'Adicionar administradores a um grupo',
+            'bot_privacy' => 'O que os bots podem ler em grupos',
+        ],
+    ],
+
+    'instagram_connect' => [
+        'title' => 'Como você quer conectar sua conta do Instagram?',
+        'description' => 'Os recursos dependem do tipo de conta do Instagram que você tem e da conexão que você escolher.',
+        'professional_title' => 'Profissional',
+        'professional_types' => '(Empresa e Criador de conteúdo)',
+        'facebook_types' => '(vinculado a uma página do Facebook)',
+        'badge' => 'Publicação automática',
+        'features' => [
+            'automatic' => [
+                'title' => 'Publicação automática',
+                'description' => 'Você agenda e nós publicamos',
+            ],
+            'metrics' => [
+                'title' => 'Métricas dos posts enviados',
+                'description' => 'Veja o desempenho dos posts anteriores',
+            ],
+            'music' => [
+                'title' => 'Música nos reels',
+                'description' => 'Adicione uma música da biblioteca do Instagram',
+            ],
+        ],
+        'connect' => 'Conectar ao Instagram',
+        'convert_hint' => 'O Instagram vai pedir para você converter facilmente para uma conta profissional, se necessário.',
+        'help' => [
+            'account_type' => 'Descobrir o tipo da sua conta do Instagram',
+            'convert' => 'Converter sua conta do Instagram em uma conta profissional',
+        ],
+    ],
+
+    'instagram_facebook_requirements' => [
+        'title' => 'Conectar o Instagram pelo Facebook',
+        'subtitle' => 'Veja o que você precisa saber 👇',
+        'heading' => 'Requisitos',
+        'items' => [
+            'account_type' => [
+                'lead' => 'Instagram Empresa ou Criador de conteúdo,',
+                'rest' => 'não um perfil pessoal do Instagram.',
+            ],
+            'page' => [
+                'lead' => 'Vinculado a uma página do Facebook,',
+                'rest' => 'não a um perfil do Facebook. Precisa vincular o Instagram ao Facebook na Meta?',
+            ],
+            'admin' => [
+                'lead' => 'Conectado como administrador da página do Facebook',
+                'rest' => 'com “controle total”.',
+            ],
+            'permissions' => [
+                'lead' => 'Todas as permissões selecionadas para todas as páginas e contas do Instagram',
+                'rest' => 'ao conectar, inclusive as que você não vai conectar ao TryPost.',
+            ],
+        ],
+        'learn_how' => 'Saiba como.',
+        'note' => 'A conexão não vai funcionar se algum desses requisitos não for atendido.',
+        'connect' => 'Conectar pelo Facebook',
+    ],
+
+    'flash' => [
+        'disconnected_paused_repurposes' => 'Conta desconectada. :count automação pausada.|Conta desconectada. :count automações pausadas.',
+        'disconnected' => 'Conta desconectada com sucesso!',
+        'session_expired' => 'Sessão expirada. Por favor, tente novamente.',
+        'workspace_not_found' => 'Workspace não encontrado.',
+        'already_connected' => 'Esta plataforma já está conectada.',
+        'no_youtube_channels' => 'Nenhum canal do YouTube encontrado. Por favor, crie um canal primeiro.',
+    ],
+
+    'connect' => [
+        'label' => 'Conectar canal',
+        'close' => 'Fechar',
+        'title_single' => 'Conecte sua conta',
+        'title_select' => 'Selecione as contas',
+        'subtitle_single' => 'Escolha a conta em que o TryPost vai publicar no :network.',
+        'subtitle_select' => 'Escolha as contas em que o TryPost vai publicar no :network.',
+        'selected' => ':count selecionadas',
+        'select_all' => 'Selecionar todas',
+        'connected' => 'Conectada',
+        'all_connected' => 'Todas as suas contas do :network já estão conectadas.',
+        'finish' => 'Concluir conexão',
+        'switch' => [
+            'button' => 'Trocar conta',
+            'button_short' => 'Trocar',
+            'title' => 'Conectar outra conta',
+            'description' => 'Vá até o :site, mude para a conta que você quer e depois clique em “Conectar :network” abaixo.',
+            'connect' => 'Conectar :network',
+        ],
+        'types' => [
+            'profile' => 'Perfil',
+            'page' => 'Página',
+            'channel' => 'Canal',
+            'location' => 'Local',
+            'server' => 'Servidor',
+        ],
+        'help' => [
+            'label' => 'Precisa de ajuda',
+            'missing' => 'Falta uma conta? Confira se você a gerencia, tente de novo e aceite todas as permissões.',
+        ],
+        'states' => [
+            'cancelled' => [
+                'title' => 'Conexão cancelada',
+                'description' => 'Nada foi conectado. Tente de novo quando quiser.',
+            ],
+            'missing_permission' => [
+                'title' => 'Permissão necessária',
+                'description' => 'O TryPost precisa de permissão para publicar seus posts. Conecte de novo e mantenha essa permissão marcada.',
+            ],
+            'expired' => [
+                'title' => 'Esta conexão expirou',
+                'description' => 'Por segurança, uma conexão expira após 15 minutos. Comece de novo para conectar sua conta.',
+            ],
+            'error' => [
+                'title' => 'Não foi possível conectar',
+            ],
+        ],
+        'actions' => [
+            'try_again' => 'Tentar de novo',
+            'back' => 'Voltar',
+            'connect_again' => 'Conectar de novo',
+            'start_again' => 'Começar de novo',
+        ],
+        'errors' => [
+            'bluesky_email_unconfirmed' => 'Confirme seu e-mail nas configurações do Bluesky e conecte sua conta novamente. O TryPost exige um e-mail confirmado para publicar vídeos.',
+            'error_connecting' => 'Erro ao conectar conta. Por favor, tente novamente.',
+            'network_taken' => 'Este workspace já tem uma conta para esta rede. Desconecte-a primeiro.',
+            'wrong_account' => 'Essa é outra conta. Autorize a que você está reconectando.',
+            'all_connected' => 'Todas as contas deste login já estão conectadas.',
+            'identity_connected' => 'Esta conta já está conectada.',
+            'busy' => 'Outra conexão ainda está sendo concluída. Tente novamente em instantes.',
+            'session_expired' => 'Sessão expirada. Por favor, tente novamente.',
+            'workspace_not_found' => 'Workspace não encontrado.',
+            'invalid_state' => 'Estado inválido. Por favor, tente novamente.',
+            'failed_to_authenticate' => 'Falha na autenticação.',
+            'failed_to_get_profile' => 'Falha ao obter perfil.',
+            'page_not_found' => 'Página não encontrada.',
+            'channel_not_found' => 'Canal não encontrado.',
+            'pages_read_incomplete' => 'Não conseguimos terminar de ler suas páginas. Tente novamente em instantes.',
+            'publish_permission_missing' => 'O TryPost precisa de permissão para publicar seus posts. Conecte de novo e mantenha essa permissão marcada.',
+            'cancelled' => 'Conexão cancelada.',
+            'pages_missing_permission' => 'Encontramos páginas, mas nenhuma em que você possa publicar. É preciso ter um cargo na própria página e aceitar todas as permissões.',
+            'no_facebook_pages' => 'Nenhuma página do Facebook encontrada. Você precisa ser administrador de pelo menos uma página.',
+            'no_facebook_instagram_pages' => 'Nenhuma página do Facebook com conta do Instagram vinculada foi encontrada.',
+            'no_youtube_channels' => 'Nenhum canal do YouTube encontrado. Por favor, crie um canal primeiro.',
+            'not_linkedin_admin' => 'Você não é administrador de nenhuma página do LinkedIn.',
+            'no_google_business_locations' => 'Nenhum local do Google Business Profile encontrado. Verifique sua empresa primeiro.',
+            'location_not_found' => 'Local não encontrado.',
+        ],
+    ],
+];

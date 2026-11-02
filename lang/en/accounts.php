@@ -1,0 +1,199 @@
+<?php
+
+declare(strict_types=1);
+
+return [
+    'bluesky' => [
+        'title' => 'Connect Bluesky',
+        'description' => 'Enter your credentials to connect',
+        'email' => 'Handle or email',
+        'email_placeholder' => 'yourhandle.bsky.social',
+        'app_password' => 'App Password',
+        'app_password_placeholder' => 'xxxx-xxxx-xxxx-xxxx',
+        'app_password_hint' => 'Use an <strong>App Password</strong> for security. Create one at <a href="https://bsky.app/settings/app-passwords" target="_blank" class="underline">bsky.app/settings</a>.',
+        'submit' => 'Connect Bluesky',
+        'submitting' => 'Connecting...',
+        'invalid_credentials' => 'Invalid credentials.',
+        'connection_error' => 'Error connecting to Bluesky. Please try again.',
+    ],
+
+    'mastodon' => [
+        'title' => 'Connect Mastodon',
+        'description' => 'Enter your Mastodon instance',
+        'instance_url' => 'Instance URL',
+        'instance_placeholder' => 'https://mastodon.social',
+        'instance_hint' => 'For example: mastodon.social or techhub.social.',
+        'submit' => 'Continue with Mastodon',
+        'submitting' => 'Connecting...',
+        'instance_unreachable' => 'Could not connect to this Mastodon instance.',
+        'connection_error' => 'Error connecting to the Mastodon instance.',
+    ],
+
+    'telegram' => [
+        'title' => 'Connect Telegram',
+        'description' => 'Link a channel or group',
+        'steps' => 'Steps',
+        'step_admin' => 'Add :bot as an administrator to your Telegram channel or group.',
+        'open_bot' => 'Open in Telegram',
+        'step_command' => 'Post this command in the channel or group:',
+        'waiting' => 'Waiting for the channel to connect…',
+        'copy_command' => 'Copy command',
+        'expired' => 'This command has expired. Generate a new one to try again.',
+        'new_command' => 'Generate new command',
+        'error_generic' => 'Could not start the connection. Please try again.',
+        'network_taken' => 'This workspace already has a Telegram channel connected. Disconnect it first.',
+        'wrong_chat' => 'Post the command in the channel you are reconnecting.',
+        'busy' => 'Another connection is still finishing. Post the command again in a moment.',
+        'help' => [
+            'channel_admins' => 'Add administrators to a channel',
+            'group_admins' => 'Add administrators to a group',
+            'bot_privacy' => 'What bots can read in groups',
+        ],
+    ],
+
+    'instagram_connect' => [
+        'title' => 'How would you like to connect your Instagram account?',
+        'description' => 'Features depend on the type of Instagram account you have and the connection you choose.',
+        'professional_title' => 'Professional',
+        'professional_types' => '(Business & Creator)',
+        'facebook_types' => '(linked to a Facebook Page)',
+        'badge' => 'Automatic posting',
+        'features' => [
+            'automatic' => [
+                'title' => 'Automatic posting',
+                'description' => 'You schedule and we\'ll post',
+            ],
+            'metrics' => [
+                'title' => 'Sent post metrics',
+                'description' => 'View past post performance',
+            ],
+            'music' => [
+                'title' => 'Music on reels',
+                'description' => 'Add a track from Instagram\'s library',
+            ],
+        ],
+        'connect' => 'Connect to Instagram',
+        'convert_hint' => 'Instagram will prompt you to easily convert to a professional account if needed.',
+        'help' => [
+            'account_type' => 'Finding your Instagram account type',
+            'convert' => 'Converting your Instagram account to a Professional account',
+        ],
+    ],
+
+    'instagram_facebook_requirements' => [
+        'title' => 'Connect Instagram through Facebook',
+        'subtitle' => 'Here\'s what you need to know 👇',
+        'heading' => 'Requirements',
+        'items' => [
+            'account_type' => [
+                'lead' => 'Business or Creator',
+                'rest' => 'Instagram, not a Personal Instagram profile.',
+            ],
+            'page' => [
+                'lead' => 'Linked to a Facebook page,',
+                'rest' => 'not a Facebook profile. Need to link Instagram to Facebook on Meta?',
+            ],
+            'admin' => [
+                'lead' => 'Logged in as Facebook Page admin',
+                'rest' => 'with “full control”.',
+            ],
+            'permissions' => [
+                'lead' => 'All permissions selected for all Pages and Instagram accounts',
+                'rest' => 'when connecting, even ones you won\'t connect to TryPost.',
+            ],
+        ],
+        'learn_how' => 'Learn how.',
+        'note' => 'The connection won\'t work if any of these requirements aren\'t met.',
+        'connect' => 'Connect through Facebook',
+    ],
+
+    'flash' => [
+        'disconnected_paused_repurposes' => 'Account disconnected. :count automation paused.|Account disconnected. :count automations paused.',
+        'disconnected' => 'Account disconnected successfully!',
+        'session_expired' => 'Session expired. Please try again.',
+        'workspace_not_found' => 'Workspace not found.',
+        'already_connected' => 'This platform is already connected.',
+        'no_youtube_channels' => 'No YouTube channels found. Please create a channel first.',
+    ],
+
+    'connect' => [
+        'label' => 'Connect channel',
+        'close' => 'Close',
+        'title_single' => 'Connect your account',
+        'title_select' => 'Select accounts',
+        'subtitle_single' => 'Choose the account TryPost will publish to on :network.',
+        'subtitle_select' => 'Choose the accounts TryPost will publish to on :network.',
+        'selected' => ':count selected',
+        'select_all' => 'Select all',
+        'connected' => 'Connected',
+        'all_connected' => 'All your :network accounts are already connected.',
+        'finish' => 'Finish connection',
+        'switch' => [
+            'button' => 'Switch account',
+            'button_short' => 'Switch',
+            'title' => 'Connect a different account',
+            'description' => 'Go to :site and switch to the account you want, then click “Connect to :network” below.',
+            'connect' => 'Connect to :network',
+        ],
+        'types' => [
+            'profile' => 'Profile',
+            'page' => 'Page',
+            'channel' => 'Channel',
+            'location' => 'Location',
+            'server' => 'Server',
+        ],
+        'help' => [
+            'label' => 'Need help',
+            'missing' => 'Missing an account? Check that you manage it, then try again and allow every permission.',
+        ],
+        'states' => [
+            'cancelled' => [
+                'title' => 'Connection cancelled',
+                'description' => 'Nothing was connected. You can try again whenever you are ready.',
+            ],
+            'missing_permission' => [
+                'title' => 'Permission needed',
+                'description' => 'TryPost needs permission to publish your posts. Connect again and keep that permission checked.',
+            ],
+            'expired' => [
+                'title' => 'This connection expired',
+                'description' => 'For your security, a connection expires after 15 minutes. Start again to connect your account.',
+            ],
+            'error' => [
+                'title' => 'Could not connect',
+            ],
+        ],
+        'actions' => [
+            'try_again' => 'Try again',
+            'back' => 'Back',
+            'connect_again' => 'Connect again',
+            'start_again' => 'Start again',
+        ],
+        'errors' => [
+            'bluesky_email_unconfirmed' => 'Confirm your email in Bluesky settings, then connect your account again. TryPost requires a confirmed email to publish videos.',
+            'error_connecting' => 'Error connecting account. Please try again.',
+            'network_taken' => 'This workspace already has an account for this network. Disconnect it first.',
+            'wrong_account' => 'That is a different account. Authorize the one you are reconnecting.',
+            'all_connected' => 'Every account on this login is already connected.',
+            'identity_connected' => 'This account is already connected.',
+            'busy' => 'Another connection is still finishing. Please try again in a moment.',
+            'session_expired' => 'Session expired. Please try again.',
+            'workspace_not_found' => 'Workspace not found.',
+            'invalid_state' => 'Invalid state. Please try again.',
+            'failed_to_authenticate' => 'Failed to authenticate.',
+            'failed_to_get_profile' => 'Failed to get profile.',
+            'page_not_found' => 'Page not found.',
+            'channel_not_found' => 'Channel not found.',
+            'pages_read_incomplete' => 'We could not finish reading your Pages. Please try again in a moment.',
+            'publish_permission_missing' => 'TryPost needs permission to publish your posts. Connect again and keep that permission checked.',
+            'cancelled' => 'Connection cancelled.',
+            'pages_missing_permission' => 'We found Pages, but none you can post to. You need a role on the Page itself, and every permission accepted.',
+            'no_facebook_pages' => 'No Facebook Pages found. You need to be an admin of at least one page.',
+            'no_facebook_instagram_pages' => 'No Facebook Pages with linked Instagram accounts found.',
+            'no_youtube_channels' => 'No YouTube channels found. Please create a channel first.',
+            'not_linkedin_admin' => 'You are not an administrator of any LinkedIn page.',
+            'no_google_business_locations' => 'No Google Business Profile locations found. Verify your business first.',
+            'location_not_found' => 'Location not found.',
+        ],
+    ],
+];

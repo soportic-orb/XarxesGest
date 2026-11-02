@@ -1,0 +1,30 @@
+<x-main>
+  <x-message authenticated="true">
+    <x-heading>
+      @{{ __('mail.webhook_paused.heading') }}
+    </x-heading>
+
+    <p class="m-0 leading-6">
+      @{{ __('mail.webhook_paused.body') }}
+    </p>
+
+    <div class="email-context">
+      <p class="m-0 text-sm text-muted-foreground">
+        @{{ __('webhooks.create.endpoint') }}
+      </p>
+      <p dir="ltr" class="m-0 mt-2 text-sm font-semibold text-foreground break-all">
+        @{{ $endpoint }}
+      </p>
+    </div>
+
+    <p class="m-0 mt-6 leading-6">
+      @{{ __('mail.webhook_paused.next_steps') }}
+    </p>
+
+    <x-spacer height="24px" />
+
+    <x-button href="@{{ $url }}">
+      @{{ __('mail.webhook_paused.button') }}
+    </x-button>
+  </x-message>
+</x-main>

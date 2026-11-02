@@ -1,0 +1,34 @@
+<x-main>
+  <x-message authenticated="true">
+    <x-heading>
+      @{{ __('mail.post_at_risk.heading') }}
+    </x-heading>
+
+    <p class="m-0 leading-6">
+      @{{ __('mail.post_at_risk.intro', ['workspace' => $workspaceName]) }}
+    </p>
+
+    @foreach($atRiskGroups as $group)
+    <table role="presentation" class="w-full mt-4">
+      <tr>
+        <td class="rounded-xl border border-solid border-border p-5 sm:p-4">
+          <x-channel-identity platform="$group['account']->platform" account-name="$group['account']->accountDisplayName()" />
+          <p class="m-0 mt-3 text-sm text-muted-foreground">
+            @{{ trans_choice('mail.post_at_risk.posts_label', $group['postCount'], ['count' => $group['postCount'], 'times' => $group['times'], 'timezone' => $timezone]) }}
+          </p>
+        </td>
+      </tr>
+    </table>
+    @endforeach
+
+    <p class="m-0 mt-4 leading-6">
+      @{{ __('mail.post_at_risk.reconnect_cta') }}
+    </p>
+
+    <x-spacer height="24px" />
+
+    <x-button href="@{{ $url }}">
+      @{{ __('mail.post_at_risk.button') }}
+    </x-button>
+  </x-message>
+</x-main>

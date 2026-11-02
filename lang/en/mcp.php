@@ -1,0 +1,85 @@
+<?php
+
+declare(strict_types=1);
+
+return [
+    'title' => 'MCP',
+    'subtitle' => 'Connect AI assistants to your workspace.',
+    'copy' => 'Copy',
+    'connect' => 'Connect :client',
+    'name_label' => 'Name',
+    'url_label' => 'Server URL',
+    'config_label' => 'Config',
+    'tabs' => [
+        'connected' => 'Connected apps',
+        'connect' => 'Connect an app',
+    ],
+    'connect_other' => 'Connect',
+    'other_hint' => 'Any app that supports MCP.',
+    'other_dialog_title' => 'Connect TryPost to another app',
+    'connected_description' => 'Assistants you\'ve signed in with. You can disconnect any you no longer use.',
+    'connected_empty_title' => 'No connected apps',
+    'connected_empty' => 'Connect Claude, ChatGPT or another app to see it here.',
+    'disconnect' => 'Disconnect',
+    'disconnect_title' => 'Disconnect app',
+    'disconnect_confirm' => 'This signs the app out of TryPost. It will need to reconnect before it can use MCP again.',
+    'disconnected' => 'App disconnected.',
+    'copied' => 'Copied',
+    'last_used' => 'Last used',
+    'never' => 'Never',
+    'connector_name' => 'TryPost',
+
+    'authorize' => [
+        'page_title' => 'Authorize Application - TryPost',
+        'app_title' => 'Authorize MCP',
+        'heading' => 'Authorize :client',
+        'intro' => 'This application will be able to:',
+        'intro_capability' => 'Use available MCP functionality.',
+        'logged_in_as' => 'Logged in as:',
+        'workspace' => 'Workspace:',
+        'workspace_scope' => 'This connection will only access the selected workspace.',
+        'permissions' => 'Permissions:',
+        'cancel' => 'Cancel',
+        'approve' => 'Authorize',
+        'approving' => 'Authorizing...',
+        'select_workspace' => 'Select a workspace',
+        'search_workspace' => 'Search workspaces...',
+        'no_workspace_found' => 'No workspace found',
+        'scope_mcp_use' => 'Use MCP server',
+        'error_page_title' => 'Authorization failed - TryPost',
+        'error_title' => 'Could not connect',
+        'error_body' => 'This authorization request is invalid or expired. Close this window and try connecting again from your MCP client.',
+        'error_code' => 'Error: :error',
+    ],
+
+    'other_clients_title' => 'Other apps',
+
+    'dialog' => [
+        'title' => 'Connect TryPost to :client',
+        'description' => 'Takes about a minute. This page updates as soon as you\'re connected.',
+        'open' => 'Open :client',
+        'steps' => [
+            'claude' => [
+                'paste' => 'Paste the URL into the connector\'s URL field',
+                'add' => 'Click Add, then Connect',
+                'login' => 'Log in to TryPost and pick your workspace',
+            ],
+            'chatgpt' => [
+                'open' => 'Open TryPost in ChatGPT and click Connect',
+                'login' => 'Log in to TryPost and pick your workspace',
+            ],
+            'other' => [
+                'add' => 'Add a custom MCP server in your app',
+                'paste' => 'Paste the name and URL, or the config',
+                'login' => 'Log in to TryPost and pick your workspace',
+            ],
+        ],
+        'waiting' => 'Waiting for your AI to connect…',
+    ],
+    'prompt' => [
+        'title' => 'You haven\'t connected an AI yet',
+        'body' => 'Connect Claude or ChatGPT to create, schedule and analyze your posts just by asking.',
+        'not_now' => 'Not now',
+    ],
+
+];

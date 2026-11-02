@@ -1,0 +1,37 @@
+<x-main>
+  <x-message authenticated="true">
+    <x-heading>
+      @{{ __('mail.post_published.heading') }}
+    </x-heading>
+
+    <p class="m-0 leading-6">
+      @{{ __('mail.post_published.body', ['workspace' => $workspaceName]) }}
+    </p>
+
+    <x-post-preview />
+
+    <x-spacer height="24px" />
+
+    @if($publishedUrl)
+      <table role="presentation" align="center" class="mx-auto">
+        <tr>
+          <td class="align-middle">
+            <x-button href="@{{ $publishedUrl }}" variant="primary" size="sm">
+              @{{ __('mail.post_published.button') }}
+            </x-button>
+          </td>
+          <td class="w-3 sm:w-2" aria-hidden="true">&nbsp;</td>
+          <td class="align-middle">
+            <x-button href="@{{ $url }}" variant="secondary" size="sm">
+              @{{ __('mail.post_published.open_in_app') }}
+            </x-button>
+          </td>
+        </tr>
+      </table>
+    @else
+      <x-button href="@{{ $url }}">
+        @{{ __('mail.post_published.open_in_app') }}
+      </x-button>
+    @endif
+  </x-message>
+</x-main>

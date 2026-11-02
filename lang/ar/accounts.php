@@ -1,0 +1,199 @@
+<?php
+
+declare(strict_types=1);
+
+return [
+    'bluesky' => [
+        'title' => 'ربط Bluesky',
+        'description' => 'أدخل بيانات اعتمادك للربط',
+        'email' => 'اسم المستخدم أو البريد الإلكتروني',
+        'email_placeholder' => 'yourhandle.bsky.social',
+        'app_password' => 'كلمة مرور التطبيق',
+        'app_password_placeholder' => 'xxxx-xxxx-xxxx-xxxx',
+        'app_password_hint' => 'استخدم <strong>كلمة مرور التطبيق</strong> لمزيد من الأمان. أنشئ واحدة من <a href="https://bsky.app/settings/app-passwords" target="_blank" class="underline">bsky.app/settings</a>.',
+        'submit' => 'ربط Bluesky',
+        'submitting' => 'جارٍ الاتصال...',
+        'invalid_credentials' => 'بيانات الاعتماد غير صالحة.',
+        'connection_error' => 'حدث خطأ أثناء الاتصال بـ Bluesky. يرجى المحاولة مرة أخرى.',
+    ],
+
+    'mastodon' => [
+        'title' => 'ربط Mastodon',
+        'description' => 'أدخل خادم Mastodon الخاص بك',
+        'instance_url' => 'رابط الخادم',
+        'instance_placeholder' => 'https://mastodon.social',
+        'instance_hint' => 'مثال: mastodon.social أو techhub.social',
+        'submit' => 'المتابعة عبر Mastodon',
+        'submitting' => 'جارٍ الاتصال...',
+        'instance_unreachable' => 'تعذر الاتصال بخادم Mastodon هذا.',
+        'connection_error' => 'حدث خطأ أثناء الاتصال بخادم Mastodon.',
+    ],
+
+    'telegram' => [
+        'title' => 'ربط Telegram',
+        'description' => 'اربط قناة أو مجموعة',
+        'steps' => 'الخطوات',
+        'step_admin' => 'أضِف :bot كمشرف على قناتك أو مجموعتك على Telegram.',
+        'open_bot' => 'افتح في Telegram',
+        'step_command' => 'انشر هذا الأمر في القناة أو المجموعة:',
+        'waiting' => 'في انتظار اتصال القناة…',
+        'copy_command' => 'نسخ الأمر',
+        'expired' => 'انتهت صلاحية هذا الأمر. أنشئ أمرًا جديدًا للمحاولة مرة أخرى.',
+        'new_command' => 'إنشاء أمر جديد',
+        'error_generic' => 'تعذر بدء الاتصال. يرجى المحاولة مرة أخرى.',
+        'network_taken' => 'تحتوي مساحة العمل هذه بالفعل على قناة Telegram متصلة. افصلها أولًا.',
+        'wrong_chat' => 'انشر الأمر في القناة التي تعيد ربطها.',
+        'busy' => 'لا يزال هناك اتصال آخر قيد الإنهاء. أعد إرسال الأمر بعد لحظات.',
+        'help' => [
+            'channel_admins' => 'إضافة مشرفين إلى قناة',
+            'group_admins' => 'إضافة مشرفين إلى مجموعة',
+            'bot_privacy' => 'ما الذي يمكن للبوتات قراءته في المجموعات',
+        ],
+    ],
+
+    'instagram_connect' => [
+        'title' => 'كيف تريد ربط حسابك على Instagram؟',
+        'description' => 'تعتمد الميزات على نوع حسابك على Instagram وطريقة الربط التي تختارها.',
+        'professional_title' => 'احترافي',
+        'professional_types' => '(نشاط تجاري وصانع محتوى)',
+        'facebook_types' => '(مرتبط بصفحة على Facebook)',
+        'badge' => 'نشر تلقائي',
+        'features' => [
+            'automatic' => [
+                'title' => 'النشر التلقائي',
+                'description' => 'أنت تجدول ونحن ننشر',
+            ],
+            'metrics' => [
+                'title' => 'مقاييس المنشورات المرسلة',
+                'description' => 'اطّلع على أداء المنشورات السابقة',
+            ],
+            'music' => [
+                'title' => 'موسيقى في مقاطع ريلز',
+                'description' => 'أضف مقطعًا موسيقيًا من مكتبة Instagram',
+            ],
+        ],
+        'connect' => 'الربط مع Instagram',
+        'convert_hint' => 'سيطلب منك Instagram التحويل بسهولة إلى حساب احترافي عند الحاجة.',
+        'help' => [
+            'account_type' => 'معرفة نوع حسابك على Instagram',
+            'convert' => 'تحويل حسابك على Instagram إلى حساب احترافي',
+        ],
+    ],
+
+    'instagram_facebook_requirements' => [
+        'title' => 'اربط Instagram عبر Facebook',
+        'subtitle' => 'إليك ما تحتاج إلى معرفته 👇',
+        'heading' => 'المتطلبات',
+        'items' => [
+            'account_type' => [
+                'lead' => 'حساب نشاط تجاري أو صانع محتوى',
+                'rest' => 'على Instagram، وليس ملفًا شخصيًا.',
+            ],
+            'page' => [
+                'lead' => 'مرتبط بصفحة على Facebook',
+                'rest' => '، وليس بملف شخصي على Facebook. هل تحتاج إلى ربط Instagram بـ Facebook على Meta؟',
+            ],
+            'admin' => [
+                'lead' => 'تسجيل الدخول كمسؤول عن صفحة Facebook',
+                'rest' => 'مع «التحكم الكامل».',
+            ],
+            'permissions' => [
+                'lead' => 'تحديد جميع الأذونات لجميع الصفحات وحسابات Instagram',
+                'rest' => 'عند الربط، حتى التي لن تربطها بـ TryPost.',
+            ],
+        ],
+        'learn_how' => 'تعرّف على الطريقة.',
+        'note' => 'لن يعمل الربط إذا لم يتحقق أي من هذه المتطلبات.',
+        'connect' => 'الربط عبر Facebook',
+    ],
+
+    'flash' => [
+        'disconnected_paused_repurposes' => 'تم فصل الحساب. تم إيقاف :count أتمتة مؤقتًا.|تم فصل الحساب. تم إيقاف :count أتمتة مؤقتًا.',
+        'disconnected' => 'تم فصل الحساب بنجاح!',
+        'session_expired' => 'انتهت الجلسة. يرجى المحاولة مرة أخرى.',
+        'workspace_not_found' => 'لم يتم العثور على مساحة العمل.',
+        'already_connected' => 'هذه المنصة متصلة بالفعل.',
+        'no_youtube_channels' => 'لم يتم العثور على قنوات YouTube. يرجى إنشاء قناة أولًا.',
+    ],
+
+    'connect' => [
+        'label' => 'ربط قناة',
+        'close' => 'إغلاق',
+        'title_single' => 'اربط حسابك',
+        'title_select' => 'اختر الحسابات',
+        'subtitle_single' => 'اختر الحساب الذي سينشر عليه TryPost في :network.',
+        'subtitle_select' => 'اختر الحسابات التي سينشر عليها TryPost في :network.',
+        'selected' => 'المحدد: :count',
+        'select_all' => 'تحديد الكل',
+        'connected' => 'متصل',
+        'all_connected' => 'كل حسابات :network لديك متصلة بالفعل.',
+        'finish' => 'إنهاء الربط',
+        'switch' => [
+            'button' => 'تبديل الحساب',
+            'button_short' => 'تبديل',
+            'title' => 'ربط حساب آخر',
+            'description' => 'انتقل إلى :site وبدّل إلى الحساب الذي تريده، ثم انقر على «الربط بـ :network» أدناه.',
+            'connect' => 'الربط بـ :network',
+        ],
+        'types' => [
+            'profile' => 'ملف شخصي',
+            'page' => 'صفحة',
+            'channel' => 'قناة',
+            'location' => 'موقع',
+            'server' => 'خادم',
+        ],
+        'help' => [
+            'label' => 'تحتاج مساعدة',
+            'missing' => 'هل ينقصك حساب؟ تأكد أنك تديره، ثم حاول مرة أخرى وامنح كل الأذونات.',
+        ],
+        'states' => [
+            'cancelled' => [
+                'title' => 'تم إلغاء الربط',
+                'description' => 'لم يُربط أي شيء. يمكنك المحاولة مرة أخرى متى شئت.',
+            ],
+            'missing_permission' => [
+                'title' => 'الإذن مطلوب',
+                'description' => 'يحتاج TryPost إلى إذن لنشر منشوراتك. اربط مرة أخرى وأبقِ هذا الإذن محددًا.',
+            ],
+            'expired' => [
+                'title' => 'انتهت صلاحية هذا الربط',
+                'description' => 'لأمانك، تنتهي صلاحية الربط بعد 15 دقيقة. ابدأ من جديد لربط حسابك.',
+            ],
+            'error' => [
+                'title' => 'تعذر الربط',
+            ],
+        ],
+        'actions' => [
+            'try_again' => 'إعادة المحاولة',
+            'back' => 'رجوع',
+            'connect_again' => 'اربط مجددًا',
+            'start_again' => 'ابدأ من جديد',
+        ],
+        'errors' => [
+            'bluesky_email_unconfirmed' => 'أكّد بريدك الإلكتروني في إعدادات Bluesky، ثم اربط حسابك مجددًا. يتطلب TryPost بريدًا إلكترونيًا مؤكدًا لنشر الفيديوهات.',
+            'error_connecting' => 'خطأ في ربط الحساب. يرجى المحاولة مرة أخرى.',
+            'network_taken' => 'تحتوي مساحة العمل هذه بالفعل على حساب لهذه الشبكة. افصله أولًا.',
+            'wrong_account' => 'هذا حساب مختلف. صرّح بالحساب الذي تعيد ربطه.',
+            'all_connected' => 'كل الحسابات في تسجيل الدخول هذا مرتبطة بالفعل.',
+            'identity_connected' => 'هذا الحساب متصل بالفعل.',
+            'busy' => 'لا تزال عملية ربط أخرى قيد الإنهاء. يرجى المحاولة مرة أخرى بعد لحظات.',
+            'session_expired' => 'انتهت الجلسة. يرجى المحاولة مرة أخرى.',
+            'workspace_not_found' => 'لم يتم العثور على مساحة العمل.',
+            'invalid_state' => 'حالة غير صالحة. يرجى المحاولة مرة أخرى.',
+            'failed_to_authenticate' => 'فشلت المصادقة.',
+            'failed_to_get_profile' => 'فشل جلب الملف الشخصي.',
+            'page_not_found' => 'لم يتم العثور على الصفحة.',
+            'channel_not_found' => 'لم يتم العثور على القناة.',
+            'pages_read_incomplete' => 'لم نتمكن من إكمال قراءة صفحاتك. حاول مرة أخرى بعد قليل.',
+            'publish_permission_missing' => 'يحتاج TryPost إلى إذن لنشر منشوراتك. اربط مرة أخرى وأبقِ هذا الإذن محددًا.',
+            'cancelled' => 'تم إلغاء الربط.',
+            'pages_missing_permission' => 'وجدنا صفحات، لكن لا يمكنك النشر في أي منها. تحتاج إلى دور على الصفحة نفسها وقبول جميع الأذونات.',
+            'no_facebook_pages' => 'لم يتم العثور على صفحات Facebook. يجب أن تكون مشرفًا على صفحة واحدة على الأقل.',
+            'no_facebook_instagram_pages' => 'لم يتم العثور على صفحات Facebook مرتبطة بحسابات Instagram.',
+            'no_youtube_channels' => 'لم يتم العثور على قنوات YouTube. يرجى إنشاء قناة أولًا.',
+            'not_linkedin_admin' => 'أنت لست مشرفًا على أي صفحة LinkedIn.',
+            'no_google_business_locations' => 'لم يتم العثور على مواقع Google Business Profile. يرجى التحقق من نشاطك التجاري أولاً.',
+            'location_not_found' => 'الموقع غير موجود.',
+        ],
+    ],
+];

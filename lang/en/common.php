@@ -1,0 +1,93 @@
+<?php
+
+declare(strict_types=1);
+
+return [
+    'beta' => 'Beta',
+
+    'back' => 'Back',
+
+    'unsaved_changes' => [
+
+        'title' => 'Discard changes?',
+
+        'description' => 'Your changes to this post haven\'t been saved. If you leave now, they\'ll be lost.',
+
+        'discard' => 'Discard',
+
+    ],
+
+    'confirm_modal' => [
+        'type' => 'Type',
+        'to_confirm' => 'to confirm.',
+        'copy_to_clipboard' => 'Copy to clipboard',
+        'delete_keyword' => 'DELETE',
+    ],
+
+    'photo_upload' => [
+        'upload' => 'Upload',
+        'uploading' => 'Uploading...',
+        'remove' => 'Remove photo',
+        'hint' => 'Recommended: square image, max 2 MB.',
+        'crop_title' => 'Crop image',
+        'crop_description' => 'Select the area you want to keep.',
+        'crop_hint' => 'Drag to move, or a corner to resize.',
+        'crop_save' => 'Save',
+        'crop_cancel' => 'Cancel',
+        'crop_error' => 'Couldn\'t load this image. Try another file.',
+    ],
+
+    'timezone' => [
+        'select' => 'Select timezone',
+        'search' => 'Search timezone...',
+        'empty' => 'No timezone found',
+    ],
+
+    'just_now' => 'Just now',
+
+    'date_picker' => [
+        'label' => 'Date picker',
+        'select' => 'Select date',
+    ],
+
+    'date_range_picker' => [
+        'placeholder' => 'Pick a date range',
+        'today' => 'Today',
+        'yesterday' => 'Yesterday',
+        'last_7_days' => 'Last 7 days',
+        'last_30_days' => 'Last 30 days',
+        'last_3_months' => 'Last 3 months',
+        'last_6_months' => 'Last 6 months',
+        'last_12_months' => 'Last 12 months',
+        'this_month' => 'This month',
+        'last_month' => 'Last month',
+        'year_to_date' => 'Year to date',
+        'last_year' => 'Last year',
+    ],
+
+    'cancel' => 'Cancel',
+    'clear' => 'Clear',
+    'close' => 'Close',
+    'more' => 'More',
+    'learn_more' => 'Learn more',
+    'play' => 'Play',
+    'loading' => 'Loading...',
+    'loading_more' => 'Loading more...',
+
+    'actions' => [
+        'copy' => 'Copy',
+        'copied' => 'Copied',
+        'copy_failed' => 'Failed to copy to clipboard',
+    ],
+
+    'media_lightbox' => [
+        'title' => 'Media preview',
+        'previous' => 'Previous',
+        'next' => 'Next',
+        'zoom_in' => 'Zoom in',
+        'zoom_out' => 'Zoom out',
+        'counter' => ':current / :total',
+        'go_to' => 'Show item :number',
+        'open' => 'Open preview',
+    ],
+];

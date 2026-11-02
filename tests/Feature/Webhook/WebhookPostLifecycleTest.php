@@ -1,0 +1,441 @@
+<?php
+
+declare(strict_types=1);
+
+use App\Actions\Post\CreatePosts;
+use App\Actions\Post\DeletePost;
+use App\Actions\Post\UpdatePost;
+use App\Enums\Post\CreatedVia;
+use App\Enums\Post\Status as PostStatus;
+use App\Enums\PostPlatform\ContentType;
+use App\Enums\SocialAccount\Platform;
+use App\Enums\Webhook\EventType;
+use App\Events\PostCreated;
+use App\Events\PostDeleted;
+use App\Events\PostStatusChanged;
+use App\Jobs\DispatchWebhook;
+use App\Listeners\Webhook\SendPostCreatedWebhook;
+use App\Listeners\Webhook\SendPostDeletedWebhook;
+use App\Listeners\Webhook\SendPostStatusWebhook;
+use App\Models\Post;
+use App\Models\SocialAccount;
+use App\Models\User;
+use App\Models\Webhook;
+use App\Models\Workspace;
+use App\Models\WorkspaceLabel;
+use App\Services\WebhookService;
+use Illuminate\Support\Facades\Event;
+use Illuminate\Support\Facades\Queue;
+
+beforeEach(function () {
+    Queue::fake([DispatchWebhook::class]);
+
+    $this->user = User::factory()->create();
+    $this->workspace = Workspace::factory()->create(['user_id' => $this->user->id]);
+});
+
+/**
+ * @param  list<EventType>  $events
+ */
+function subscribeToWebhook(Workspace $workspace, array $events): Webhook
+{
+    return Webhook::factory()->create([
+        'workspace_id' => $workspace->id,
+        'events' => array_map(fn (EventType $event): string => $event->value, $events),
+    ]);
+}
+
+/** @param array<string, mixed> $data */
+function createWebhookPost(Workspace $workspace, User $user, array $data): Post
+{
+    $destination = $data['destination'] ?? null;
+    if ($destination === null) {
+        $account = SocialAccount::factory()->linkedin()->create(['workspace_id' => $workspace->id]);
+        $destination = [
+            'social_account_id' => $account->id,
+            'content_type' => ContentType::LinkedInPost->value,
+        ];
+    }
+
+    return CreatePosts::execute($workspace, $user, [
+        'status' => PostStatus::Draft->value,
+        'content' => $data['content'] ?? '',
+        'created_via' => $data['created_via'] ?? null,
+        'label_ids' => $data['label_ids'] ?? [],
+        'destinations' => [$destination],
+    ])->sole();
+}
+
+test('webhook listeners are registered for the post lifecycle events', function () {
+    Event::fake();
+
+    Event::assertListening(PostCreated::class, SendPostCreatedWebhook::class);
+    Event::assertListening(PostStatusChanged::class, SendPostStatusWebhook::class);
+    Event::assertListening(PostDeleted::class, SendPostDeletedWebhook::class);
+});
+
+test('creating a channel post queues a post.created webhook', function () {
+    subscribeToWebhook($this->workspace, [EventType::PostCreated]);
+
+    $post = createWebhookPost($this->workspace, $this->user, [
+        'content' => 'Hello from webhooks',
+        'created_via' => CreatedVia::Web,
+    ]);
+
+    Queue::assertPushed(DispatchWebhook::class, function (DispatchWebhook $job) use ($post) {
+        return $job->eventType === EventType::PostCreated->value
+            && data_get($job->payload, 'id') === $post->id
+            && data_get($job->payload, 'workspace_id') === $this->workspace->id
+            && data_get($job->payload, 'status') === PostStatus::Draft->value;
+    });
+});
+
+test('creating a channel post includes labels and its channel in the payload', function () {
+    subscribeToWebhook($this->workspace, [EventType::PostCreated]);
+
+    $label = WorkspaceLabel::factory()->recycle($this->workspace)->create([
+        'name' => 'Launch',
+        'color' => '#7C3AED',
+    ]);
+    $account = SocialAccount::factory()->linkedin()->recycle($this->workspace)->create([
+        'display_name' => 'Paulo Castellano',
+        'username' => 'paulocastellano',
+    ]);
+
+    $post = createWebhookPost($this->workspace, $this->user, [
+        'content' => 'Hello from webhooks',
+        'created_via' => CreatedVia::Web,
+        'label_ids' => [$label->id],
+        'destination' => [
+            'social_account_id' => $account->id,
+            'content_type' => ContentType::LinkedInPost->value,
+            'meta' => ['document_title' => 'TryPost launch deck'],
+        ],
+    ]);
+
+    Queue::assertPushed(DispatchWebhook::class, function (DispatchWebhook $job) use ($post, $label, $account) {
+        return $job->eventType === EventType::PostCreated->value
+            && data_get($job->payload, 'id') === $post->id
+            && data_get($job->payload, 'labels.0.id') === $label->id
+            && data_get($job->payload, 'labels.0.name') === 'Launch'
+            && data_get($job->payload, 'social_account_id') === $account->id
+            && data_get($job->payload, 'platform') === Platform::LinkedIn->value
+            && data_get($job->payload, 'meta.document_title') === 'TryPost launch deck';
+    });
+});
+
+test('creating an instagram reel with music and collaborators carries them in the post.created payload', function () {
+    subscribeToWebhook($this->workspace, [EventType::PostCreated]);
+
+    $account = SocialAccount::factory()->recycle($this->workspace)->create(['platform' => Platform::InstagramFacebook]);
+
+    $post = createWebhookPost($this->workspace, $this->user, [
+        'content' => 'Reel with music',
+        'created_via' => CreatedVia::Api,
+        'destination' => [
+            'social_account_id' => $account->id,
+            'content_type' => ContentType::InstagramReel->value,
+            'meta' => [
+                'audio' => ['id' => '1234567890', 'title' => 'Summer Song', 'artist' => 'The Band', 'audio_volume' => 40, 'video_volume' => 30],
+                'collaborators' => ['alice', 'bob'],
+                'share_to_feed' => false,
+            ],
+        ],
+    ]);
+
+    Queue::assertPushed(DispatchWebhook::class, fn (DispatchWebhook $job): bool => $job->eventType === EventType::PostCreated->value
+        && data_get($job->payload, 'id') === $post->id
+        && data_get($job->payload, 'platform') === Platform::InstagramFacebook->value
+        && data_get($job->payload, 'content_type') === ContentType::InstagramReel->value
+        && data_get($job->payload, 'meta.audio.id') === '1234567890'
+        && data_get($job->payload, 'meta.audio.audio_volume') === 40
+        && data_get($job->payload, 'meta.audio.video_volume') === 30
+        && data_get($job->payload, 'meta.collaborators') === ['alice', 'bob']
+        && data_get($job->payload, 'meta.share_to_feed') === false);
+});
+
+test('scheduling a post through UpdatePost includes labels and meta from the same save', function () {
+    subscribeToWebhook($this->workspace, [EventType::PostScheduled]);
+
+    $label = WorkspaceLabel::factory()->recycle($this->workspace)->create([
+        'name' => 'Launch',
+        'color' => '#7C3AED',
+    ]);
+    $account = SocialAccount::factory()->linkedin()->recycle($this->workspace)->create();
+    $post = Post::factory()->forAccount($account, ContentType::LinkedInPost)->createQuietly([
+        'user_id' => $this->user->id,
+        'status' => PostStatus::Draft,
+        'content' => 'Ready to schedule',
+        'meta' => [],
+    ]);
+
+    UpdatePost::execute($this->workspace, $post, [
+        'status' => PostStatus::Scheduled->value,
+        'scheduled_at' => now()->addDay()->toIso8601String(),
+        'label_ids' => [$label->id],
+        'content_type' => ContentType::LinkedInPost->value,
+        'meta' => ['document_title' => 'TryPost launch deck'],
+    ]);
+
+    Queue::assertPushed(DispatchWebhook::class, function (DispatchWebhook $job) use ($post, $label, $account) {
+        return $job->eventType === EventType::PostScheduled->value
+            && data_get($job->payload, 'id') === $post->id
+            && data_get($job->payload, 'status') === PostStatus::Scheduled->value
+            && data_get($job->payload, 'labels.0.id') === $label->id
+            && data_get($job->payload, 'labels.0.name') === 'Launch'
+            && data_get($job->payload, 'social_account_id') === $account->id
+            && data_get($job->payload, 'meta.document_title') === 'TryPost launch deck';
+    });
+});
+
+test('creating a draft does not queue status webhooks', function () {
+    subscribeToWebhook($this->workspace, EventType::cases());
+
+    createWebhookPost($this->workspace, $this->user, [
+        'content' => 'Draft only',
+        'created_via' => CreatedVia::Web,
+    ]);
+
+    Queue::assertPushed(DispatchWebhook::class, 1);
+    Queue::assertPushed(DispatchWebhook::class, fn (DispatchWebhook $job) => $job->eventType === EventType::PostCreated->value);
+});
+
+test('unscheduling a post through UpdatePost queues a post.unscheduled webhook', function () {
+    subscribeToWebhook($this->workspace, [EventType::PostUnscheduled]);
+
+    $post = Post::factory()->linkedin()->createQuietly([
+        'workspace_id' => $this->workspace->id,
+        'user_id' => $this->user->id,
+        'status' => PostStatus::Scheduled,
+        'scheduled_at' => now()->addDay(),
+        'content' => 'Was scheduled',
+    ]);
+
+    UpdatePost::execute($this->workspace, $post, [
+        'status' => PostStatus::Draft->value,
+    ]);
+
+    Queue::assertPushed(DispatchWebhook::class, function (DispatchWebhook $job) use ($post) {
+        return $job->eventType === EventType::PostUnscheduled->value
+            && data_get($job->payload, 'id') === $post->id
+            && data_get($job->payload, 'status') === PostStatus::Draft->value;
+    });
+});
+
+test('saving a draft that was never scheduled does not queue post.unscheduled', function () {
+    subscribeToWebhook($this->workspace, [EventType::PostUnscheduled]);
+
+    $post = Post::factory()->createQuietly([
+        'workspace_id' => $this->workspace->id,
+        'user_id' => $this->user->id,
+        'status' => PostStatus::Draft,
+        'content' => 'Still a draft',
+    ]);
+
+    UpdatePost::execute($this->workspace, $post, [
+        'status' => PostStatus::Draft->value,
+        'content' => 'Still a draft, edited',
+    ]);
+
+    Queue::assertNotPushed(DispatchWebhook::class);
+});
+
+test('moving a failed post back to draft does not queue post.unscheduled', function () {
+    subscribeToWebhook($this->workspace, [EventType::PostUnscheduled]);
+
+    $post = Post::factory()->failed()->createQuietly([
+        'workspace_id' => $this->workspace->id,
+        'user_id' => $this->user->id,
+    ]);
+
+    $post->update(['status' => PostStatus::Draft]);
+
+    Queue::assertNotPushed(DispatchWebhook::class);
+});
+
+test('changing post status through the observer queues the matching webhook', function (PostStatus $status, EventType $event) {
+    subscribeToWebhook($this->workspace, [$event]);
+
+    $post = Post::factory()->createQuietly([
+        'workspace_id' => $this->workspace->id,
+        'user_id' => $this->user->id,
+        'status' => PostStatus::Draft,
+    ]);
+
+    match ($status) {
+        PostStatus::Scheduled => $post->update([
+            'status' => PostStatus::Scheduled,
+            'scheduled_at' => now()->addDay(),
+        ]),
+        PostStatus::Published => $post->markAsPublished(),
+        PostStatus::Failed => $post->markAsFailed(),
+        default => $post->update(['status' => $status]),
+    };
+
+    Queue::assertPushed(DispatchWebhook::class, function (DispatchWebhook $job) use ($post, $event) {
+        return $job->eventType === $event->value
+            && data_get($job->payload, 'id') === $post->id
+            && data_get($job->payload, 'author.id') === $this->user->id
+            && data_get($job->payload, 'workspace.id') === $this->workspace->id
+            && array_key_exists('labels', $job->payload)
+            && array_key_exists('media', $job->payload)
+            && array_key_exists('publish_status', $job->payload)
+            && ! array_key_exists('platforms', $job->payload);
+    });
+})->with([
+    [PostStatus::Scheduled, EventType::PostScheduled],
+    [PostStatus::Published, EventType::PostPublished],
+    [PostStatus::Failed, EventType::PostFailed],
+]);
+
+test('publishing a post queues the full webhook payload', function () {
+    subscribeToWebhook($this->workspace, [EventType::PostPublished]);
+
+    $account = SocialAccount::factory()->linkedin()->recycle($this->workspace)->create([
+        'display_name' => 'Paulo Castellano',
+        'username' => 'paulocastellano',
+        'avatar_url' => 'avatars/li.jpg',
+    ]);
+    $post = Post::factory()->forAccount($account, ContentType::LinkedInPost)->published()->createQuietly([
+        'user_id' => $this->user->id,
+        'status' => PostStatus::Draft,
+        'meta' => ['document_title' => 'TryPost launch deck'],
+        'content' => '<p>Launch day. TryPost is live.</p>',
+        'created_via' => CreatedVia::Web,
+        'media' => [
+            [
+                'id' => 'm_01',
+                'path' => 'medias/9f2c-hero.jpg',
+                'url' => 'https://cdn.example.com/medias/9f2c-hero.jpg',
+                'mime_type' => 'image/jpeg',
+                'original_filename' => 'hero.jpg',
+                'source' => 'unsplash',
+                'meta' => ['alt_text' => 'Product screenshot on a laptop'],
+            ],
+        ],
+    ]);
+
+    $label = WorkspaceLabel::factory()->recycle($this->workspace)->create([
+        'name' => 'Launch',
+        'color' => '#7C3AED',
+    ]);
+    $post->labels()->attach($label);
+
+    $post->markAsPublished();
+
+    $expected = app(WebhookService::class)->postPayload($post->fresh());
+
+    Queue::assertPushed(DispatchWebhook::class, function (DispatchWebhook $job) use ($expected, $account) {
+        return $job->eventType === EventType::PostPublished->value
+            && $job->payload['id'] === $expected['id']
+            && $job->payload['status'] === PostStatus::Published->value
+            && $job->payload['author'] === $expected['author']
+            && $job->payload['workspace'] === $expected['workspace']
+            && $job->payload['labels'] === $expected['labels']
+            && $job->payload['media'] === $expected['media']
+            && $job->payload['social_account'] === $expected['social_account']
+            && $job->payload['meta'] === ['document_title' => 'TryPost launch deck']
+            && $job->payload['publish_status'] === $expected['publish_status']
+            && $job->payload['platform_post_id'] === $expected['platform_post_id']
+            && $job->payload['social_account_id'] === $account->id
+            && ! array_key_exists('error_context', $job->payload);
+    });
+});
+
+test('marking a post as publishing does not queue a webhook', function () {
+    subscribeToWebhook($this->workspace, EventType::cases());
+
+    $post = Post::factory()->createQuietly([
+        'workspace_id' => $this->workspace->id,
+        'user_id' => $this->user->id,
+        'status' => PostStatus::Draft,
+    ]);
+
+    $post->markAsPublishing();
+
+    Queue::assertNotPushed(DispatchWebhook::class);
+});
+
+test('deleting a post through DeletePost queues a post.deleted webhook', function () {
+    subscribeToWebhook($this->workspace, [EventType::PostDeleted]);
+
+    $post = Post::factory()->createQuietly([
+        'workspace_id' => $this->workspace->id,
+        'user_id' => $this->user->id,
+    ]);
+
+    DeletePost::execute($post);
+
+    Queue::assertPushed(DispatchWebhook::class, function (DispatchWebhook $job) use ($post) {
+        return $job->eventType === EventType::PostDeleted->value
+            && $job->payload === [
+                'id' => $post->id,
+                'workspace_id' => $this->workspace->id,
+            ];
+    });
+});
+
+test('a paused webhook is not queued when a post is created', function () {
+    Webhook::factory()->paused()->create([
+        'workspace_id' => $this->workspace->id,
+        'events' => [EventType::PostCreated->value],
+    ]);
+
+    createWebhookPost($this->workspace, $this->user, [
+        'content' => 'Should not notify',
+        'created_via' => CreatedVia::Web,
+    ]);
+
+    Queue::assertNotPushed(DispatchWebhook::class);
+});
+
+test('a disabled webhook is not queued when a post is created', function () {
+    Webhook::factory()->disabled()->create([
+        'workspace_id' => $this->workspace->id,
+        'events' => [EventType::PostCreated->value],
+    ]);
+
+    createWebhookPost($this->workspace, $this->user, [
+        'content' => 'Should not notify',
+        'created_via' => CreatedVia::Web,
+    ]);
+
+    Queue::assertNotPushed(DispatchWebhook::class);
+});
+
+test('a webhook subscribed only to other events is not queued on create', function () {
+    subscribeToWebhook($this->workspace, [EventType::PostPublished, EventType::PostFailed]);
+
+    createWebhookPost($this->workspace, $this->user, [
+        'content' => 'Created but unpublished',
+        'created_via' => CreatedVia::Web,
+    ]);
+
+    Queue::assertNotPushed(DispatchWebhook::class);
+});
+
+test('a webhook from another workspace is not queued', function () {
+    $otherWorkspace = Workspace::factory()->create();
+    subscribeToWebhook($otherWorkspace, EventType::cases());
+
+    createWebhookPost($this->workspace, $this->user, [
+        'content' => 'Other workspace should not see this',
+        'created_via' => CreatedVia::Web,
+    ]);
+
+    Queue::assertNotPushed(DispatchWebhook::class);
+});
+
+test('creating a post through the observer without Event::fake still queues the job', function () {
+    subscribeToWebhook($this->workspace, [EventType::PostCreated]);
+
+    $post = Post::factory()->create([
+        'workspace_id' => $this->workspace->id,
+        'user_id' => $this->user->id,
+    ]);
+
+    Queue::assertPushed(DispatchWebhook::class, function (DispatchWebhook $job) use ($post) {
+        return $job->eventType === EventType::PostCreated->value
+            && data_get($job->payload, 'id') === $post->id;
+    });
+});

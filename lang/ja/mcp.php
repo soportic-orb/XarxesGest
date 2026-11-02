@@ -1,0 +1,85 @@
+<?php
+
+declare(strict_types=1);
+
+return [
+    'title' => 'MCP',
+    'subtitle' => 'AI アシスタントを接続します。',
+    'copy' => 'コピー',
+    'connect' => ':clientを接続',
+    'name_label' => '名前',
+    'url_label' => 'サーバーURL',
+    'config_label' => '設定',
+    'tabs' => [
+        'connected' => '接続済みアプリ',
+        'connect' => 'アプリを接続',
+    ],
+    'connect_other' => '接続',
+    'other_hint' => 'MCP対応のあらゆるアプリ。',
+    'other_dialog_title' => 'TryPostを他のアプリに接続',
+    'connected_description' => 'サインインしたアシスタントです。不要な接続は切断できます。',
+    'connected_empty_title' => '接続済みのアプリはありません',
+    'connected_empty' => 'Claude、ChatGPTなどのアプリを接続すると、ここに表示されます。',
+    'disconnect' => '切断',
+    'disconnect_title' => 'アプリを切断',
+    'disconnect_confirm' => 'TryPostからアプリを切断します。再度MCPを使うには再接続が必要です。',
+    'disconnected' => 'アプリを切断しました。',
+    'copied' => 'コピーしました',
+    'last_used' => '最終使用',
+    'never' => 'なし',
+    'connector_name' => 'TryPost',
+
+    'authorize' => [
+        'page_title' => 'アプリを承認 - TryPost',
+        'app_title' => 'MCPを承認',
+        'heading' => ':clientを承認',
+        'intro' => 'このアプリは次のことができます:',
+        'intro_capability' => '利用可能なMCP機能を使用する。',
+        'logged_in_as' => 'ログイン中のアカウント:',
+        'workspace' => 'ワークスペース:',
+        'workspace_scope' => 'この接続は選択したワークスペースにのみアクセスします。',
+        'permissions' => '権限:',
+        'cancel' => 'キャンセル',
+        'approve' => '承認',
+        'approving' => '承認中...',
+        'select_workspace' => 'ワークスペースを選択',
+        'search_workspace' => 'ワークスペースを検索...',
+        'no_workspace_found' => 'ワークスペースが見つかりません',
+        'scope_mcp_use' => 'MCPサーバーを使用',
+        'error_page_title' => '承認に失敗しました - TryPost',
+        'error_title' => '接続できませんでした',
+        'error_body' => 'この承認リクエストは無効か期限切れです。このウィンドウを閉じ、MCPクライアントからもう一度接続してください。',
+        'error_code' => 'エラー: :error',
+    ],
+
+    'other_clients_title' => 'その他のアプリ',
+
+    'dialog' => [
+        'title' => 'TryPostを:clientに接続',
+        'description' => '1分ほどで完了します。接続するとこのページが自動で更新されます。',
+        'open' => ':clientを開く',
+        'steps' => [
+            'claude' => [
+                'paste' => 'コネクタのURL欄にURLを貼り付け',
+                'add' => '「追加」→「接続」をクリック',
+                'login' => 'TryPostにログインしてワークスペースを選択',
+            ],
+            'chatgpt' => [
+                'open' => 'ChatGPTでTryPostを開き、「接続する」をクリック',
+                'login' => 'TryPostにログインしてワークスペースを選択',
+            ],
+            'other' => [
+                'add' => 'アプリにカスタムMCPサーバーを追加',
+                'paste' => '名前とURL、または設定を貼り付け',
+                'login' => 'TryPostにログインしてワークスペースを選択',
+            ],
+        ],
+        'waiting' => 'AIの接続を待っています…',
+    ],
+    'prompt' => [
+        'title' => 'まだAIを接続していません',
+        'body' => 'ClaudeやChatGPTを接続すると、頼むだけで投稿の作成・予約・分析ができます。',
+        'not_now' => '今はしない',
+    ],
+
+];

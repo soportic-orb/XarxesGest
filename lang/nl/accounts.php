@@ -1,0 +1,199 @@
+<?php
+
+declare(strict_types=1);
+
+return [
+    'bluesky' => [
+        'title' => 'Bluesky koppelen',
+        'description' => 'Voer je inloggegevens in om te koppelen',
+        'email' => 'Handle of e-mail',
+        'email_placeholder' => 'jouwhandle.bsky.social',
+        'app_password' => 'App-wachtwoord',
+        'app_password_placeholder' => 'xxxx-xxxx-xxxx-xxxx',
+        'app_password_hint' => 'Gebruik voor de veiligheid een <strong>App-wachtwoord</strong>. Maak er een aan op <a href="https://bsky.app/settings/app-passwords" target="_blank" class="underline">bsky.app/settings</a>.',
+        'submit' => 'Bluesky koppelen',
+        'submitting' => 'Koppelen...',
+        'invalid_credentials' => 'Ongeldige inloggegevens.',
+        'connection_error' => 'Fout bij verbinden met Bluesky. Probeer het opnieuw.',
+    ],
+
+    'mastodon' => [
+        'title' => 'Mastodon koppelen',
+        'description' => 'Voer je Mastodon-instance in',
+        'instance_url' => 'Instance-URL',
+        'instance_placeholder' => 'https://mastodon.social',
+        'instance_hint' => 'Bijvoorbeeld: mastodon.social of techhub.social.',
+        'submit' => 'Doorgaan met Mastodon',
+        'submitting' => 'Koppelen...',
+        'instance_unreachable' => 'Kan geen verbinding maken met deze Mastodon-instantie.',
+        'connection_error' => 'Fout bij verbinden met de Mastodon-instantie.',
+    ],
+
+    'telegram' => [
+        'title' => 'Telegram koppelen',
+        'description' => 'Koppel een kanaal of groep',
+        'steps' => 'Stappen',
+        'step_admin' => 'Voeg :bot toe als beheerder aan je Telegram-kanaal of -groep.',
+        'open_bot' => 'Openen in Telegram',
+        'step_command' => 'Plaats deze opdracht in het kanaal of de groep:',
+        'waiting' => 'Wachten tot het kanaal koppelt…',
+        'copy_command' => 'Opdracht kopiëren',
+        'expired' => 'Deze opdracht is verlopen. Genereer een nieuwe om het opnieuw te proberen.',
+        'new_command' => 'Nieuwe opdracht genereren',
+        'error_generic' => 'Kon de koppeling niet starten. Probeer het opnieuw.',
+        'network_taken' => 'Deze workspace heeft al een Telegram-kanaal gekoppeld. Koppel dat eerst los.',
+        'wrong_chat' => 'Plaats de opdracht in het kanaal dat je opnieuw koppelt.',
+        'busy' => 'Een andere koppeling wordt nog afgerond. Plaats de opdracht zo meteen opnieuw.',
+        'help' => [
+            'channel_admins' => 'Beheerders toevoegen aan een kanaal',
+            'group_admins' => 'Beheerders toevoegen aan een groep',
+            'bot_privacy' => 'Wat bots in groepen kunnen lezen',
+        ],
+    ],
+
+    'instagram_connect' => [
+        'title' => 'Hoe wil je je Instagram-account koppelen?',
+        'description' => 'Functies hangen af van het type Instagram-account dat je hebt en de koppeling die je kiest.',
+        'professional_title' => 'Professioneel',
+        'professional_types' => '(Bedrijf & Creator)',
+        'facebook_types' => '(gekoppeld aan een Facebook-pagina)',
+        'badge' => 'Automatisch posten',
+        'features' => [
+            'automatic' => [
+                'title' => 'Automatisch posten',
+                'description' => 'Jij plant, wij posten',
+            ],
+            'metrics' => [
+                'title' => 'Statistieken van verzonden posts',
+                'description' => 'Bekijk de prestaties van eerdere posts',
+            ],
+            'music' => [
+                'title' => 'Muziek in reels',
+                'description' => 'Voeg een nummer uit de bibliotheek van Instagram toe',
+            ],
+        ],
+        'connect' => 'Koppelen met Instagram',
+        'convert_hint' => 'Instagram vraagt je indien nodig om eenvoudig over te stappen naar een professioneel account.',
+        'help' => [
+            'account_type' => 'Het type van je Instagram-account vinden',
+            'convert' => 'Je Instagram-account omzetten naar een professioneel account',
+        ],
+    ],
+
+    'instagram_facebook_requirements' => [
+        'title' => 'Koppel Instagram via Facebook',
+        'subtitle' => 'Dit moet je weten 👇',
+        'heading' => 'Vereisten',
+        'items' => [
+            'account_type' => [
+                'lead' => 'Zakelijk of Creator',
+                'rest' => 'Instagram-account, geen persoonlijk Instagram-profiel.',
+            ],
+            'page' => [
+                'lead' => 'Gekoppeld aan een Facebook-pagina,',
+                'rest' => 'niet aan een Facebook-profiel. Moet je Instagram nog aan Facebook koppelen bij Meta?',
+            ],
+            'admin' => [
+                'lead' => 'Ingelogd als beheerder van de Facebook-pagina',
+                'rest' => 'met “volledige controle”.',
+            ],
+            'permissions' => [
+                'lead' => 'Alle machtigingen geselecteerd voor alle pagina’s en Instagram-accounts',
+                'rest' => 'tijdens het koppelen, ook voor de accounts die je niet aan TryPost koppelt.',
+            ],
+        ],
+        'learn_how' => 'Zo werkt het.',
+        'note' => 'De koppeling werkt niet als niet aan al deze vereisten wordt voldaan.',
+        'connect' => 'Koppelen via Facebook',
+    ],
+
+    'flash' => [
+        'disconnected_paused_repurposes' => 'Account losgekoppeld. :count automatisering gepauzeerd.|Account losgekoppeld. :count automatiseringen gepauzeerd.',
+        'disconnected' => 'Account succesvol losgekoppeld!',
+        'session_expired' => 'Sessie verlopen. Probeer het opnieuw.',
+        'workspace_not_found' => 'Workspace niet gevonden.',
+        'already_connected' => 'Dit platform is al gekoppeld.',
+        'no_youtube_channels' => 'Geen YouTube-kanalen gevonden. Maak eerst een kanaal aan.',
+    ],
+
+    'connect' => [
+        'label' => 'Kanaal koppelen',
+        'close' => 'Sluiten',
+        'title_single' => 'Koppel je account',
+        'title_select' => 'Kies accounts',
+        'subtitle_single' => 'Kies het account waarop TryPost op :network publiceert.',
+        'subtitle_select' => 'Kies de accounts waarop TryPost op :network publiceert.',
+        'selected' => ':count geselecteerd',
+        'select_all' => 'Alles kiezen',
+        'connected' => 'Gekoppeld',
+        'all_connected' => 'Al je :network-accounts zijn al gekoppeld.',
+        'finish' => 'Koppeling afronden',
+        'switch' => [
+            'button' => 'Account wisselen',
+            'button_short' => 'Wisselen',
+            'title' => 'Een ander account koppelen',
+            'description' => 'Ga naar :site, schakel over naar het account dat je wilt en klik daarna hieronder op ‘Koppelen met :network’.',
+            'connect' => 'Koppelen met :network',
+        ],
+        'types' => [
+            'profile' => 'Profiel',
+            'page' => 'Pagina',
+            'channel' => 'Kanaal',
+            'location' => 'Locatie',
+            'server' => 'Server',
+        ],
+        'help' => [
+            'label' => 'Hulp nodig',
+            'missing' => 'Mist er een account? Controleer of je het beheert, probeer het opnieuw en sta alle rechten toe.',
+        ],
+        'states' => [
+            'cancelled' => [
+                'title' => 'Koppeling geannuleerd',
+                'description' => 'Er is niets gekoppeld. Je kunt het opnieuw proberen wanneer je wilt.',
+            ],
+            'missing_permission' => [
+                'title' => 'Toestemming nodig',
+                'description' => 'TryPost heeft toestemming nodig om je berichten te publiceren. Koppel opnieuw en laat die toestemming aangevinkt.',
+            ],
+            'expired' => [
+                'title' => 'Deze koppeling is verlopen',
+                'description' => 'Voor je veiligheid verloopt een koppeling na 15 minuten. Begin opnieuw om je account te koppelen.',
+            ],
+            'error' => [
+                'title' => 'Koppelen mislukt',
+            ],
+        ],
+        'actions' => [
+            'try_again' => 'Opnieuw',
+            'back' => 'Terug',
+            'connect_again' => 'Opnieuw koppelen',
+            'start_again' => 'Opnieuw beginnen',
+        ],
+        'errors' => [
+            'bluesky_email_unconfirmed' => 'Bevestig je e-mailadres in de instellingen van Bluesky en verbind je account opnieuw. TryPost vereist een bevestigd e-mailadres om video’s te publiceren.',
+            'error_connecting' => 'Fout bij het koppelen van het account. Probeer het opnieuw.',
+            'network_taken' => 'Deze workspace heeft al een account voor dit netwerk. Koppel dat eerst los.',
+            'wrong_account' => 'Dat is een ander account. Autoriseer het account dat je opnieuw koppelt.',
+            'all_connected' => 'Alle accounts van deze login zijn al gekoppeld.',
+            'identity_connected' => 'Dit account is al gekoppeld.',
+            'busy' => 'Een andere koppeling wordt nog afgerond. Probeer het zo meteen opnieuw.',
+            'session_expired' => 'Sessie verlopen. Probeer het opnieuw.',
+            'workspace_not_found' => 'Workspace niet gevonden.',
+            'invalid_state' => 'Ongeldige status. Probeer het opnieuw.',
+            'failed_to_authenticate' => 'Authenticatie mislukt.',
+            'failed_to_get_profile' => 'Kon profiel niet ophalen.',
+            'page_not_found' => 'Pagina niet gevonden.',
+            'channel_not_found' => 'Kanaal niet gevonden.',
+            'pages_read_incomplete' => 'We konden je pagina’s niet volledig uitlezen. Probeer het zo meteen opnieuw.',
+            'publish_permission_missing' => 'TryPost heeft toestemming nodig om je berichten te publiceren. Koppel opnieuw en laat die toestemming aangevinkt.',
+            'cancelled' => 'Koppeling geannuleerd.',
+            'pages_missing_permission' => 'We vonden pagina\'s, maar geen waar je op kunt posten. Je hebt een rol op de pagina zelf nodig en alle rechten.',
+            'no_facebook_pages' => 'Geen Facebook-pagina\'s gevonden. Je moet beheerder zijn van ten minste één pagina.',
+            'no_facebook_instagram_pages' => 'Geen Facebook-pagina\'s met gekoppelde Instagram-accounts gevonden.',
+            'no_youtube_channels' => 'Geen YouTube-kanalen gevonden. Maak eerst een kanaal aan.',
+            'not_linkedin_admin' => 'Je bent geen beheerder van een LinkedIn-pagina.',
+            'no_google_business_locations' => 'Geen Google Bedrijfsprofiel-locaties gevonden. Verifieer eerst je bedrijf.',
+            'location_not_found' => 'Locatie niet gevonden.',
+        ],
+    ],
+];

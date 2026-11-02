@@ -1,0 +1,53 @@
+<?php
+
+declare(strict_types=1);
+
+return [
+    'title' => 'Was beschreibt dich am besten?',
+    'continue' => 'Weiter',
+    'subscription_required_title' => 'Warten auf den Kontoinhaber',
+    'subscription_required_description' => 'Dieses Konto hat noch kein aktives Abo. Bitte den Kontoinhaber, den Checkout abzuschließen — du erhältst vollen Zugriff, sobald es aktiv ist.',
+    'subscription_required_owner' => 'Der Kontoinhaber ist :name.',
+    'subscription_required_auto' => 'Diese Seite aktualisiert sich automatisch — kein Neuladen nötig.',
+    'progress' => 'Willkommensfortschritt',
+    'step_of' => 'Schritt :step von :total',
+    'back' => 'Zurück',
+    'steps' => [
+        'persona' => 'Über dich',
+        'goals' => 'Deine Ziele',
+        'software' => 'Aktuelles Tool',
+        'plan' => 'Tarif',
+    ],
+    'personas' => [
+        'creator' => 'Content Creator',
+        'freelancer' => 'Freelancer',
+        'developer' => 'Entwickler',
+        'startup' => 'Startup',
+        'agency' => 'Agentur',
+        'small_business' => 'Kleinunternehmen',
+        'marketer' => 'Marketer',
+        'online_store' => 'Onlineshop',
+        'other' => 'Sonstiges',
+    ],
+    'goals_title' => 'Was ist dein Ziel?',
+    'goals' => [
+        'save_time' => 'Überall gleichzeitig posten',
+        'use_mcp' => 'Per MCP posten (Claude, ChatGPT)',
+        'plan_calendar' => 'Beiträge im Kalender planen',
+        'stay_on_brand' => 'Markentreu bleiben',
+        'grow_audience' => 'Meine Reichweite steigern',
+        'drive_sales' => 'Mehr Traffic und Umsatz',
+        'manage_clients' => 'Marken oder Kunden verwalten',
+        'other' => 'Etwas anderes',
+    ],
+    'software_title' => 'Welches Tool nutzt du heute?',
+    'software' => [
+        'none' => 'Ich nutze noch keins',
+        'other' => 'Anderes',
+    ],
+    'plan_title' => 'Aktiviere dein Konto',
+    'plan_description' => 'Verbinde deine Kanäle und plane noch heute deinen ersten Post.',
+    'plan_terms' => 'Danach :price/Monat. Jederzeit kündbar',
+    'plan_checkout_button' => 'Mein Konto aktivieren',
+    'plan_cancel_anytime' => 'Jederzeit kündbar',
+];

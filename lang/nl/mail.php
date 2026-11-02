@@ -1,0 +1,161 @@
+<?php
+
+declare(strict_types=1);
+
+return [
+
+    'layout' => [
+        'tagline' => 'Verzonden door het :brand-team',
+        'manage_notifications' => 'Meldingen beheren',
+        'signoff' => 'Met vriendelijke groet,',
+        'team' => 'Het TryPost-team',
+    ],
+
+    'account_disconnected' => [
+        'subject' => 'Je :platform-account in :workspace moet opnieuw worden verbonden',
+        'title' => 'Je :platform-account moet opnieuw worden verbonden',
+        'preview' => 'Verbind je :platform-account in :workspace opnieuw om posts te blijven inplannen.',
+        'heading' => 'Account losgekoppeld',
+        'intro' => 'Het onderstaande account is losgekoppeld van de werkruimte :workspace.',
+        'reasons_title' => 'Dit kan zijn gebeurd omdat:',
+        'reason_expired' => 'Je toegangstoken is verlopen',
+        'reason_revoked' => 'Je hebt de toegang van TryPost ingetrokken',
+        'reason_error' => 'Er was een authenticatiefout',
+        'reconnect_cta' => 'Verbind je account opnieuw om te blijven inplannen en publiceren.',
+        'button' => 'Account opnieuw verbinden',
+    ],
+
+    'email_verification' => [
+        'subject' => 'Bevestig je e-mailadres',
+        'preview' => 'Bevestig je e-mailadres.',
+        'greeting' => 'Hallo :name,',
+        'body' => 'Bevestig je e-mailadres via de knop hieronder:',
+        'button' => 'E-mailadres bevestigen',
+        'ignore' => 'Als je geen account hebt aangemaakt, kun je deze e-mail negeren.',
+    ],
+
+    'password_reset' => [
+        'subject' => 'Stel je wachtwoord opnieuw in',
+        'preview' => 'Stel je wachtwoord opnieuw in.',
+        'greeting' => 'Hallo :name,',
+        'body' => 'We hebben een verzoek ontvangen om je wachtwoord opnieuw in te stellen. Klik op de knop om een nieuw wachtwoord te maken:',
+        'button' => 'Wachtwoord opnieuw instellen',
+        'expiry' => 'Deze link verloopt over 60 minuten. Als je hier niet om hebt gevraagd, kun je deze e-mail negeren.',
+    ],
+
+    'post_at_risk' => [
+        'subject' => '{1} :count post loopt risico in :workspace|[0,*] :count posts lopen risico in :workspace',
+        'title' => 'Posts kunnen mislukken',
+        'heading' => 'Posts kunnen mislukken',
+        'intro' => 'De volgende accounts in de werkruimte :workspace moeten opnieuw worden verbonden voordat deze ingeplande posts kunnen worden gepubliceerd:',
+        'posts_label' => '{1} :count post ingepland: :times (:timezone)|[0,*] :count posts ingepland: :times (:timezone)',
+        'reconnect_cta' => 'Verbind deze accounts nu opnieuw zodat je ingeplande posts niet worden gemist.',
+        'button' => 'Accounts opnieuw verbinden',
+    ],
+
+    'post_note_added' => [
+        'subject' => ':author heeft een notitie aan een bericht toegevoegd',
+        'title' => 'Nieuwe notitie van :author',
+        'heading' => 'Nieuwe notitie bij een bericht',
+        'body' => ':author heeft een notitie toegevoegd aan een bericht in de workspace :workspace.',
+        'post_title' => 'Bericht',
+        'post_without_text' => 'Dit bericht heeft nog geen tekst.',
+        'button' => 'Notitie bekijken',
+    ],
+    'post_approval_requested' => [
+        'subject' => ':name vraagt je een bericht goed te keuren',
+        'title' => 'Een bericht wacht op je goedkeuring',
+        'preview' => ':name vraagt om goedkeuring in :workspace.',
+        'heading' => 'Een bericht wacht op je goedkeuring',
+        'body' => ':name (:email) vraagt om goedkeuring in de workspace :workspace.',
+        'channel' => 'Kanaal',
+        'requested_time' => 'Gevraagd tijdstip',
+        'next_queue_slot' => 'Volgende plek in de wachtrij',
+        'as_soon_as_approved' => 'Zodra het is goedgekeurd',
+        'post_without_text' => 'Dit bericht heeft nog geen tekst.',
+        'button' => 'Berichten bekijken die op goedkeuring wachten',
+    ],
+
+    'post_approved' => [
+        'subject' => ':name heeft je bericht goedgekeurd',
+        'title' => 'Je bericht is goedgekeurd',
+        'preview' => ':name heeft je bericht in :workspace goedgekeurd.',
+        'heading' => 'Je bericht is goedgekeurd',
+        'body' => ':name heeft je bericht in de workspace :workspace goedgekeurd.',
+        'channel' => 'Kanaal',
+        'goes_out' => 'Wordt gepubliceerd',
+        'channel_time' => ':channel: :time',
+        'publishing_now' => 'Wordt nu gepubliceerd',
+        'button' => 'Bekijken in de wachtrij',
+    ],
+
+    'post_rejected' => [
+        'subject' => ':name heeft je bericht niet goedgekeurd',
+        'title' => 'Je bericht is niet goedgekeurd',
+        'preview' => ':name heeft je bericht teruggezet naar concepten.',
+        'heading' => 'Je bericht is niet goedgekeurd',
+        'body' => ':name heeft je bericht in de workspace :workspace teruggezet naar concepten.',
+        'channel' => 'Kanaal',
+        'button' => 'Bekijken in concepten',
+    ],
+
+    'post_preview' => [
+        'no_text' => 'Bericht zonder tekst',
+        'error' => 'Wat er misging',
+    ],
+
+    'post_publish_failed' => [
+        'subject' => 'Je post in :workspace kon niet worden gepubliceerd',
+        'title' => 'Je post kon niet worden gepubliceerd',
+        'preview' => 'Je post kon niet worden gepubliceerd',
+        'heading' => 'Je post kon niet worden gepubliceerd',
+        'body' => 'Je bericht in :workspace kon niet worden gepubliceerd.',
+        'button' => 'Post bekijken',
+    ],
+
+    'post_published' => [
+        'subject' => 'Je post is gepubliceerd in :workspace',
+        'title' => 'Je post is gepubliceerd',
+        'preview' => 'Je post is succesvol gepubliceerd.',
+        'heading' => 'Je post is gepubliceerd',
+        'body' => 'Je post in de werkruimte :workspace is succesvol gepubliceerd.',
+        'button' => 'Bekijk op social media',
+        'open_in_app' => 'Open in TryPost',
+    ],
+
+    'webhook_paused' => [
+        'subject' => 'Webhook gepauzeerd: :endpoint',
+        'title' => 'Webhook gepauzeerd na herhaalde fouten',
+        'preview' => 'We hebben een webhook gepauzeerd na 5 opeenvolgende afleverfouten.',
+        'heading' => 'Webhook gepauzeerd na herhaalde fouten',
+        'body' => 'We hebben een webhook gepauzeerd na 5 opeenvolgende afleverfouten.',
+        'next_steps' => 'Controleer het endpoint en schakel het weer in op de webhookdetailpagina.',
+        'button' => 'Webhook bekijken',
+    ],
+
+    'workspace_connections_disconnected' => [
+        'subject' => '{1} :count account moet opnieuw worden gekoppeld in :workspace|[0,*] :count accounts moeten opnieuw worden gekoppeld in :workspace',
+        'title' => 'Accounts moeten opnieuw worden gekoppeld',
+        'heading' => 'Accounts moeten opnieuw worden gekoppeld',
+        'intro' => 'De volgende social accounts in je workspace <strong>:workspace</strong> zijn losgekoppeld en moeten opnieuw worden gekoppeld:',
+        'reasons_title' => 'Dit kan gebeurd zijn omdat:',
+        'reason_expired' => 'Toegangstokens zijn verlopen',
+        'reason_revoked' => 'Je hebt de toegang van TryPost op het platform ingetrokken',
+        'reason_changed' => 'Het platform heeft zijn authenticatievereisten gewijzigd',
+        'reconnect_cta' => 'Koppel deze accounts opnieuw om posts te blijven plannen en publiceren.',
+        'button' => 'Accounts opnieuw koppelen',
+    ],
+
+    'workspace_invite' => [
+        'subject' => 'Je bent uitgenodigd voor :workspace',
+        'title' => 'Je bent uitgenodigd voor :workspace',
+        'preview' => 'Je bent uitgenodigd voor :workspace',
+        'heading' => 'Je bent uitgenodigd!',
+        'intro' => 'Je bent uitgenodigd om samen te werken in de werkruimte <strong>:workspace</strong>.',
+        'role' => 'Je bent uitgenodigd als <strong>:role</strong>.',
+        'roles' => ['admin' => 'Beheerder', 'member' => 'Lid', 'needs_approval' => 'Lid (berichten vereisen goedkeuring)'],
+        'button' => 'Uitnodiging accepteren',
+        'expiry' => 'Deze uitnodiging verloopt over 7 dagen.',
+    ],
+
+];

@@ -1,0 +1,118 @@
+import { derivesContentType } from '@/lib/derivedContentType';
+
+const PLATFORM_LOGOS: Record<string, string> = {
+    linkedin: '/images/accounts/linkedin.png',
+    'linkedin-page': '/images/accounts/linkedin.png',
+    x: '/images/accounts/x.png',
+    tiktok: '/images/accounts/tiktok.png',
+    instagram: '/images/accounts/instagram.png',
+    'instagram-facebook': '/images/accounts/instagram.png',
+    facebook: '/images/accounts/facebook.png',
+    youtube: '/images/accounts/youtube.png',
+    threads: '/images/accounts/threads.png',
+    bluesky: '/images/accounts/bluesky.png',
+    pinterest: '/images/accounts/pinterest.png',
+    mastodon: '/images/accounts/mastodon.png',
+    telegram: '/images/accounts/telegram.png',
+    discord: '/images/accounts/discord.png',
+    google_business: '/images/accounts/google_business.png',
+};
+
+const PLATFORM_LABELS: Record<string, string> = {
+    linkedin: 'LinkedIn',
+    'linkedin-page': 'LinkedIn Page',
+    x: 'X',
+    tiktok: 'TikTok',
+    instagram: 'Instagram',
+    'instagram-facebook': 'Instagram',
+    facebook: 'Facebook',
+    youtube: 'YouTube',
+    threads: 'Threads',
+    bluesky: 'Bluesky',
+    pinterest: 'Pinterest',
+    mastodon: 'Mastodon',
+    telegram: 'Telegram',
+    discord: 'Discord',
+    google_business: 'Google Business Profile',
+};
+
+const PLATFORM_CONTENT_TYPES: Record<string, string[]> = {
+    instagram: ['instagram_feed', 'instagram_reel', 'instagram_story'],
+    'instagram-facebook': [
+        'instagram_feed',
+        'instagram_reel',
+        'instagram_story',
+    ],
+    linkedin: ['linkedin_post'],
+    'linkedin-page': ['linkedin_page_post'],
+    facebook: ['facebook_post', 'facebook_reel', 'facebook_story'],
+    tiktok: ['tiktok_video', 'tiktok_photo'],
+    youtube: ['youtube_short'],
+    x: ['x_post'],
+    threads: ['threads_post', 'threads_ghost_post'],
+    pinterest: ['pinterest_pin', 'pinterest_video_pin', 'pinterest_carousel'],
+    bluesky: ['bluesky_post'],
+    mastodon: ['mastodon_post'],
+    telegram: ['telegram_post'],
+    discord: ['discord_message'],
+    google_business: ['google_business_post'],
+};
+
+const PLATFORM_CONTENT_TYPE_BADGES: Record<string, string[]> = {
+    instagram: ['instagram_reel', 'instagram_story'],
+    'instagram-facebook': ['instagram_reel', 'instagram_story'],
+    facebook: ['facebook_reel', 'facebook_story'],
+    threads: ['threads_ghost_post'],
+};
+
+export interface ContentTypeOption {
+    value: string;
+    labelKey: string;
+    disabledReasonKey?: string;
+}
+
+export const getPlatformLogo = (platform: string): string =>
+    PLATFORM_LOGOS[platform] ?? PLATFORM_LOGOS.linkedin;
+
+export const getPlatformLabel = (platform: string): string =>
+    PLATFORM_LABELS[platform] ?? platform;
+
+const translationKeyFor = (contentType: string): string => `posts.content_types.${contentType}.label`;
+
+export const getContentTypeOptions = (platform: string): ContentTypeOption[] =>
+    (PLATFORM_CONTENT_TYPES[platform] ?? []).map((value) => ({
+        value,
+        labelKey: translationKeyFor(value),
+    }));
+
+const LONE_CONTENT_TYPE_RADIO_PLATFORMS = new Set(['youtube']);
+
+/**
+ * The content types the composer offers as radios. A single type shows only
+ * where it gets a lone radio (YouTube "Short"); networks that derive their type
+ * from the media (Pinterest, TikTok) offer none.
+ */
+export const getPickableContentTypeOptions = (
+    platform: string,
+): ContentTypeOption[] => {
+    const options = derivesContentType(platform)
+        ? []
+        : getContentTypeOptions(platform);
+
+    return options.length > 1 || LONE_CONTENT_TYPE_RADIO_PLATFORMS.has(platform)
+        ? options
+        : [];
+};
+
+/** Whether the user picks a format on this platform, or it only has one. */
+export const hasMultipleContentTypes = (platform: string): boolean =>
+    getContentTypeOptions(platform).length > 1;
+
+/** Translation key for a format explicitly shown as a badge on post cards. */
+export const getContentTypeBadgeKey = (
+    platform: string,
+    contentType: string | null,
+): string | null =>
+    contentType && PLATFORM_CONTENT_TYPE_BADGES[platform]?.includes(contentType)
+        ? translationKeyFor(contentType)
+        : null;

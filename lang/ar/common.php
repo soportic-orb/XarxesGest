@@ -1,0 +1,93 @@
+<?php
+
+declare(strict_types=1);
+
+return [
+    'beta' => 'تجريبي',
+
+    'back' => 'رجوع',
+
+    'unsaved_changes' => [
+
+        'title' => 'تجاهل التغييرات؟',
+
+        'description' => 'لم يتم حفظ تغييراتك على هذا المنشور. إذا غادرت الآن فستفقدها.',
+
+        'discard' => 'تجاهل',
+
+    ],
+
+    'confirm_modal' => [
+        'type' => 'اكتب',
+        'to_confirm' => 'للتأكيد.',
+        'copy_to_clipboard' => 'نسخ إلى الحافظة',
+        'delete_keyword' => 'حذف',
+    ],
+
+    'photo_upload' => [
+        'upload' => 'رفع',
+        'uploading' => 'جارٍ الرفع...',
+        'remove' => 'إزالة الصورة',
+        'hint' => 'موصى به: صورة مربعة، بحد أقصى 2 ميغابايت.',
+        'crop_title' => 'قص الصورة',
+        'crop_description' => 'حدّد المنطقة التي تريد الاحتفاظ بها.',
+        'crop_hint' => 'اسحب للتحريك، أو زاوية لتغيير الحجم.',
+        'crop_save' => 'حفظ',
+        'crop_cancel' => 'إلغاء',
+        'crop_error' => 'تعذّر تحميل هذه الصورة. جرّب ملفًا آخر.',
+    ],
+
+    'timezone' => [
+        'select' => 'اختر المنطقة الزمنية',
+        'search' => 'البحث عن منطقة زمنية...',
+        'empty' => 'لم يتم العثور على منطقة زمنية',
+    ],
+
+    'just_now' => 'الآن',
+
+    'date_picker' => [
+        'label' => 'منتقي التاريخ',
+        'select' => 'اختر التاريخ',
+    ],
+
+    'date_range_picker' => [
+        'placeholder' => 'اختر نطاقًا زمنيًا',
+        'today' => 'اليوم',
+        'yesterday' => 'أمس',
+        'last_7_days' => 'آخر 7 أيام',
+        'last_30_days' => 'آخر 30 يومًا',
+        'last_3_months' => 'آخر 3 أشهر',
+        'last_6_months' => 'آخر 6 أشهر',
+        'last_12_months' => 'آخر 12 شهرًا',
+        'this_month' => 'هذا الشهر',
+        'last_month' => 'الشهر الماضي',
+        'year_to_date' => 'منذ بداية العام',
+        'last_year' => 'العام الماضي',
+    ],
+
+    'cancel' => 'إلغاء',
+    'clear' => 'مسح',
+    'close' => 'إغلاق',
+    'more' => 'المزيد',
+    'learn_more' => 'اعرف المزيد',
+    'play' => 'تشغيل',
+    'loading' => 'جارٍ التحميل...',
+    'loading_more' => 'جارٍ تحميل المزيد...',
+
+    'actions' => [
+        'copy' => 'نسخ',
+        'copied' => 'تم النسخ',
+        'copy_failed' => 'فشل النسخ إلى الحافظة',
+    ],
+
+    'media_lightbox' => [
+        'title' => 'معاينة الوسائط',
+        'previous' => 'السابق',
+        'next' => 'التالي',
+        'zoom_in' => 'تكبير',
+        'zoom_out' => 'تصغير',
+        'counter' => ':current / :total',
+        'go_to' => 'عرض العنصر :number',
+        'open' => 'فتح المعاينة',
+    ],
+];

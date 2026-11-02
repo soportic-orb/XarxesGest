@@ -1,0 +1,24 @@
+<x-main>
+  <x-message authenticated="true">
+    <x-heading>
+      @{{ __('mail.post_publish_failed.heading') }}
+    </x-heading>
+
+    <p class="m-0 leading-6">
+      @{{ __('mail.post_publish_failed.body', ['workspace' => $workspaceName]) }}
+    </p>
+
+    <x-post-preview />
+    @if($publication['error'])
+      <x-alert title-key="mail.post_preview.error">
+        @{{ $publication['error'] }}
+      </x-alert>
+    @endif
+
+    <x-spacer height="24px" />
+
+    <x-button href="@{{ $url }}">
+      @{{ __('mail.post_publish_failed.button') }}
+    </x-button>
+  </x-message>
+</x-main>

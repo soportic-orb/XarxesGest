@@ -1,0 +1,880 @@
+<?php
+
+declare(strict_types=1);
+
+use App\Enums\Plan\Slug;
+use App\Enums\SocialAccount\Platform;
+use App\Jobs\Analytics\BootstrapAccountAnalytics;
+use App\Jobs\Analytics\CollectAccountDailySnapshot;
+use App\Models\AccessToken;
+use App\Models\Account;
+use App\Models\Plan;
+use App\Models\SocialAccount;
+use App\Models\User;
+use App\Models\Workspace;
+use App\Services\Http\HostResolver;
+use App\Support\Social\PendingConnection;
+use Illuminate\Foundation\Testing\RefreshDatabase;
+use Illuminate\Http\Client\Request as HttpClientRequest;
+use Illuminate\Support\Facades\Bus;
+use Illuminate\Support\Facades\DB;
+use Illuminate\Support\Facades\Http;
+use Illuminate\Support\Facades\Queue;
+use Illuminate\Support\Str;
+use Illuminate\Testing\TestResponse;
+use Stripe\ApiRequestor;
+use Stripe\HttpClient\ClientInterface;
+use Tests\BrowserTestCase;
+use Tests\TestCase;
+
+/*
+|--------------------------------------------------------------------------
+| Test Case
+|--------------------------------------------------------------------------
+|
+| The closure you provide to your test functions is always bound to a specific PHPUnit test
+| case class. By default, that class is "PHPUnit\Framework\TestCase". Of course, you may
+| need to change it using the "pest()" function to bind a different classes or traits.
+|
+*/
+
+pest()->extend(TestCase::class)
+    ->use(RefreshDatabase::class)
+    ->beforeEach(function (): void {
+        Http::preventStrayRequests();
+        fakePwnedPasswords();
+        fakeChatGptEgressRanges();
+        Queue::fake([BootstrapAccountAnalytics::class]);
+    })
+    ->in('Feature', 'Unit');
+
+pest()->extend(BrowserTestCase::class)
+    ->use(RefreshDatabase::class)
+    ->beforeEach(fn () => fakePwnedPasswords())
+    ->in('Browser');
+
+pest()->in('Feature/Social')
+    ->beforeEach(fn () => Queue::fake([BootstrapAccountAnalytics::class, CollectAccountDailySnapshot::class]));
+
+/*
+|--------------------------------------------------------------------------
+| Test Impact Analysis
+|--------------------------------------------------------------------------
+|
+| Only re-run tests affected by local changes, replaying cached results for
+| the rest. Scoped to local runs via "locally()" — automatically skipped on
+| CI (or when the "--ci" flag is passed), which always runs the full suite.
+|
+*/
+
+pest()->tia()->locally();
+
+/*
+|--------------------------------------------------------------------------
+| Browser Timeout
+|--------------------------------------------------------------------------
+|
+| CI runs the browser suite with four processes per runner, so an action can
+| wait longer than the plugin's 5 seconds before its element is ready. This is
+| the ceiling of each wait, not a delay.
+|
+*/
+
+pest()->browser()->timeout(15000);
+
+/*
+|--------------------------------------------------------------------------
+| Browser Traces
+|--------------------------------------------------------------------------
+|
+| On CI each browser test records a Playwright trace, kept only when the test
+| fails, in tests/Browser/Traces (uploaded with the screenshots). Open one
+| with `npx playwright show-trace <file>.zip`. Set here and not with --trace,
+| which does not reach the parallel workers.
+|
+*/
+
+if (filled(getenv('CI'))) {
+    pest()->browser()->trace(open: false);
+}
+
+/*
+|--------------------------------------------------------------------------
+| Expectations
+|--------------------------------------------------------------------------
+|
+| When you're writing tests, you often need to check that values meet certain conditions. The
+| "expect()" function gives you access to a set of "expectations" methods that you can use
+| to assert different things. Of course, you may extend the Expectation API at any time.
+|
+*/
+
+expect()->extend('toBeOne', function () {
+    return $this->toBe(1);
+});
+
+/*
+|--------------------------------------------------------------------------
+| Functions
+|--------------------------------------------------------------------------
+|
+| While Pest is very powerful out-of-the-box, you may have some testing code specific to your
+| project that you don't want to repeat in every file. Here you can also expose helpers as
+| global functions to help you to reduce the number of lines of code in your test files.
+|
+*/
+
+/**
+ * Issue a real Passport personal access token bound to a workspace and return
+ * the plain JWT string. Use the returned token in `Authorization: Bearer ...`
+ * to exercise the auth:api + workspace.token middleware stack.
+ */
+function strongPassword(): string
+{
+    return 'Tr7#pass-Word-2026';
+}
+
+function compromisedPassword(): string
+{
+    return 'Compromised#Pass-2026';
+}
+
+function fakePwnedPasswords(): void
+{
+    $hash = strtoupper(sha1(compromisedPassword()));
+
+    Http::fake([
+        'api.pwnedpasswords.com/range/*' => fn (HttpClientRequest $request) => Http::response(
+            str_ends_with($request->url(), substr($hash, 0, 5)) ? substr($hash, 5).':42' : '',
+        ),
+    ]);
+}
+
+/**
+ * OpenAI's published ChatGPT egress ranges, answered from the
+ * testing.chatgpt_egress_ranges config so a test can change them after the
+ * global fake is registered. null answers a failed read.
+ *
+ * @param  list<mixed>|null  $ranges
+ */
+function fakeChatGptEgressRanges(?array $ranges = []): void
+{
+    config(['testing.chatgpt_egress_ranges' => $ranges]);
+
+    Http::fake([
+        config('trypost.mcp_chatgpt_ip_ranges_url') => fn () => config('testing.chatgpt_egress_ranges') === null
+            ? Http::response('', 500)
+            : Http::response([
+                'prefixes' => collect(config('testing.chatgpt_egress_ranges'))->map(fn (mixed $range): array => ['ipv4Prefix' => $range])->all(),
+            ]),
+    ]);
+}
+
+function passportToken(User $user, Workspace $workspace, array $scopes = []): string
+{
+    $result = $user->createToken('Test', $scopes);
+
+    AccessToken::find($result->token->id)
+        ->forceFill(['workspace_id' => $workspace->id])
+        ->saveQuietly();
+
+    return $result->accessToken;
+}
+
+/**
+ * Create a workspace + owner + Passport token suitable for hitting the public
+ * API. Drop-in replacement for the legacy `createXApiToken` helpers.
+ *
+ * @param  array{workspace?: Workspace}  $overrides
+ * @return array{plain_token: string, workspace: Workspace, user: User}
+ */
+function createApiTestToken(array $overrides = []): array
+{
+    $workspace = data_get($overrides, 'workspace');
+
+    if (! $workspace) {
+        $user = User::factory()->create();
+        $workspace = Workspace::factory()->create([
+            'account_id' => $user->account_id,
+            'user_id' => $user->id,
+        ]);
+        $workspace->members()->attach($user->id, membershipPivot('admin'));
+        $user->update(['current_workspace_id' => $workspace->id]);
+    } else {
+        $user = $workspace->owner ?? User::factory()->create([
+            'account_id' => $workspace->account_id,
+        ]);
+
+        if ($workspace->account && $workspace->account->owner_id !== $user->id) {
+            $workspace->account->update(['owner_id' => $user->id]);
+        }
+    }
+
+    return [
+        'plain_token' => passportToken($user, $workspace),
+        'workspace' => $workspace,
+        'user' => $user,
+    ];
+}
+
+/**
+ * Pivot columns for a workspace membership: an admin, a member who publishes
+ * directly, or a member whose posts need approval.
+ *
+ * @return array{is_admin: bool, requires_approval: bool}
+ */
+function membershipPivot(string $access): array
+{
+    return match ($access) {
+        'admin' => ['is_admin' => true, 'requires_approval' => false],
+        'member' => ['is_admin' => false, 'requires_approval' => false],
+        'approval' => ['is_admin' => false, 'requires_approval' => true],
+    };
+}
+
+/**
+ * A user on the workspace's account, attached with the given access and
+ * switched to that workspace.
+ *
+ * @param  array<string, mixed>  $attributes
+ */
+function workspaceMember(Workspace $workspace, string $access = 'member', array $attributes = []): User
+{
+    $user = User::factory()->create(['account_id' => $workspace->account_id, ...$attributes]);
+    $workspace->members()->attach($user->id, membershipPivot($access));
+    $user->update(['current_workspace_id' => $workspace->id]);
+
+    return $user->fresh();
+}
+
+/**
+ * A user on the workspace's account whose current workspace is this one but
+ * who is not a member of it.
+ */
+function workspaceOutsider(Workspace $workspace): User
+{
+    $user = User::factory()->create(['account_id' => $workspace->account_id]);
+    $user->update(['current_workspace_id' => $workspace->id]);
+
+    return $user->fresh();
+}
+
+/**
+ * Create an account on the Workspace plan with an active subscription on the
+ * given Stripe price, plus N workspaces. Used by the billing-cycle tests.
+ *
+ * @param  array<string, mixed>  $subscriptionAttributes
+ */
+function billingAccount(string $price, array $subscriptionAttributes = [], int $workspaces = 1): Account
+{
+    $plan = Plan::where('slug', Slug::Socials)->firstOrFail();
+    $plan->update([
+        'stripe_monthly_price_id' => 'price_month',
+        'stripe_yearly_price_id' => 'price_year',
+    ]);
+
+    $account = Account::factory()->create([
+        'plan_id' => $plan->id,
+        'trial_ends_at' => null,
+    ]);
+
+    $account->subscriptions()->create(array_merge([
+        'type' => Account::SUBSCRIPTION_NAME,
+        'stripe_id' => 'sub_'.fake()->uuid(),
+        'stripe_status' => 'active',
+        'stripe_price' => $price,
+        'quantity' => $workspaces,
+    ], $subscriptionAttributes));
+
+    Workspace::factory()->count($workspaces)->create(['account_id' => $account->id]);
+
+    return $account->refresh();
+}
+
+/**
+ * The session a connect start route leaves behind: the network, the workspace,
+ * the card being reconnected and where to return.
+ */
+function startSocialConnect(Workspace|string $workspace, Platform $platform, SocialAccount|string|null $reconnect = null, ?string $returnTo = null): PendingConnection
+{
+    $workspace = $workspace instanceof Workspace ? $workspace : (new Workspace)->forceFill(['id' => $workspace]);
+
+    return PendingConnection::start($platform, $workspace, $reconnect instanceof SocialAccount ? $reconnect->id : $reconnect, $returnTo);
+}
+
+/**
+ * "Finish connection" on the confirmation page, with every offered identity not
+ * already connected unless a selection is given.
+ *
+ * @param  array<int, string>|null  $identities
+ */
+function finishSocialConnect(Platform $platform, ?array $identities = null): TestResponse
+{
+    return test()->post(route('app.social.connect.finish', $platform), [
+        'identities' => $identities ?? array_values(array_diff(
+            PendingConnection::current()?->identityKeys() ?? [],
+            PendingConnection::current()?->lockedIdentityKeys() ?? [],
+        )),
+    ]);
+}
+
+/**
+ * Finish always lands on the publish page of the channel it connected: the given
+ * one, else any channel of the test workspace.
+ */
+function assertFinishedOnChannel(TestResponse $response, ?SocialAccount $channel = null): TestResponse
+{
+    if ($channel !== null) {
+        return $response->assertRedirect(route('app.channels.publish', $channel));
+    }
+
+    $location = (string) $response->headers->get('Location');
+
+    preg_match('#/channels/([^/]+)/publish$#', $location, $matches);
+
+    expect(SocialAccount::query()->whereKey($matches[1] ?? '')->exists())->toBeTrue("Finish redirected to {$location}");
+
+    return $response;
+}
+
+/**
+ * Why the pending connection stopped, as the confirmation page reads it.
+ */
+function socialConnectFailure(): ?string
+{
+    return PendingConnection::current()?->failure();
+}
+
+/**
+ * Every host name resolves to one public documentation address, so a fetch
+ * through SafeHttpFetcher never depends on real DNS. IP literals are still
+ * vetted by the guard itself.
+ */
+function fakePublicDns(string $address = '93.184.216.34'): void
+{
+    test()->mock(HostResolver::class)->shouldReceive('addresses')->andReturn([$address]);
+}
+
+/**
+ * Attach an active default subscription to the given account.
+ */
+function subscribeAccount(Account $account): void
+{
+    $account->subscriptions()->create([
+        'type' => Account::SUBSCRIPTION_NAME,
+        'stripe_id' => 'sub_'.fake()->uuid(),
+        'stripe_status' => 'active',
+        'stripe_price' => 'price_123',
+    ]);
+}
+
+/**
+ * Answers Stripe from memory for an account billed as `cus_fake` on
+ * `sub_fake`: the subscription with an optional coupon, the customer with an
+ * optional card, and no invoices. Reset with ApiRequestor::setHttpClient(null).
+ *
+ * @param  array<string, mixed>|null  $coupon
+ */
+function fakeStripeBilling(Account $account, ?array $coupon = null, ?int $discountEndsAt = null, ?string $cardBrand = null, int $paidInvoices = 0, ?string $secondCardBrand = null, bool $customerHasDefault = true, ?string $subscriptionCard = null, bool $customerDefaultIsLink = false): void
+{
+    config(['cashier.secret' => 'sk_test_fake']);
+    $account->forceFill(['stripe_id' => 'cus_fake'])->save();
+    $account->subscriptions()->create([
+        'type' => Account::SUBSCRIPTION_NAME,
+        'stripe_id' => 'sub_fake',
+        'stripe_status' => 'active',
+        'stripe_price' => 'price_123',
+    ]);
+
+    ApiRequestor::setHttpClient(new class($coupon, $discountEndsAt, $cardBrand, $paidInvoices, $secondCardBrand, $customerHasDefault, $subscriptionCard, $customerDefaultIsLink) implements ClientInterface
+    {
+        public function __construct(private ?array $coupon, private ?int $discountEndsAt, private ?string $cardBrand, private int $paidInvoices, private ?string $secondCardBrand, private bool $customerHasDefault, private ?string $subscriptionCard, private bool $customerDefaultIsLink) {}
+
+        public function request($method, $absUrl, $headers, $params, $hasFile, $apiMode = 'v1', $maxNetworkRetries = null): array
+        {
+            $card = blank($this->cardBrand) ? null : [
+                'id' => 'pm_fake',
+                'object' => 'payment_method',
+                'customer' => 'cus_fake',
+                'type' => 'card',
+                'card' => ['brand' => $this->cardBrand, 'last4' => '4242', 'exp_month' => 4, 'exp_year' => 2044],
+            ];
+            $secondCard = blank($this->secondCardBrand) ? null : [
+                'id' => 'pm_fake_second',
+                'object' => 'payment_method',
+                'customer' => 'cus_fake',
+                'type' => 'card',
+                'card' => ['brand' => $this->secondCardBrand, 'last4' => '5454', 'exp_month' => 5, 'exp_year' => 2055],
+            ];
+
+            $body = match (true) {
+                str_contains($absUrl, '/v1/subscriptions/') => [
+                    'id' => 'sub_fake',
+                    'object' => 'subscription',
+                    'default_payment_method' => $this->subscriptionCard,
+                    'discounts' => blank($this->coupon) ? [] : [[
+                        'id' => 'di_fake',
+                        'object' => 'discount',
+                        'coupon' => ['object' => 'coupon', 'id' => 'FAKE', ...$this->coupon],
+                        'start' => now()->subDay()->timestamp,
+                        'end' => $this->discountEndsAt,
+                    ]],
+                ],
+                str_contains($absUrl, '/v1/customers/cus_fake/payment_methods'), str_contains($absUrl, '/v1/payment_methods') => ['object' => 'list', 'data' => array_values(array_filter([$secondCard, $card])), 'has_more' => false, 'url' => '/v1/payment_methods'],
+                str_contains($absUrl, '/v1/customers/') => [
+                    'id' => 'cus_fake',
+                    'object' => 'customer',
+                    'invoice_settings' => ['default_payment_method' => match (true) {
+                        $this->customerDefaultIsLink => ['id' => 'pm_link', 'object' => 'payment_method', 'customer' => 'cus_fake', 'type' => 'link'],
+                        $this->customerHasDefault => $card,
+                        default => null,
+                    }],
+                ],
+                str_contains($absUrl, '/v1/invoices') => $this->invoices($params),
+                default => ['object' => 'list', 'data' => [], 'has_more' => false, 'url' => '/v1/invoices'],
+            };
+
+            return [json_encode($body), 200, []];
+        }
+
+        /**
+         * The paid invoices, newest first, paged the way Stripe pages them:
+         * `limit` and `starting_after`, and only when `status` is `paid`.
+         *
+         * @param  array<string, mixed>  $params
+         * @return array<string, mixed>
+         */
+        private function invoices(array $params): array
+        {
+            $invoices = collect($this->paidInvoices > 0 ? range($this->paidInvoices, 1) : [])
+                ->filter(fn (): bool => data_get($params, 'status') === 'paid')
+                ->map(fn (int $number): array => [
+                    'id' => sprintf('in_fake_%03d', $number),
+                    'object' => 'invoice',
+                    'customer' => 'cus_fake',
+                    'status' => 'paid',
+                    'currency' => 'usd',
+                    'total' => 1900,
+                    'created' => now()->subMonths($this->paidInvoices - $number)->timestamp,
+                    'invoice_pdf' => "https://pay.stripe.com/invoice/in_fake_{$number}/pdf",
+                ])
+                ->values();
+
+            $after = data_get($params, 'starting_after');
+            $start = blank($after) ? 0 : $invoices->search(fn (array $invoice): bool => $invoice['id'] === $after) + 1;
+            $limit = (int) data_get($params, 'limit', 10);
+
+            return [
+                'object' => 'list',
+                'data' => $invoices->slice($start, $limit)->values()->all(),
+                'has_more' => $invoices->count() > $start + $limit,
+                'url' => '/v1/invoices',
+            ];
+        }
+    });
+}
+
+/**
+ * Turns PostHog on for the test, as on an install with an API key.
+ */
+function enablePostHog(): void
+{
+    config(['services.posthog.enabled' => true, 'services.posthog.api_key' => 'phc_test_key']);
+}
+
+/**
+ * Make dispatching the given job throw, as when the queue is down, while every
+ * other job dispatches as usual. `$when` narrows the failure to the jobs it
+ * accepts.
+ *
+ * @param  class-string  $jobClass
+ * @param  (Closure(object): bool)|null  $when
+ */
+function failDispatchOf(string $jobClass, ?Closure $when = null): void
+{
+    $dispatcher = Bus::getFacadeRoot();
+    $bus = Mockery::mock($dispatcher);
+    $bus->shouldReceive('dispatch')
+        ->with(Mockery::on(fn (mixed $job): bool => $job instanceof $jobClass && ($when === null || $when($job))))
+        ->andThrow(new RuntimeException('Queue is down.'));
+    $bus->shouldReceive('dispatch')->andReturnUsing(fn (mixed $job, mixed $handler = null): mixed => $dispatcher->dispatch($job, $handler));
+
+    Bus::swap($bus);
+}
+
+/**
+ * Insert an OAuth client suitable for MCP connection tests.
+ */
+function mcpOauthClient(string $name = 'My Agent'): string
+{
+    $id = (string) Str::uuid();
+
+    DB::table('oauth_clients')->insert([
+        'id' => $id,
+        'name' => $name,
+        'secret' => null,
+        'provider' => null,
+        'redirect_uris' => '[]',
+        'grant_types' => json_encode(['authorization_code', 'refresh_token']),
+        'revoked' => false,
+        'created_at' => now(),
+        'updated_at' => now(),
+    ]);
+
+    return $id;
+}
+
+/**
+ * @return array<string, string>
+ */
+function oauthAuthorizeQuery(
+    string $clientId,
+    string $redirectUri = 'https://client.example/callback',
+    string $prompt = 'consent',
+): array {
+    $verifier = Str::random(64);
+    $challenge = rtrim(strtr(base64_encode(hash('sha256', $verifier, true)), '+/', '-_'), '=');
+
+    return [
+        'client_id' => $clientId,
+        'redirect_uri' => $redirectUri,
+        'response_type' => 'code',
+        'scope' => 'mcp:use',
+        'state' => 'test-state',
+        'code_challenge' => $challenge,
+        'code_challenge_method' => 'S256',
+        'prompt' => $prompt,
+    ];
+}
+
+/**
+ * Create an active OAuth access token for MCP connection tests.
+ *
+ * @param  list<string>  $scopes
+ */
+function mcpAccessToken(
+    User $user,
+    string $clientId,
+    ?Workspace $workspace = null,
+    array $scopes = ['mcp:use'],
+): AccessToken {
+    $token = new AccessToken;
+    $token->forceFill([
+        'id' => Str::random(80),
+        'user_id' => $user->id,
+        'client_id' => $clientId,
+        'workspace_id' => $workspace?->id,
+        'name' => 'MCP',
+        'scopes' => $scopes,
+        'revoked' => false,
+        'expires_at' => now()->addYear(),
+    ])->save();
+
+    return $token->refresh();
+}
+
+/**
+ * Issue a Passport token, attach it to a dedicated MCP OAuth client, and bind
+ * it to a workspace — the post-#222 shape used by middleware / MCP endpoint tests.
+ *
+ * @param  list<string>  $scopes
+ * @return array{token: AccessToken, plain_token: string}
+ */
+function mcpBearerToken(User $user, Workspace $workspace, array $scopes = ['mcp:use'], string $clientName = 'My Agent'): array
+{
+    $result = $user->createToken('MCP', $scopes);
+    $token = AccessToken::query()->findOrFail($result->token->id);
+
+    // Reassign to a dedicated MCP client so we never mutate Passport's shared
+    // personal-access client (which would poison PAT fixtures in the same run).
+    $token->forceFill([
+        'client_id' => mcpOauthClient($clientName),
+        'workspace_id' => $workspace->id,
+    ])->saveQuietly();
+
+    return [
+        'token' => $token->refresh(),
+        'plain_token' => $result->accessToken,
+    ];
+}
+
+/**
+ * Move a member onto a shared account (stranded-member / invitee fixture).
+ *
+ * @return array{
+ *     owner: User,
+ *     member: User,
+ *     shared_workspaces: list<Workspace>
+ * }
+ */
+function strandedMemberOnSharedAccount(
+    int $sharedWorkspaces = 0,
+    bool $attachMember = true,
+    bool $attachMemberToAll = true,
+    bool $setMemberCurrent = false,
+    ?User $owner = null,
+    ?string $memberEmail = null,
+): array {
+    $owner ??= User::factory()->create();
+    $member = User::factory()->create(array_filter([
+        'email' => $memberEmail,
+    ]));
+
+    // Closed-account model: the member's empty signup shell is gone after
+    // accepting the invite, so drop it here to match the real state.
+    $member->account?->delete();
+
+    $shared = [];
+
+    for ($i = 0; $i < $sharedWorkspaces; $i++) {
+        $workspace = Workspace::factory()->create([
+            'account_id' => $owner->account_id,
+            'user_id' => $owner->id,
+        ]);
+
+        $workspace->members()->syncWithoutDetaching([
+            $owner->id => membershipPivot('admin'),
+        ]);
+
+        if ($attachMember && ($attachMemberToAll || $i === 0)) {
+            $workspace->members()->attach($member->id, membershipPivot('member'));
+        }
+
+        $shared[] = $workspace;
+    }
+
+    $member->update([
+        'account_id' => $owner->account_id,
+        'current_workspace_id' => ($setMemberCurrent && $shared !== [])
+            ? $shared[0]->id
+            : null,
+    ]);
+
+    return [
+        'owner' => $owner->fresh(),
+        'member' => $member->fresh(),
+        'shared_workspaces' => $shared,
+    ];
+}
+
+/**
+ * A workspace reachable both through a REST API token and as the MCP actor,
+ * for tests that run one scenario through both surfaces.
+ *
+ * @return array{user: User, workspace: Workspace, token: string}
+ */
+function parityContext(): array
+{
+    $result = createApiTestToken();
+
+    return [
+        'user' => $result['user']->fresh(),
+        'workspace' => $result['workspace'],
+        'token' => $result['plain_token'],
+    ];
+}
+
+/**
+ * @return array<string, string>
+ */
+function parityApi(string $token): array
+{
+    return ['Authorization' => "Bearer {$token}", 'Accept' => 'application/json'];
+}
+
+/**
+ * The structured content an MCP list tool returns for the same page as a paginated API list response.
+ *
+ * @return array<string, mixed>
+ */
+function parityMcpPage(string $key, TestResponse $api): array
+{
+    return [
+        $key => $api->json('data'),
+        'total' => $api->json('meta.total'),
+        'per_page' => $api->json('meta.per_page'),
+        'current_page' => $api->json('meta.current_page'),
+        'last_page' => $api->json('meta.last_page'),
+    ];
+}
+
+/**
+ * Wait until the Inter web font is loaded, so layout assertions measure the
+ * font users see instead of whichever fallback the operating system has.
+ */
+function waitForWebFonts(mixed $page): void
+{
+    $page->script(<<<'JS'
+        (async () => {
+            const interFaces = () => [...document.fonts].filter((face) => face.family.replaceAll('"', '') === 'Inter');
+            for (let attempt = 0; attempt < 100 && interFaces().length === 0; attempt++) {
+                await new Promise((resolve) => setTimeout(resolve, 50));
+            }
+            await Promise.all(interFaces().map((face) => face.load().catch(() => null)));
+            await document.fonts.ready;
+        })();
+    JS);
+}
+
+/**
+ * Wait until a JavaScript expression is true in the page, for up to 15
+ * seconds. Assertions do not wait for the SPA to paint, and a blocking
+ * sleep() would starve the server that serves the page, so the page polls.
+ */
+function waitForCondition(mixed $page, string $condition): void
+{
+    $page->script(<<<JS
+        (async () => {
+            for (let i = 0; i < 300; i++) {
+                if ({$condition}) return;
+                await new Promise((resolve) => setTimeout(resolve, 50));
+            }
+        })();
+    JS);
+}
+
+/**
+ * Wait until a condition the test reads on the server (a row in the database)
+ * holds, letting the page's own requests land between tries.
+ */
+function waitForDatabase(mixed $page, Closure $condition): void
+{
+    for ($attempt = 0; $attempt < 50 && ! $condition(); $attempt++) {
+        $page->script('new Promise((resolve) => setTimeout(resolve, 100))');
+    }
+}
+
+/**
+ * Wait until the page's URL carries this query parameter value.
+ */
+function waitForQueryParameter(mixed $page, string $name, string $value): void
+{
+    $name = json_encode($name);
+    $value = json_encode($value);
+
+    waitForCondition($page, "new URLSearchParams(location.search).get({$name}) === {$value}");
+}
+
+/**
+ * The selector as a JavaScript string, with `@name` standing for
+ * `[data-testid="name"]` as in `$page->click('@name')`, anywhere in it:
+ * `@channel-settings-rows [role="combobox"]`.
+ */
+function jsSelector(string $selector): string
+{
+    return json_encode(preg_replace('/@([\w-]+)/', '[data-testid="$1"]', $selector));
+}
+
+/**
+ * Wait until an element matching the selector exists and the expression,
+ * written about `element`, is true: "element.getAttribute('aria-checked') === 'true'".
+ */
+function waitForState(mixed $page, string $selector, string $expression): void
+{
+    $selector = jsSelector($selector);
+
+    waitForCondition($page, "((element) => element && ({$expression}))(document.querySelector({$selector}))");
+}
+
+/**
+ * Wait until an element matching the selector is mounted and laid out.
+ */
+function waitFor(mixed $page, string $selector): void
+{
+    waitForState($page, $selector, 'element.getBoundingClientRect().height > 0');
+}
+
+/**
+ * Wait until no element matches the selector.
+ */
+function waitForGone(mixed $page, string $selector): void
+{
+    $selector = jsSelector($selector);
+
+    waitForCondition($page, "!document.querySelector({$selector})");
+}
+
+/**
+ * Wait until any element matching the selector contains the text.
+ */
+function waitForText(mixed $page, string $selector, string $text): void
+{
+    $selector = jsSelector($selector);
+    $text = json_encode($text);
+
+    waitForCondition($page, "[...document.querySelectorAll({$selector})].some((element) => element.textContent.includes({$text}))");
+}
+
+/**
+ * Wait until one element is gone or another is shown, whichever happens
+ * first, so the assertion after it fails at once on the other outcome
+ * instead of waiting out the timeout.
+ */
+function waitForGoneOrShown(mixed $page, string $gone, string $shown): void
+{
+    $gone = jsSelector($gone);
+    $shown = jsSelector($shown);
+
+    waitForCondition($page, "!document.querySelector({$gone}) || document.querySelector({$shown})");
+}
+
+/**
+ * Wait until the page is at this path.
+ */
+function waitForPath(mixed $page, string $path): void
+{
+    $path = json_encode($path);
+
+    waitForCondition($page, "location.pathname === {$path}");
+}
+
+/**
+ * Records what every canvas on the page draws from now on: each text with
+ * its direction, place, width, alignment and font (`window.__drawn`), each image's address
+ * (`window.__images`) and how many patterns it fills with (`window.__patterns`,
+ * the share card's hatch for a previous period). A canvas cannot be read back
+ * as text, so a test of a painted card reads these instead.
+ */
+function recordCanvasDrawing(mixed $page): void
+{
+    $page->script(<<<'JS'
+        (() => {
+            if (window.__drawn) {
+                return;
+            }
+
+            window.__drawn = [];
+            window.__images = [];
+            window.__patterns = 0;
+            window.__paths = [];
+            const NativePath2D = window.Path2D;
+            window.Path2D = class extends NativePath2D {
+                constructor(path) {
+                    super(path);
+
+                    if (typeof path === 'string') {
+                        window.__paths.push(path);
+                    }
+                }
+            };
+            const createPattern = CanvasRenderingContext2D.prototype.createPattern;
+            const fillText = CanvasRenderingContext2D.prototype.fillText;
+            const drawImage = CanvasRenderingContext2D.prototype.drawImage;
+            CanvasRenderingContext2D.prototype.fillText = function (text, ...rest) {
+                window.__drawn.push({ text: String(text), direction: this.direction, x: rest[0], y: rest[1], width: this.measureText(String(text)).width, align: this.textAlign, font: this.font });
+
+                return fillText.call(this, text, ...rest);
+            };
+            CanvasRenderingContext2D.prototype.createPattern = function (...args) {
+                window.__patterns += 1;
+
+                return createPattern.apply(this, args);
+            };
+            CanvasRenderingContext2D.prototype.drawImage = function (image, ...rest) {
+                window.__images.push(image.src ?? '');
+
+                return drawImage.call(this, image, ...rest);
+            };
+        })();
+    JS);
+}

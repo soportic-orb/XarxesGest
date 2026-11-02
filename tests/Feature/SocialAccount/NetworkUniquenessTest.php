@@ -1,0 +1,603 @@
+<?php
+
+declare(strict_types=1);
+
+use App\Enums\Analytics\SyncCollector;
+use App\Enums\Analytics\SyncStatus;
+use App\Enums\Post\PublishStatus;
+use App\Enums\PostPlatform\ContentType;
+use App\Enums\SocialAccount\Platform;
+use App\Enums\SocialAccount\Status;
+use App\Exceptions\SocialAccount\NetworkAlreadyConnectedException;
+use App\Jobs\Analytics\BootstrapAccountAnalytics;
+use App\Jobs\Analytics\CollectAccountDailySnapshot;
+use App\Models\AnalyticsAccountDailySnapshot;
+use App\Models\AnalyticsPublication;
+use App\Models\AnalyticsSyncState;
+use App\Models\Post;
+use App\Models\SocialAccount;
+use App\Models\Workspace;
+use Illuminate\Database\QueryException;
+use Illuminate\Database\UniqueConstraintViolationException;
+use Illuminate\Support\Facades\Cache;
+use Illuminate\Support\Facades\Http;
+use Illuminate\Support\Facades\Queue;
+
+beforeEach(function () {
+    Queue::fake([BootstrapAccountAnalytics::class, CollectAccountDailySnapshot::class]);
+    config()->set('trypost.self_hosted', false);
+    $this->workspace = Workspace::factory()->create();
+});
+
+test('allows a second account of the same network', function () {
+    SocialAccount::factory()->create([
+        'workspace_id' => $this->workspace->id,
+        'platform' => Platform::Instagram,
+        'platform_user_id' => 'ig-a',
+    ]);
+
+    $second = SocialAccount::factory()->create([
+        'workspace_id' => $this->workspace->id,
+        'platform' => Platform::Instagram,
+        'platform_user_id' => 'ig-b',
+    ]);
+
+    expect($second->exists)->toBeTrue()
+        ->and($this->workspace->socialAccounts()->count())->toBe(2);
+});
+
+test('allows both variants of a network side by side', function () {
+    SocialAccount::factory()->create([
+        'workspace_id' => $this->workspace->id,
+        'platform' => Platform::LinkedIn,
+        'platform_user_id' => 'li-profile',
+    ]);
+
+    $page = SocialAccount::factory()->create([
+        'workspace_id' => $this->workspace->id,
+        'platform' => Platform::LinkedInPage,
+        'platform_user_id' => 'li-page',
+    ]);
+
+    expect($page->exists)->toBeTrue()
+        ->and($this->workspace->socialAccounts()->count())->toBe(2);
+});
+
+test('allows different networks in the same workspace', function () {
+    SocialAccount::factory()->create([
+        'workspace_id' => $this->workspace->id,
+        'platform' => Platform::Instagram,
+        'platform_user_id' => 'ig-a',
+    ]);
+
+    $x = SocialAccount::factory()->create([
+        'workspace_id' => $this->workspace->id,
+        'platform' => Platform::X,
+        'platform_user_id' => 'x-a',
+    ]);
+
+    expect($x->exists)->toBeTrue();
+});
+
+test('allows the same network in different workspaces', function () {
+    $other = Workspace::factory()->create();
+
+    SocialAccount::factory()->create([
+        'workspace_id' => $this->workspace->id,
+        'platform' => Platform::Instagram,
+        'platform_user_id' => 'ig-a',
+    ]);
+
+    $second = SocialAccount::factory()->create([
+        'workspace_id' => $other->id,
+        'platform' => Platform::Instagram,
+        'platform_user_id' => 'ig-a',
+    ]);
+
+    expect($second->exists)->toBeTrue();
+});
+
+test('reconnecting the same account via updateOrCreate is allowed', function () {
+    SocialAccount::factory()->create([
+        'workspace_id' => $this->workspace->id,
+        'platform' => Platform::Instagram,
+        'platform_user_id' => 'ig-a',
+        'username' => 'old',
+    ]);
+
+    $this->workspace->socialAccounts()->updateOrCreate(
+        ['platform' => Platform::Instagram->value, 'platform_user_id' => 'ig-a'],
+        ['username' => 'new', 'status' => Status::Connected],
+    );
+
+    expect($this->workspace->socialAccounts()->count())->toBe(1)
+        ->and($this->workspace->socialAccounts()->first()->username)->toBe('new');
+});
+
+test('the same workspace platform identity cannot be stored twice', function () {
+
+    SocialAccount::factory()->create([
+        'workspace_id' => $this->workspace->id,
+        'platform' => Platform::Instagram,
+        'platform_user_id' => 'ig-a',
+    ]);
+
+    expect(fn () => SocialAccount::factory()->create([
+        'workspace_id' => $this->workspace->id,
+        'platform' => Platform::Instagram,
+        'platform_user_id' => 'ig-a',
+    ]))->toThrow(UniqueConstraintViolationException::class);
+});
+
+test('connectIdentity refuses to repoint the reconnect target at another identity', function () {
+
+    $account = SocialAccount::factory()->create([
+        'workspace_id' => $this->workspace->id,
+        'platform' => Platform::Instagram,
+        'platform_user_id' => 'ig-a',
+        'username' => 'old',
+    ]);
+
+    expect(fn () => SocialAccount::connectIdentity(
+        $this->workspace,
+        Platform::Instagram,
+        'ig-b',
+        ['username' => 'new', 'status' => Status::Connected],
+        $account,
+    ))->toThrow(NetworkAlreadyConnectedException::class);
+
+    expect($account->fresh()->platform_user_id)->toBe('ig-a')
+        ->and($account->fresh()->username)->toBe('old')
+        ->and($this->workspace->socialAccounts()->count())->toBe(1);
+});
+
+test('connectIdentity keeps posts on the card when a stray identity is authorized', function () {
+
+    $account = SocialAccount::factory()->create([
+        'workspace_id' => $this->workspace->id,
+        'platform' => Platform::X,
+        'platform_user_id' => 'x-brand',
+        'username' => 'brand',
+    ]);
+
+    expect(fn () => SocialAccount::connectIdentity(
+        $this->workspace,
+        Platform::X,
+        'x-personal',
+        [
+            'username' => 'personal',
+            'status' => Status::Connected,
+            'access_token' => 'personal-token',
+        ],
+        $account,
+    ))->toThrow(NetworkAlreadyConnectedException::class);
+
+    expect($account->fresh()->platform_user_id)->toBe('x-brand')
+        ->and($account->fresh()->username)->toBe('brand')
+        ->and($this->workspace->socialAccounts()->where('platform_user_id', 'x-personal')->exists())->toBeFalse();
+});
+
+test('connectIdentity still reconnects the same identity across a network variant', function () {
+    $account = SocialAccount::factory()->create([
+        'workspace_id' => $this->workspace->id,
+        'platform' => Platform::LinkedIn,
+        'platform_user_id' => 'li-same',
+        'username' => 'old',
+    ]);
+
+    $updated = SocialAccount::connectIdentity(
+        $this->workspace,
+        Platform::LinkedInPage,
+        'li-same',
+        ['username' => 'new', 'status' => Status::Connected],
+        $account,
+    );
+
+    expect($updated->id)->toBe($account->id)
+        ->and($updated->platform)->toBe(Platform::LinkedInPage)
+        ->and($updated->username)->toBe('new')
+        ->and($this->workspace->socialAccounts()->count())->toBe(1);
+});
+
+test('connectIdentity reconnect throws when the new identity is already taken', function () {
+
+    SocialAccount::factory()->create([
+        'workspace_id' => $this->workspace->id,
+        'platform' => Platform::Instagram,
+        'platform_user_id' => 'ig-keep',
+    ]);
+
+    $move = SocialAccount::factory()->create([
+        'workspace_id' => $this->workspace->id,
+        'platform' => Platform::Instagram,
+        'platform_user_id' => 'ig-move',
+    ]);
+
+    expect(fn () => SocialAccount::connectIdentity(
+        $this->workspace,
+        Platform::Instagram,
+        'ig-keep',
+        ['username' => 'taken', 'status' => Status::Connected],
+        $move,
+    ))->toThrow(NetworkAlreadyConnectedException::class);
+});
+
+test('connectIdentity ignores a reconnect target from another network', function () {
+    $facebook = SocialAccount::factory()->create([
+        'workspace_id' => $this->workspace->id,
+        'platform' => Platform::Facebook,
+        'platform_user_id' => 'page-1',
+    ]);
+
+    $instagram = SocialAccount::connectIdentity(
+        $this->workspace,
+        Platform::Instagram,
+        'ig-new',
+        [
+            'username' => 'fresh',
+            'status' => Status::Connected,
+            'access_token' => 'ig-token',
+        ],
+        $facebook,
+    );
+
+    expect($instagram->id)->not->toBe($facebook->id)
+        ->and($instagram->platform)->toBe(Platform::Instagram)
+        ->and($facebook->fresh()->platform)->toBe(Platform::Facebook)
+        ->and($this->workspace->socialAccounts()->count())->toBe(2);
+});
+
+test('the observer leaves a missing platform to the database instead of a type error', function () {
+    SocialAccount::factory()->create([
+        'workspace_id' => $this->workspace->id,
+        'platform' => Platform::Instagram,
+        'platform_user_id' => 'ig-a',
+    ]);
+
+    $account = new SocialAccount([
+        'workspace_id' => $this->workspace->id,
+        'platform_user_id' => 'no-platform',
+    ]);
+
+    expect(fn () => $account->save())
+        ->toThrow(QueryException::class)
+        ->and(fn () => $account->save())->not->toThrow(TypeError::class);
+});
+
+test('connectIdentity serializes connects on the same network', function () {
+    $lock = Cache::lock("social_connect:{$this->workspace->id}:instagram", 10);
+
+    expect($lock->get())->toBeTrue();
+
+    try {
+        try {
+            SocialAccount::connectIdentity(
+                $this->workspace,
+                Platform::Instagram,
+                'ig-a',
+                ['username' => 'blocked', 'status' => Status::Connected],
+            );
+
+            $this->fail('A busy network lock should reject the connect.');
+        } catch (NetworkAlreadyConnectedException $e) {
+            expect($e->messageKey)->toBe('busy');
+        }
+
+        expect($this->workspace->socialAccounts()->count())->toBe(0);
+    } finally {
+        $lock->release();
+    }
+});
+
+test('connectIdentity does not serialize connects on different networks', function () {
+    $lock = Cache::lock("social_connect:{$this->workspace->id}:instagram", 10);
+
+    expect($lock->get())->toBeTrue();
+
+    try {
+        $account = SocialAccount::connectIdentity(
+            $this->workspace,
+            Platform::X,
+            'x-a',
+            ['username' => 'free', 'status' => Status::Connected, 'access_token' => 'x-token'],
+        );
+
+        expect($account->exists)->toBeTrue();
+    } finally {
+        $lock->release();
+    }
+});
+
+test('connectIdentity releases the lock so the next connect proceeds', function () {
+    SocialAccount::connectIdentity(
+        $this->workspace,
+        Platform::X,
+        'x-a',
+        ['username' => 'first', 'status' => Status::Connected, 'access_token' => 'x-token'],
+    );
+
+    $second = SocialAccount::connectIdentity(
+        $this->workspace,
+        Platform::X,
+        'x-a',
+        ['username' => 'second', 'status' => Status::Connected, 'access_token' => 'x-token-2'],
+    );
+
+    expect($second->username)->toBe('second')
+        ->and($this->workspace->socialAccounts()->count())->toBe(1);
+});
+
+test('reconnecting through the other variant moves pending posts onto the new platform', function () {
+    $account = SocialAccount::factory()->create([
+        'workspace_id' => $this->workspace->id,
+        'platform' => Platform::Instagram,
+        'platform_user_id' => 'shared-ig-id',
+        'scopes' => ['instagram_business_content_publish'],
+    ]);
+
+    $pending = Post::factory()->forAccount($account)->create([
+        'platform' => Platform::Instagram->value,
+        'content_type' => ContentType::InstagramReel,
+        'publish_status' => PublishStatus::Pending,
+    ]);
+
+    SocialAccount::connectIdentity(
+        $this->workspace,
+        Platform::InstagramFacebook,
+        'shared-ig-id',
+        ['username' => 'brand', 'scopes' => ['instagram_content_publish'], 'status' => Status::Connected],
+        $account,
+    );
+
+    expect($account->fresh()->platform)->toBe(Platform::InstagramFacebook)
+        ->and($pending->fresh()->platform)->toBe(Platform::InstagramFacebook)
+        ->and($pending->fresh()->content_type)->toBe(ContentType::InstagramReel)
+        ->and(array_diff(
+            $pending->fresh()->platform->requiredPublishScopes(),
+            $account->fresh()->scopes,
+        ))->toBe([]);
+});
+
+test('a variant move leaves a published post on the platform it really published to', function () {
+    $account = SocialAccount::factory()->create([
+        'workspace_id' => $this->workspace->id,
+        'platform' => Platform::Instagram,
+        'platform_user_id' => 'shared-ig-id',
+    ]);
+
+    $published = Post::factory()->forAccount($account)->create([
+        'platform' => Platform::Instagram->value,
+        'publish_status' => PublishStatus::Published,
+    ]);
+
+    SocialAccount::connectIdentity(
+        $this->workspace,
+        Platform::InstagramFacebook,
+        'shared-ig-id',
+        ['username' => 'brand', 'status' => Status::Connected],
+        $account,
+    );
+
+    expect($published->fresh()->platform)->toBe(Platform::Instagram);
+});
+
+test('a variant move resets a content type the new platform cannot publish', function () {
+    $account = SocialAccount::factory()->create([
+        'workspace_id' => $this->workspace->id,
+        'platform' => Platform::LinkedIn,
+        'platform_user_id' => 'li-same',
+    ]);
+
+    $pending = Post::factory()->forAccount($account)->create([
+        'platform' => Platform::LinkedIn->value,
+        'content_type' => ContentType::LinkedInPost,
+        'publish_status' => PublishStatus::Pending,
+    ]);
+
+    SocialAccount::connectIdentity(
+        $this->workspace,
+        Platform::LinkedInPage,
+        'li-same',
+        ['username' => 'page', 'status' => Status::Connected],
+        $account,
+    );
+
+    expect($pending->fresh()->platform)->toBe(Platform::LinkedInPage)
+        ->and($pending->fresh()->content_type)->toBe(ContentType::LinkedInPagePost);
+});
+
+test('reconnecting the same variant leaves pending posts untouched', function () {
+    $account = SocialAccount::factory()->create([
+        'workspace_id' => $this->workspace->id,
+        'platform' => Platform::Instagram,
+        'platform_user_id' => 'ig-same',
+    ]);
+
+    $pending = Post::factory()->forAccount($account)->create([
+        'platform' => Platform::Instagram->value,
+        'content_type' => ContentType::InstagramStory,
+        'publish_status' => PublishStatus::Pending,
+    ]);
+
+    $before = $pending->updated_at;
+
+    SocialAccount::connectIdentity(
+        $this->workspace,
+        Platform::Instagram,
+        'ig-same',
+        ['username' => 'fresh', 'status' => Status::Connected],
+        $account,
+    );
+
+    expect($pending->fresh()->platform)->toBe(Platform::Instagram)
+        ->and($pending->fresh()->content_type)->toBe(ContentType::InstagramStory)
+        ->and($pending->fresh()->updated_at->equalTo($before))->toBeTrue();
+});
+
+test('a variant move carries a retrying post, which still has a publish ahead of it', function () {
+    $account = SocialAccount::factory()->create([
+        'workspace_id' => $this->workspace->id,
+        'platform' => Platform::Instagram,
+        'platform_user_id' => 'shared-ig-id',
+        'scopes' => ['instagram_business_content_publish'],
+    ]);
+
+    $retrying = Post::factory()->forAccount($account)->create([
+        'platform' => Platform::Instagram->value,
+        'publish_status' => PublishStatus::Retrying,
+    ]);
+
+    SocialAccount::connectIdentity(
+        $this->workspace,
+        Platform::InstagramFacebook,
+        'shared-ig-id',
+        ['username' => 'brand', 'scopes' => ['instagram_content_publish'], 'status' => Status::Connected],
+        $account,
+    );
+
+    expect($retrying->fresh()->platform)->toBe(Platform::InstagramFacebook)
+        ->and(array_diff(
+            $retrying->fresh()->platform->requiredPublishScopes(),
+            $account->fresh()->scopes,
+        ))->toBe([]);
+});
+
+test('a variant move leaves a failed post on the platform it failed against', function () {
+    $account = SocialAccount::factory()->create([
+        'workspace_id' => $this->workspace->id,
+        'platform' => Platform::Instagram,
+        'platform_user_id' => 'shared-ig-id',
+    ]);
+
+    $failed = Post::factory()->forAccount($account)->create([
+        'platform' => Platform::Instagram->value,
+        'publish_status' => PublishStatus::Failed,
+    ]);
+
+    SocialAccount::connectIdentity(
+        $this->workspace,
+        Platform::InstagramFacebook,
+        'shared-ig-id',
+        ['username' => 'brand', 'status' => Status::Connected],
+        $account,
+    );
+
+    expect($failed->fresh()->platform)->toBe(Platform::Instagram);
+});
+
+test('reconnecting across a network variant moves only the posts still waiting to publish', function () {
+    $account = SocialAccount::factory()->create([
+        'workspace_id' => $this->workspace->id,
+        'platform' => Platform::LinkedIn,
+        'platform_user_id' => 'li-move',
+    ]);
+    $retryAt = now()->addHour()->startOfSecond();
+    $pending = Post::factory()->forAccount($account, ContentType::LinkedInPost)->scheduled()->create();
+    $retrying = Post::factory()->forAccount($account, ContentType::LinkedInPost)->publishing()->create(['publish_status' => PublishStatus::Retrying, 'retry_at' => $retryAt]);
+    $published = Post::factory()->forAccount($account, ContentType::LinkedInPost)->published()->create();
+    $failed = Post::factory()->forAccount($account, ContentType::LinkedInPost)->failed()->create();
+
+    SocialAccount::connectIdentity($this->workspace, Platform::LinkedInPage, 'li-move', ['status' => Status::Connected], $account);
+
+    expect($pending->fresh())
+        ->platform->toBe(Platform::LinkedInPage)
+        ->content_type->toBe(ContentType::LinkedInPagePost)
+        ->and($retrying->fresh())
+        ->platform->toBe(Platform::LinkedInPage)
+        ->retry_at->toIso8601String()->toBe($retryAt->toIso8601String())
+        ->and($published->fresh())
+        ->platform->toBe(Platform::LinkedIn)
+        ->content_type->toBe(ContentType::LinkedInPost)
+        ->and($failed->fresh()->platform)->toBe(Platform::LinkedIn);
+});
+
+test('an instagram login account without a stored account id is not matched across variants and asks instagram nothing', function () {
+    $account = SocialAccount::factory()->instagram()->create(['platform_user_id' => 'app-scoped-1', 'meta' => []]);
+    Http::fake();
+
+    expect($account->isIdentity(Platform::InstagramFacebook, 'ig-pro-1'))->toBeFalse();
+
+    Http::assertNothingSent();
+});
+
+test('reconnecting through facebook carries the card analytics over to the new identity', function () {
+    $account = SocialAccount::factory()->instagram()->create([
+        'workspace_id' => $this->workspace->id,
+        'platform_user_id' => 'app-scoped-id',
+        'meta' => ['ig_user_id' => 'ig-account-id'],
+    ]);
+    $backfill = AnalyticsSyncState::factory()->create([
+        ...AnalyticsSyncState::identityFor($account),
+        'social_account_id' => $account->id,
+        'status' => SyncStatus::Complete,
+    ]);
+    $publication = AnalyticsPublication::factory()->create([
+        'workspace_id' => $this->workspace->id,
+        'social_account_id' => $account->id,
+        'platform' => Platform::Instagram,
+        'platform_user_id' => 'app-scoped-id',
+    ]);
+    $snapshot = AnalyticsAccountDailySnapshot::factory()->create([
+        'workspace_id' => $this->workspace->id,
+        'social_account_id' => $account->id,
+        'network' => Platform::Instagram->network(),
+        'platform' => Platform::Instagram,
+        'platform_user_id' => 'app-scoped-id',
+    ]);
+
+    SocialAccount::connectIdentity(
+        $this->workspace,
+        Platform::InstagramFacebook,
+        'ig-account-id',
+        ['status' => Status::Connected],
+        $account,
+    );
+
+    expect($backfill->fresh())
+        ->social_account_id->toBe($account->id)
+        ->platform_user_id->toBe('ig-account-id')
+        ->identity_key->toBe(AnalyticsSyncState::identityFor($account->fresh())['identity_key'])
+        ->and($publication->fresh())
+        ->platform->toBe(Platform::InstagramFacebook)
+        ->platform_user_id->toBe('ig-account-id')
+        ->and($snapshot->fresh())
+        ->platform->toBe(Platform::InstagramFacebook)
+        ->platform_user_id->toBe('ig-account-id');
+});
+
+test('a card moved onto an identity it was connected as before takes that sync history back', function () {
+    $account = SocialAccount::factory()->create([
+        'workspace_id' => $this->workspace->id,
+        'platform' => Platform::InstagramFacebook,
+        'platform_user_id' => 'ig-account-id',
+    ]);
+    $facebookBackfill = AnalyticsSyncState::factory()->create([
+        ...AnalyticsSyncState::identityFor($account),
+        'social_account_id' => $account->id,
+        'status' => SyncStatus::Complete,
+    ]);
+    $earlierLoginBackfill = AnalyticsSyncState::factory()->create([
+        ...AnalyticsSyncState::identityFor(new SocialAccount([
+            'workspace_id' => $this->workspace->id,
+            'platform' => Platform::Instagram,
+            'platform_user_id' => 'app-scoped-id',
+        ])),
+        'social_account_id' => null,
+        'status' => SyncStatus::Complete,
+    ]);
+
+    SocialAccount::connectIdentity(
+        $this->workspace,
+        Platform::Instagram,
+        'app-scoped-id',
+        ['status' => Status::Connected, 'meta' => ['ig_user_id' => 'ig-account-id']],
+        $account,
+    );
+    (new BootstrapAccountAnalytics($account->id, true))->handleFor($account->id);
+
+    expect($earlierLoginBackfill->fresh()->social_account_id)->toBe($account->id)
+        ->and($facebookBackfill->fresh())
+        ->social_account_id->toBeNull()
+        ->platform_user_id->toBe('ig-account-id')
+        ->and(AnalyticsSyncState::query()->where('social_account_id', $account->id)->where('collector', SyncCollector::PublicationBackfill)->count())->toBe(1);
+});

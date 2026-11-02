@@ -1,0 +1,308 @@
+import type { MediaItem } from '@/types/media';
+import type { VerifiedBadge } from '@/types/social-account';
+import type { SocialAccountStatusValue } from '@/types/social-account-status';
+
+export interface Comparison {
+    value: number | null;
+    previous: number | null;
+    change: number | null;
+}
+
+/** A span of days, both ends included, as `Y-m-d` dates. */
+export interface DateRange {
+    start: string;
+    end: string;
+}
+
+export interface AccountIdentityData {
+    social_account_key: string;
+    platform: string;
+    name: string | null;
+    username: string | null;
+    avatar_url: string | null;
+    status?: SocialAccountStatusValue | null;
+    verified_badge?: VerifiedBadge | null;
+}
+
+/** A channel with one number of its own, as a bar chart's row. */
+export interface AccountMetricRow {
+    account: AccountIdentityData;
+    value: number | null;
+}
+
+/** How the Followers card is drawn: per channel, over time, or the change per channel. */
+export type FollowersChartMode = 'bar' | 'line' | 'growth';
+
+/** How the Posts card is drawn: per channel, or over time split by channel. */
+export type PostsChartMode = 'bar' | 'stacked';
+
+/** How long one bar of a chart over time covers. */
+export type BucketResolution = 'daily' | 'weekly' | 'monthly';
+
+export interface FollowerAccount extends AccountIdentityData {
+    social_account_id: string | null;
+    network: string;
+    value: number | null;
+    growth: number | null;
+    net?: number | null;
+}
+
+export interface PostAccount extends AccountIdentityData {
+    count: number;
+}
+
+export interface PostBucket extends DateRange {
+    accounts: Record<string, number>;
+    total: number;
+}
+
+export interface TopPost {
+    id: string;
+    /** Its place in the Top 5, from 1. */
+    rank: number;
+    post_id: string | null;
+    social_account_key: string;
+    platform: string;
+    name: string | null;
+    username: string | null;
+    avatar_url: string | null;
+    status?: SocialAccountStatusValue | null;
+    verified_badge?: VerifiedBadge | null;
+    origin: string;
+    content_type: string;
+    availability: string;
+    published_at: string;
+    permalink: string | null;
+    excerpt: string | null;
+    preview_metadata: Record<string, unknown> | null;
+    media: MediaItem | null;
+    reactions: number | null;
+    comments: number | null;
+}
+
+export type PerformanceMetric =
+    | 'posts'
+    | 'reactions'
+    | 'comments'
+    | 'engagement_rate'
+    | 'reposts'
+    | 'impressions'
+    | 'clicks'
+    | 'views'
+    | 'shares'
+    | 'saves'
+    | 'follows_gained'
+    | 'reach'
+    | 'watch_time_minutes'
+    | 'average_watch_time_seconds';
+
+export type PerformanceRow = AccountIdentityData &
+    Record<PerformanceMetric, Comparison>;
+
+export interface InsightsSyncCadence {
+    metrics_days: number;
+}
+
+export interface CoverageRow {
+    social_account_id: string;
+    collector: string;
+    status: string;
+    target_since: string | null;
+    oldest_reached_at: string | null;
+    high_watermark_at: string | null;
+    last_success_at: string | null;
+    last_error_category: string | null;
+}
+
+export interface AnalyticsReport {
+    bounds: { min: string | null; max: string | null };
+    range: DateRange;
+    previous_range: DateRange;
+    summary: {
+        posts: Comparison;
+        followers: Comparison;
+        net_followers: Comparison;
+        reactions: Comparison;
+        comments: Comparison;
+        engagement_rate: Comparison;
+        views: Comparison;
+        impressions: Comparison;
+        clicks: Comparison;
+        reposts: Comparison;
+        quotes: Comparison;
+        reach: Comparison;
+        shares: Comparison;
+        saves: Comparison;
+        watch_time_minutes: Comparison;
+        average_watch_time_seconds: Comparison;
+        follows_gained: Comparison;
+    };
+    followers: {
+        total: number | null;
+        accounts: FollowerAccount[];
+        series: { date: string; accounts: Record<string, number | null> }[];
+    };
+    posts: {
+        resolution: BucketResolution;
+        /** Every post the channels sent over the period. */
+        total: number;
+        accounts: PostAccount[];
+        buckets: PostBucket[];
+    };
+    top_posts: { reactions: TopPost[]; comments: TopPost[] };
+    performance: PerformanceRow[];
+    coverage: CoverageRow[];
+}
+
+export interface WorkspaceAnalyticsReport extends AnalyticsReport {
+    filters: WorkspaceAnalyticsFilters;
+}
+
+export type AnalyticsRangePreset =
+    | '7d'
+    | '30d'
+    | 'mtd'
+    | 'custom';
+
+export interface AnalyticsFilters {
+    range: AnalyticsRangePreset;
+    start: string;
+    end: string;
+}
+
+export interface WorkspaceAnalyticsFilters extends AnalyticsFilters {
+    channels: string[];
+}
+
+export interface AnalyticsChannelOption {
+    id: string;
+    platform: string;
+    display_label: string;
+    username: string | null;
+    avatar_url: string | null;
+    status: SocialAccountStatusValue;
+    analytics_key: string;
+}
+
+export type SummaryMetric = keyof AnalyticsReport['summary'];
+
+export type PublicationPeriod = 'current' | 'previous';
+
+export type SeriesMetric =
+    | 'posts'
+    | 'followers'
+    | 'net_followers'
+    | 'reach'
+    | 'views'
+    | 'impressions'
+    | 'profile_visits'
+    | 'growth_rate';
+
+export type SeriesValues = Partial<Record<SeriesMetric, number | null>>;
+
+export interface MetricSeriesPoint {
+    start: string;
+    end: string;
+    values: SeriesValues;
+}
+
+export interface FollowerGrowthMonth {
+    month: string;
+    start: string;
+    end: string;
+    followers: number | null;
+    rate: number | null;
+}
+
+export interface FollowerGrowthRate {
+    range: DateRange;
+    months: FollowerGrowthMonth[];
+    latest: number | null;
+    previous: number | null;
+}
+
+export interface ChannelMetricSeries {
+    resolution: BucketResolution;
+    metrics: SeriesMetric[];
+    range: DateRange;
+    previous_range: DateRange;
+    current: MetricSeriesPoint[];
+    previous: MetricSeriesPoint[];
+    totals: { current: SeriesValues; previous: SeriesValues };
+    growth?: FollowerGrowthRate | null;
+}
+
+export interface ChannelPublicationPage {
+    data: ChannelPublicationRow[];
+    current_page: number;
+    last_page: number;
+    per_page: number;
+    total: number;
+}
+
+export interface ChannelInsightsFilters extends AnalyticsFilters {
+    period: PublicationPeriod;
+    sort: SummaryMetric;
+    labels: string[];
+    untagged: boolean;
+    types: string[];
+}
+
+export interface ContentTypeOption {
+    value: string;
+    label: string;
+}
+
+export interface ChannelPublicationRow {
+    id: string;
+    rank: number;
+    excerpt: string | null;
+    thumbnail_url: string | null;
+    media: MediaItem | null;
+    permalink: string | null;
+    published_at: string;
+    content_type: string | null;
+    metrics: Partial<Record<SummaryMetric, number | null>>;
+    post_id: string | null;
+}
+
+export interface PublicationMetricFact {
+    value: number | null;
+    unit: string;
+    time_basis?: string;
+    precision?: string;
+    availability: string;
+    provider_metric?: string | null;
+}
+
+export interface PublicationAnalyticsDetail {
+    available: true;
+    reason: null;
+    publication: {
+        id: string;
+        post_id: string | null;
+        social_account_key: string;
+        platform: string;
+        origin: string;
+        content_type: string;
+        availability: string;
+        provider_published_at: string | null;
+        permalink: string | null;
+        excerpt: string | null;
+        preview_metadata: Record<string, unknown> | null;
+        account_display_name: string | null;
+        account_username: string | null;
+        account_avatar_url: string | null;
+    };
+    snapshot: {
+        date: string;
+        collected_at: string | null;
+        provider_observed_at: string | null;
+    } | null;
+    metrics: Record<string, PublicationMetricFact>;
+}
+
+export interface UnsupportedPublicationAnalytics {
+    unsupported: true;
+    reason: string;
+}

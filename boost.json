@@ -1,0 +1,28 @@
+{
+    "agents": [
+        "claude_code",
+        "cursor",
+        "codex",
+        "antigravity"
+    ],
+    "cloud": false,
+    "guidelines": true,
+    "mcp": true,
+    "nightwatch": true,
+    "sail": false,
+    "skills": [
+        "infer-conventions",
+        "ai-sdk-development",
+        "cashier-stripe-development",
+        "laravel-best-practices",
+        "testing-best-practices",
+        "configuring-horizon",
+        "mcp-development",
+        "configure-nightwatch",
+        "passport-development",
+        "socialite-development",
+        "wayfinder-development",
+        "inertia-vue-development",
+        "tailwindcss-development"
+    ]
+}
