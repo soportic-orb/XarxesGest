@@ -32,7 +32,14 @@ class CreateAdminCommand extends Command
     {
         $name = $this->option('name') ?: text('Name', required: true);
         $email = $this->option('email') ?: text('Email', required: true);
-        $plainPassword = password('Password (min. 12 characters)', required: true);
+        // Interactive terminals get a hidden prompt; scripts can pipe the
+        // password on stdin so it never appears in the shell history.
+        // XARXESGEST_ADMIN_PASSWORD is for automated provisioning.
+        $plainPassword = match (true) {
+            filled(getenv('XARXESGEST_ADMIN_PASSWORD')) => (string) getenv('XARXESGEST_ADMIN_PASSWORD'),
+            stream_isatty(STDIN) => password('Password (min. 12 characters)', required: true),
+            default => trim((string) fgets(STDIN)),
+        };
 
         $validator = Validator::make(
             ['name' => $name, 'email' => $email, 'password' => $plainPassword],
