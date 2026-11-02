@@ -31,5 +31,5 @@ yarn-error.log
 /.nova
 /.vscode
 /.zed
-/docs/
+# /docs/ (ignored upstream; XarxesGest keeps its documentation here)
 /.superpowers/
