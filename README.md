@@ -5,3 +5,4 @@ Plataforma autoallotjada (CloudPanel) per gestionar les xarxes socials de les ma
 Destinació: https://xarxesgest.soportic.es
 
 - 📄 [Proposta de desenvolupament i costos de connexió](docs/PROPOSTA.md)
+- 🔍 [Avaluació de TryPost com a base](docs/AVALUACIO-TRYPOST.md)
