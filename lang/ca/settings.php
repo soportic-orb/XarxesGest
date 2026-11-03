@@ -51,14 +51,14 @@ return [
         'title' => 'Preferències',
         'theme' => [
             'heading' => 'Aparença',
-            'description' => 'Tria com et ve de gust veure TryPost.',
+            'description' => 'Tria com et ve de gust veure SocialGest.',
             'light' => 'Clar',
             'dark' => 'Fosc',
             'system' => 'Sistema',
         ],
         'language' => [
             'heading' => 'Idioma',
-            'description' => 'L\'idioma en què es mostra la interfície de TryPost.',
+            'description' => 'L\'idioma en què es mostra la interfície de SocialGest.',
             'search' => 'Cerca idiomes',
             'empty' => 'No s\'ha trobat cap idioma',
             'suggestions' => 'Suggeriments',
@@ -194,7 +194,7 @@ return [
         'delete_only_description' => 'No pots eliminar el teu únic workspace. Cancel·la la teva subscripció a la facturació per deixar de pagar, o elimina el teu compte a la configuració d\'autenticació per cancel·lar la facturació i eliminar-ho tot permanentment.',
         'delete_go_to_billing' => 'Ves a la facturació',
         'delete_go_to_delete_account' => 'Elimina el compte',
-        'delete_members_warning' => '{1}:count altre membre perdrà l\'accés. Els membres sense un altre workspace a TryPost s\'eliminen permanentment.|[2,*]:count altres membres perdran l\'accés. Els membres sense un altre workspace a TryPost s\'eliminen permanentment.',
+        'delete_members_warning' => '{1}:count altre membre perdrà l\'accés. Els membres sense un altre workspace a SocialGest s\'eliminen permanentment.|[2,*]:count altres membres perdran l\'accés. Els membres sense un altre workspace a SocialGest s\'eliminen permanentment.',
         'delete_action' => 'Elimina el workspace',
         'delete_cancel' => 'Cancel·la',
         'delete_confirm_title' => 'Eliminar el workspace?',
@@ -263,7 +263,7 @@ return [
 
         'errors' => [
             'invite_exists' => 'Ja existeix una invitació per a aquest correu.',
-            'email_belongs_to_account' => 'Aquest correu ja pertany a un altre compte de TryPost. Demana un correu de feina propi.',
+            'email_belongs_to_account' => 'Aquest correu ja pertany a un altre compte de SocialGest. Demana un correu de feina propi.',
             'cannot_remove_self' => 'No pots eliminar-te a tu mateix.',
             'cannot_remove_owner' => 'No pots eliminar el propietari del compte.',
             'cannot_change_own_access' => 'No pots canviar el teu propi accés.',

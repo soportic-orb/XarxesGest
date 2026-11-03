@@ -333,11 +333,11 @@ test('nothing of the changelog shows when it is turned off', function () {
             const trigger = await find('sidebar-support-trigger');
             trigger.dispatchEvent(new PointerEvent('pointermove', { bubbles: true }));
             trigger.click();
-            await find('sidebar-support-community-title');
+            await find('sidebar-support-help-title');
         })();
     JS);
 
-    $page->assertPresent('@sidebar-support-community-title')
+    $page->assertPresent('@sidebar-support-help-title')
         ->assertMissing('@sidebar-support-changelog')
         ->assertMissing('@changelog-card')
         ->assertNoJavaScriptErrors();

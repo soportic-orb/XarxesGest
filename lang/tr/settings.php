@@ -51,14 +51,14 @@ return [
         'title' => 'Tercihler',
         'theme' => [
             'heading' => 'Görünüm',
-            'description' => 'TryPost\'un nasıl görüneceğini seçin.',
+            'description' => 'SocialGest\'un nasıl görüneceğini seçin.',
             'light' => 'Açık',
             'dark' => 'Koyu',
             'system' => 'Sistem',
         ],
         'language' => [
             'heading' => 'Dil',
-            'description' => 'TryPost arayüzünün gösterildiği dil.',
+            'description' => 'SocialGest arayüzünün gösterildiği dil.',
             'search' => 'Dil ara',
             'empty' => 'Dil bulunamadı',
             'suggestions' => 'Öneriler',
@@ -194,7 +194,7 @@ return [
         'delete_only_description' => 'Tek workspace’inizi silemezsiniz. Ödemeyi durdurmak için faturalandırmadan aboneliği iptal edin veya her şeyi kalıcı olarak silmek için Kimlik doğrulama ayarlarından hesabınızı silin.',
         'delete_go_to_billing' => 'Faturalandırmaya git',
         'delete_go_to_delete_account' => 'Hesabı sil',
-        'delete_members_warning' => '{1}:count diğer üye erişimi kaybedecek. Başka bir TryPost workspace’i olmayan üyeler kalıcı olarak silinir.|[2,*]:count diğer üye erişimi kaybedecek. Başka bir TryPost workspace’i olmayan üyeler kalıcı olarak silinir.',
+        'delete_members_warning' => '{1}:count diğer üye erişimi kaybedecek. Başka bir SocialGest workspace’i olmayan üyeler kalıcı olarak silinir.|[2,*]:count diğer üye erişimi kaybedecek. Başka bir SocialGest workspace’i olmayan üyeler kalıcı olarak silinir.',
         'delete_action' => 'Workspace’i sil',
         'delete_cancel' => 'İptal',
         'delete_confirm_title' => 'Workspace silinsin mi?',
@@ -263,7 +263,7 @@ return [
 
         'errors' => [
             'invite_exists' => 'Bu e-posta için zaten bir davet var.',
-            'email_belongs_to_account' => 'Bu e-posta zaten başka bir TryPost hesabına ait. Bunun yerine özel bir iş e-postası isteyin.',
+            'email_belongs_to_account' => 'Bu e-posta zaten başka bir SocialGest hesabına ait. Bunun yerine özel bir iş e-postası isteyin.',
             'cannot_remove_self' => 'Kendinizi kaldıramazsınız.',
             'cannot_remove_owner' => 'Hesap sahibini kaldıramazsınız.',
             'cannot_change_own_access' => 'Kendi erişiminizi değiştiremezsiniz.',

@@ -3,6 +3,7 @@
 declare(strict_types=1);
 
 test('every review renders once for readers and once for the marquee loop', function () {
+    config(['trypost.self_hosted' => false]);
     $page = visit(route('login'));
 
     $page->assertVisible('@auth-reviews');

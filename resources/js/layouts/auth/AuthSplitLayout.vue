@@ -17,7 +17,7 @@ const widthClass = {
     md: 'max-w-xl',
 } as const;
 
-withDefaults(
+const props = withDefaults(
     defineProps<{
         title?: string;
         description?: string;
@@ -37,6 +37,10 @@ withDefaults(
 const page = usePage();
 
 const isGuest = computed(() => !(page.props.auth as Auth).user);
+/** The G2 reviews are of TryPost Cloud; self-hosted installs (SocialGest) leave the panel out. */
+const showReviews = computed(
+    () => props.panel && page.props.selfHosted === false,
+);
 const { locale, languages } = useGuestLocale();
 
 const reviews = REVIEWS.map((review, index) => ({
@@ -126,7 +130,7 @@ const loopedReviews = [
         </div>
 
         <div
-            v-if="panel"
+            v-if="showReviews"
             class="hidden p-8 ps-0 lg:sticky lg:top-0 lg:block lg:h-svh lg:self-start"
         >
             <div

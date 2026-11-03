@@ -14,7 +14,7 @@ use Symfony\Component\HttpFoundation\Response;
 
 class ChallengeChatGptToolCalls
 {
-    private const MESSAGE = 'Sign in to TryPost to continue.';
+    private const MESSAGE = 'Sign in to SocialGest to continue.';
 
     /**
      * ChatGPT shows its sign-in prompt in the conversation only for a tool

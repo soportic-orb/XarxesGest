@@ -20,8 +20,8 @@ return [
     'throttle' => 'عدد كبير جدًا من محاولات تسجيل الدخول. يرجى المحاولة مرة أخرى بعد :seconds ثانية.',
 
     'flash' => [
-        'welcome' => 'مرحبًا بك في TryPost!',
-        'welcome_trial' => 'مرحبًا بك في TryPost! لقد بدأت فترتك التجريبية.',
+        'welcome' => 'مرحبًا بك في SocialGest!',
+        'welcome_trial' => 'مرحبًا بك في SocialGest! لقد بدأت فترتك التجريبية.',
     ],
 
     'legal' => 'بمتابعتك، فإنك توافق على <a href=":terms_url" target="_blank">شروط الخدمة</a> و<a href=":privacy_url" target="_blank">سياسة الخصوصية</a>.',
@@ -60,7 +60,7 @@ return [
     'github_email_unavailable' => 'تعذر جلب بريدك الإلكتروني من GitHub. اجعل بريدك على GitHub عامًا أو امنح نطاق الوصول إلى البريد، ثم حاول مرة أخرى.',
 
     'login' => [
-        'title' => 'تسجيل الدخول إلى TryPost',
+        'title' => 'الدخول إلى SocialGest',
         'page_title' => 'تسجيل الدخول',
         'email' => 'البريد الإلكتروني',
         'password' => 'كلمة المرور',
@@ -74,7 +74,7 @@ return [
     ],
 
     'register' => [
-        'title' => 'أنشئ حساب TryPost',
+        'title' => 'أنشئ حساب SocialGest',
         'page_title' => 'التسجيل',
         'name' => 'الاسم',
         'name_placeholder' => 'الاسم الكامل',

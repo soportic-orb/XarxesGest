@@ -81,8 +81,8 @@ return [
             'edit_in_canva' => 'Edita :name a Canva',
             'errors' => [
                 'import_failed' => 'No s\'ha pogut importar el fitxer. Torna-ho a provar.',
-                'popup_blocked' => 'El navegador ha bloquejat la finestra. Permet les finestres emergents per a TryPost i torna-ho a provar.',
-                'scope_not_granted' => 'TryPost necessita accés al fitxer que triïs. Torna-ho a provar i permet-ho.',
+                'popup_blocked' => 'El navegador ha bloquejat la finestra. Permet les finestres emergents per a SocialGest i torna-ho a provar.',
+                'scope_not_granted' => 'SocialGest necessita accés al fitxer que triïs. Torna-ho a provar i permet-ho.',
                 'session_expired' => 'La sessió ha caducat. Torna a obrir la font.',
                 'video_not_ready' => 'Google Photos encara està processant aquest vídeo. Torna-ho a provar d\'aquí a uns minuts.',
                 'google_connect_failed' => 'No s\'ha pogut connectar amb Google. Torna-ho a provar.',
@@ -384,7 +384,7 @@ return [
                 'play' => 'Reprodueix la vista prèvia',
                 'pause' => 'Pausa la vista prèvia',
                 'remove' => 'Elimina la música',
-                'part_hint' => 'Instagram no permet que TryPost triï quina part de la cançó es reprodueix.',
+                'part_hint' => 'Instagram no permet que SocialGest triï quina part de la cançó es reprodueix.',
                 'volume' => 'Volum',
                 'video_volume' => 'Vídeo',
                 'audio_volume' => 'Música',
@@ -1041,7 +1041,7 @@ return [
         ],
         'created_by' => 'Creada per :name :when',
         'welcome' => [
-            'title' => 'Et donem la benvinguda a TryPost 👋',
+            'title' => 'Et donem la benvinguda a SocialGest 👋',
             'description' => 'Connecta un canal per començar a planificar i publicar les teves publicacions.',
             'invite' => 'Convida el teu equip',
             'connect_more' => 'Connecta més canals',

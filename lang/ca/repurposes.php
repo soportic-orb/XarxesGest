@@ -35,7 +35,7 @@ return [
 
     'source' => [
         'title' => 'Origen',
-        'description' => 'TryPost vigila aquest compte per detectar publicacions noves del format següent.',
+        'description' => 'SocialGest vigila aquest compte per detectar publicacions noves del format següent.',
         'watch_label' => 'Vigila',
         'watch_description' => 'El tipus de publicació que inicia una republicació.',
         'needs_reconnect' => 'Cal tornar a connectar',
@@ -49,7 +49,7 @@ return [
 
     'empty' => [
         'title' => 'Encara no hi ha cap reaprofitament configurat',
-        'description' => 'TryPost vigila el compte que triïs i republica cada publicació nova a les xarxes que escullis.',
+        'description' => 'SocialGest vigila el compte que triïs i republica cada publicació nova a les xarxes que escullis.',
     ],
 
     'table' => [
@@ -66,7 +66,7 @@ return [
 
     'create' => [
         'title' => 'Nou reaprofitament',
-        'description' => 'Tria el compte que TryPost ha de vigilar. Les destinacions les triaràs a la pantalla següent.',
+        'description' => 'Tria el compte que SocialGest ha de vigilar. Les destinacions les triaràs a la pantalla següent.',
         'source_label' => 'Compte d\'origen',
         'source_placeholder' => 'Tria un compte',
         'source_search' => 'Cerca comptes',
@@ -106,7 +106,7 @@ return [
         'watermark' => 'Vigilant des de',
         'last_polled' => 'Última comprovació',
         'draft_hint' => 'Tria almenys una destinació i després activa-ho. Només es repliquen les publicacions fetes després d\'activar-ho.',
-        'active_hint' => 'TryPost comprova aquest compte regularment i replica cada publicació nova.',
+        'active_hint' => 'SocialGest comprova aquest compte regularment i replica cada publicació nova.',
         'paused_hint' => 'Les comprovacions estan en espera. En reprendre, continua des d\'on s\'havia aturat, de manera que no es perd res del que s\'hagi publicat mentrestant.',
         'disabled_hint' => 'Desactivat. Si ho tornes a activar, comença de zero: el que hagis publicat mentre estava desactivat no es replicarà.',
     ],
@@ -121,7 +121,7 @@ return [
         'original_from' => 'original del :date',
         'empty' => [
             'title' => 'Encara no hi ha res',
-            'description' => 'Les publicacions que aquest compte publiqui fora de TryPost apareixeran aquí.',
+            'description' => 'Les publicacions que aquest compte publiqui fora de SocialGest apareixeran aquí.',
         ],
         'open_post' => 'Obre la publicació',
         'statuses' => [
@@ -133,7 +133,7 @@ return [
             'failed' => 'Fallat',
         ],
         'reasons' => [
-            'published_via_trypost' => 'Ja publicat a través de TryPost',
+            'published_via_trypost' => 'Ja publicat a través de SocialGest',
             'media_url_missing' => 'La xarxa no ha compartit cap fitxer descarregable, normalment per l\'àudio amb drets d\'autor',
             'download_failed' => 'No s\'ha pogut baixar el vídeo',
             'post_creation_failed' => 'No s\'han pogut crear les publicacions',

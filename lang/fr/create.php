@@ -114,7 +114,7 @@ return [
             'subtitle' => 'Commencez par les formats qui fonctionnent pour la plupart des comptes.',
         ],
         'see_all' => 'Tout voir',
-        'by_trypost' => 'Par TryPost',
+        'by_trypost' => 'Par SocialGest',
         'by_author' => 'Par :name',
         'copy' => 'Copier le modèle',
         'copied' => 'Copié',

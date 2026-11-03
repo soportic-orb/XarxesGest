@@ -8,9 +8,9 @@ return [
         'title_error' => 'Coś poszło nie tak',
         'closing' => 'To okno zamknie się automatycznie.',
         'manual_close' => 'Możesz teraz zamknąć to okno.',
-        'canva_return' => 'Twój projekt jest w drodze do TryPost.',
+        'canva_return' => 'Twój projekt jest w drodze do SocialGest.',
         'title_connected' => 'Połączono',
-        'google_drive_ready' => 'Połączono z Google Drive. Wybierz plik w TryPost.',
+        'google_drive_ready' => 'Połączono z Google Drive. Wybierz plik w SocialGest.',
         'google_photos_opening' => 'Otwieranie Google Photos…',
     ],
 ];

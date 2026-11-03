@@ -8,9 +8,9 @@ return [
         'title_error' => 'Algo deu errado',
         'closing' => 'Esta janela será fechada automaticamente.',
         'manual_close' => 'Você já pode fechar esta janela.',
-        'canva_return' => 'Seu design está a caminho do TryPost.',
+        'canva_return' => 'Seu design está a caminho do SocialGest.',
         'title_connected' => 'Conectado',
-        'google_drive_ready' => 'O Google Drive está conectado. Escolha seu arquivo no TryPost.',
+        'google_drive_ready' => 'O Google Drive está conectado. Escolha seu arquivo no SocialGest.',
         'google_photos_opening' => 'Abrindo o Google Photos…',
     ],
 ];

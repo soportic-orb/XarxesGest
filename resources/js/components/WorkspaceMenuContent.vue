@@ -145,6 +145,8 @@ const handleLogout = (): void => {
 };
 
 const showChatSupport = computed(() => page.props.selfHosted === false);
+/** Discord, feature requests and GitHub are TryPost Cloud's community; self-hosted installs (SocialGest) do not show them. */
+const showCommunity = computed(() => page.props.selfHosted === false);
 const showChangelog = computed(() => Boolean(page.props.changelog));
 const { openList: openChangelog } = useChangelogDialog();
 
@@ -459,6 +461,7 @@ const supportLinks = [
                         <IconSparkles />
                         {{ $t('sidebar.support.changelog') }}
                     </DropdownMenuItem>
+                    <template v-if="showCommunity">
                     <DropdownMenuSeparator />
                     <DropdownMenuLabel
                         class="px-2 py-1.5 text-xs font-medium tracking-normal text-muted-foreground normal-case"
@@ -481,6 +484,7 @@ const supportLinks = [
                             {{ $t(link.label) }}
                         </a>
                     </DropdownMenuItem>
+                    </template>
                     <template v-if="showChatSupport">
                         <DropdownMenuSeparator />
                         <DropdownMenuLabel

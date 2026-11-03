@@ -114,7 +114,7 @@ return [
             'subtitle' => 'Çoğu hesapta işe yarayan biçimlerle başlayın.',
         ],
         'see_all' => 'Tümünü gör',
-        'by_trypost' => 'TryPost tarafından',
+        'by_trypost' => 'SocialGest tarafından',
         'by_author' => 'Oluşturan: :name',
         'copy' => 'Şablonu kopyala',
         'copied' => 'Kopyalandı',

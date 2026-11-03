@@ -114,7 +114,7 @@ return [
             'subtitle' => 'ابدأ بالصيغ التي تناسب معظم الحسابات.',
         ],
         'see_all' => 'عرض الكل',
-        'by_trypost' => 'من TryPost',
+        'by_trypost' => 'من SocialGest',
         'by_author' => 'بواسطة :name',
         'copy' => 'نسخ القالب',
         'copied' => 'تم النسخ',

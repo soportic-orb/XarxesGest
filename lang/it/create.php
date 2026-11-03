@@ -114,7 +114,7 @@ return [
             'subtitle' => 'Parti dai formati che funzionano per la maggior parte degli account.',
         ],
         'see_all' => 'Vedi tutti',
-        'by_trypost' => 'Di TryPost',
+        'by_trypost' => 'Di SocialGest',
         'by_author' => 'Di :name',
         'copy' => 'Copia modello',
         'copied' => 'Copiato',

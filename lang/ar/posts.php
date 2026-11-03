@@ -81,8 +81,8 @@ return [
             'edit_in_canva' => 'تعديل :name في Canva',
             'errors' => [
                 'import_failed' => 'تعذّر استيراد الملف. حاول مرة أخرى.',
-                'popup_blocked' => 'حظر متصفحك النافذة. اسمح بالنوافذ المنبثقة لـ TryPost وحاول مرة أخرى.',
-                'scope_not_granted' => 'يحتاج TryPost إلى الوصول إلى الملف الذي تختاره. حاول مرة أخرى واسمح بذلك.',
+                'popup_blocked' => 'حظر متصفحك النافذة. اسمح بالنوافذ المنبثقة لـ SocialGest وحاول مرة أخرى.',
+                'scope_not_granted' => 'يحتاج SocialGest إلى الوصول إلى الملف الذي تختاره. حاول مرة أخرى واسمح بذلك.',
                 'session_expired' => 'انتهت جلستك. افتح المصدر مرة أخرى.',
                 'video_not_ready' => 'لا يزال Google Photos يعالج هذا الفيديو. حاول مرة أخرى بعد بضع دقائق.',
                 'google_connect_failed' => 'تعذر الاتصال بـ Google. حاول مرة أخرى.',
@@ -384,7 +384,7 @@ return [
                 'play' => 'تشغيل المعاينة',
                 'pause' => 'إيقاف المعاينة',
                 'remove' => 'إزالة الموسيقى',
-                'part_hint' => 'لا يسمح Instagram لـ TryPost باختيار الجزء الذي يتم تشغيله من المقطع.',
+                'part_hint' => 'لا يسمح Instagram لـ SocialGest باختيار الجزء الذي يتم تشغيله من المقطع.',
                 'volume' => 'مستوى الصوت',
                 'video_volume' => 'الفيديو',
                 'audio_volume' => 'الموسيقى',
@@ -1041,7 +1041,7 @@ return [
         ],
         'created_by' => 'أنشأه :name :when',
         'welcome' => [
-            'title' => 'مرحبًا بك في TryPost 👋',
+            'title' => 'مرحبًا بك في SocialGest 👋',
             'description' => 'اربط قناة لتبدأ في تخطيط منشوراتك ونشرها.',
             'invite' => 'ادعُ فريقك',
             'connect_more' => 'ربط المزيد من القنوات',

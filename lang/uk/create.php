@@ -114,7 +114,7 @@ return [
             'subtitle' => 'Почніть із форматів, що працюють для більшості акаунтів.',
         ],
         'see_all' => 'Показати всі',
-        'by_trypost' => 'Від TryPost',
+        'by_trypost' => 'Від SocialGest',
         'by_author' => 'Від :name',
         'copy' => 'Копіювати шаблон',
         'copied' => 'Скопійовано',

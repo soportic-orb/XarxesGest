@@ -20,8 +20,8 @@ return [
     'throttle' => 'Trop de tentatives de connexion. Veuillez réessayer dans :seconds secondes.',
 
     'flash' => [
-        'welcome' => 'Bienvenue sur TryPost !',
-        'welcome_trial' => 'Bienvenue sur TryPost ! Votre essai a commencé.',
+        'welcome' => 'Bienvenue sur SocialGest !',
+        'welcome_trial' => 'Bienvenue sur SocialGest ! Votre essai a commencé.',
     ],
 
     'legal' => 'En continuant, vous acceptez nos <a href=":terms_url" target="_blank">Conditions d\'utilisation</a> et notre <a href=":privacy_url" target="_blank">Politique de confidentialité</a>.',
@@ -60,7 +60,7 @@ return [
     'github_email_unavailable' => 'Impossible de récupérer votre e-mail depuis GitHub. Rendez votre e-mail GitHub public ou accordez l\'autorisation d\'accès à l\'e-mail, puis réessayez.',
 
     'login' => [
-        'title' => 'Connexion à TryPost',
+        'title' => 'Connexion à SocialGest',
         'page_title' => 'Connexion',
         'email' => 'Adresse e-mail',
         'password' => 'Mot de passe',
@@ -74,7 +74,7 @@ return [
     ],
 
     'register' => [
-        'title' => 'Créer un compte TryPost',
+        'title' => 'Créer un compte SocialGest',
         'page_title' => 'Inscription',
         'name' => 'Nom',
         'name_placeholder' => 'Nom complet',

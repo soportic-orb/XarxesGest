@@ -35,23 +35,23 @@ $accountDeleteInvitedMemberMarkers = [
  * @var array<string, string>
  */
 $workspaceDeleteConditionalMemberMarkers = [
-    'en' => 'without another TryPost workspace',
-    'uk' => 'без іншого workspace у TryPost',
-    'pt-BR' => 'sem outro workspace no TryPost',
-    'es' => 'sin otro workspace en TryPost',
-    'ca' => 'sense un altre workspace a TryPost',
-    'fr' => 'sans autre workspace TryPost',
-    'de' => 'ohne anderen TryPost-Workspace',
-    'it' => 'senza un altro workspace TryPost',
-    'nl' => 'zonder andere TryPost-workspace',
-    'pl' => 'bez innego workspace w TryPost',
-    'el' => 'χωρίς άλλο workspace στο TryPost',
-    'ja' => '別のTryPostワークスペースがない',
-    'ko' => '다른 TryPost 워크스페이스가 없는',
-    'zh' => '没有其他 TryPost 工作区',
-    'ru' => 'без другого workspace в TryPost',
-    'tr' => 'Başka bir TryPost workspace',
-    'ar' => 'مساحة عمل أخرى في TryPost',
+    'en' => 'without another SocialGest workspace',
+    'uk' => 'без іншого workspace у SocialGest',
+    'pt-BR' => 'sem outro workspace no SocialGest',
+    'es' => 'sin otro workspace en SocialGest',
+    'ca' => 'sense un altre workspace a SocialGest',
+    'fr' => 'sans autre workspace SocialGest',
+    'de' => 'ohne anderen SocialGest-Workspace',
+    'it' => 'senza un altro workspace SocialGest',
+    'nl' => 'zonder andere SocialGest-workspace',
+    'pl' => 'bez innego workspace w SocialGest',
+    'el' => 'χωρίς άλλο workspace στο SocialGest',
+    'ja' => '別のSocialGestワークスペースがない',
+    'ko' => '다른 SocialGest 워크스페이스가 없는',
+    'zh' => '没有其他 SocialGest 工作区',
+    'ru' => 'без другого workspace в SocialGest',
+    'tr' => 'Başka bir SocialGest workspace',
+    'ar' => 'مساحة عمل أخرى في SocialGest',
 ];
 
 test('workspace delete members warning describes conditional permanent deletion', function () {
@@ -59,7 +59,7 @@ test('workspace delete members warning describes conditional permanent deletion'
 
     expect($warning)
         ->toContain('lose access')
-        ->toContain('without another TryPost workspace')
+        ->toContain('without another SocialGest workspace')
         ->toContain('permanently deleted')
         ->not->toContain('personal account');
 });
