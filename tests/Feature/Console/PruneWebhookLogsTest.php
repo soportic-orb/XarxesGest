@@ -26,6 +26,7 @@ test('deletes webhook logs older than 7 days', function () {
 });
 
 test('keeps logs exactly 7 days old', function () {
+    $this->freezeTime();
     $webhook = Webhook::factory()->create();
 
     $borderline = WebhookLog::factory()->create([

@@ -237,8 +237,8 @@ class ChannelController extends Controller
         ['selection' => $selection, 'clamped' => $clamped] = $presets->selection($request->safe()->only(['range', 'start', 'end']), $timezone);
         ['bounds' => $bounds, 'range' => $current] = $analytics->resolveRange($workspace, $selection, [$accountKey], $clamped);
         $report = $analytics->execute($workspace, $current, $bounds, $account, $accountKey, $request->user()->week_starts_on, $filter);
-        $sections = $export->execute($workspace, $report, $current, [$accountKey], $timezone, $filter);
-        $filename = 'trypost-insights-'.now($timezone)->toDateString().".{$format->value}";
+        $sections = $export->execute($workspace, $report, $current, [$accountKey], $timezone, $filter, compact: $format->isCompact());
+        $filename = 'socialgest-insights-'.now($timezone)->toDateString().".{$format->value}";
 
         return response()->streamDownload(function () use ($format, $sections): void {
             $stream = fopen('php://output', 'wb');

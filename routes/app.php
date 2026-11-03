@@ -33,6 +33,7 @@ use App\Http\Controllers\App\MediaAltTextController;
 use App\Http\Controllers\App\MediaFileController;
 use App\Http\Controllers\App\MediaImportController;
 use App\Http\Controllers\App\MediaUploadController;
+use App\Http\Controllers\App\MonthlyReportController;
 use App\Http\Controllers\App\PinterestBoardController;
 use App\Http\Controllers\App\PostAiAssistantController;
 use App\Http\Controllers\App\PostApprovalController;
@@ -240,6 +241,10 @@ Route::middleware(['auth', EnsureAccountReady::class, EnsureHasWorkspace::class]
     Route::get('insights/download/{format}', [InsightsController::class, 'download'])
         ->whereIn('format', ExportFormat::values())
         ->name('app.insights.download');
+    Route::get('insights/reports', [MonthlyReportController::class, 'index'])->name('app.insights.reports.index');
+    Route::post('insights/reports', [MonthlyReportController::class, 'store'])->middleware('throttle:5,60')->name('app.insights.reports.store');
+    Route::get('insights/reports/{report}', [MonthlyReportController::class, 'show'])->whereUuid('report')->name('app.insights.reports.show');
+    Route::get('insights/reports/{report}/pdf', [MonthlyReportController::class, 'download'])->whereUuid('report')->name('app.insights.reports.download');
     Route::get('insights/publications/{publication}/details', [InsightsController::class, 'publication'])
         ->whereUuid('publication')
         ->name('app.insights.publications.details');

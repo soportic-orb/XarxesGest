@@ -126,6 +126,11 @@ export default {
             : '';
     },
 
+    /** A month written `YYYY-MM` as its name and year: "October 2026", "octubre de 2026". */
+    formatMonthName(month: string): string {
+        return localized(`${month}-01`).format('MMMM YYYY');
+    },
+
     formatDate(date: string | null | undefined) {
         if (!date) return '-';
         return dayjs.utc(date).tz(getUserTimezone()).format('LL');

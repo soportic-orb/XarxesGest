@@ -111,6 +111,11 @@ class Workspace extends Model
         return $this->hasMany(WorkspaceSignature::class);
     }
 
+    public function monthlyReports(): HasMany
+    {
+        return $this->hasMany(MonthlyReport::class);
+    }
+
     public function labels(): HasMany
     {
         return $this->hasMany(WorkspaceLabel::class);
