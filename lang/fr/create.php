@@ -10,6 +10,18 @@ return [
         'feeds' => 'Flux',
     ],
     'ideas' => [
+        'proposals' => [
+            'label' => 'Proposition IA',
+            'button' => 'Proposer via les tendances',
+            'queued' => 'Recherche des tendances de la semaine en cours. Les propositions apparaîtront dans le tableau d\'ici quelques minutes.',
+            'missing_profile' => 'Vous n\'avez pas encore rempli le profil de cette marque. Pour obtenir des propositions à partir des tendances, indiquez ce que fait la marque dans les paramètres de l\'espace de travail.',
+            'missing_profile_member' => 'Le profil de cette marque n\'est pas encore rempli. Pour obtenir des propositions à partir des tendances, un administrateur de l\'espace de travail doit indiquer ce que fait la marque dans les paramètres.',
+            'open_settings' => 'Ouvrir les paramètres',
+            'errors' => [
+                'no_brand_profile' => 'Indiquez ce que fait la marque dans les paramètres de l\'espace de travail pour obtenir des propositions.',
+                'failed' => 'Impossible de lancer la recherche. Réessayez.',
+            ],
+        ],
         'title' => 'Idées',
         'new' => 'Nouvelle idée',
         'board' => 'Tableau',

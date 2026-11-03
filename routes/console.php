@@ -18,6 +18,7 @@ use App\Console\Commands\Repurpose\PollRepurposes;
 use App\Console\Commands\ResolveTikTokVideoIds;
 use App\Console\Commands\RssFeed\PollRssFeeds;
 use App\Console\Commands\SyncPostHogLifecycleStages;
+use App\Console\Commands\XarxesGest\ProposeTrendIdeasCommand;
 use App\Enums\SocialAccount\Platform;
 use App\Jobs\Analytics\FinalizeAccountDailySnapshots;
 use App\Services\PostHogService;
@@ -25,6 +26,7 @@ use App\Support\Analytics\DiscoverySchedule;
 use Illuminate\Support\Facades\Schedule;
 
 Schedule::command(ProcessScheduledPosts::class)->everyMinute()->withoutOverlapping()->onOneServer();
+Schedule::command(ProposeTrendIdeasCommand::class)->weeklyOn(1, '05:40')->withoutOverlapping()->onOneServer();
 Schedule::command(CheckSocialConnections::class)->daily()->withoutOverlapping()->onOneServer();
 Schedule::command(CheckUpcomingPostConnections::class)->everyFifteenMinutes()->withoutOverlapping()->onOneServer();
 Schedule::command(RefreshExpiringTokens::class)->everyFifteenMinutes()->withoutOverlapping()->onOneServer();

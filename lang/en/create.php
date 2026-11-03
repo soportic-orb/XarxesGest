@@ -10,6 +10,18 @@ return [
         'feeds' => 'Feeds',
     ],
     'ideas' => [
+        'proposals' => [
+            'label' => 'AI proposal',
+            'button' => 'Propose from trends',
+            'queued' => 'Looking for this week\'s trends. The proposals will appear on the board in a few minutes.',
+            'missing_profile' => 'You haven\'t filled in this brand\'s profile yet. To get proposals from trends, add what the brand does in the workspace settings.',
+            'missing_profile_member' => 'This brand\'s profile isn\'t filled in yet. To get proposals from trends, a workspace admin needs to add what the brand does in the workspace settings.',
+            'open_settings' => 'Open settings',
+            'errors' => [
+                'no_brand_profile' => 'Add what the brand does in the workspace settings to get proposals.',
+                'failed' => 'Couldn\'t start the search. Try again.',
+            ],
+        ],
         'title' => 'Ideas',
         'new' => 'New idea',
         'board' => 'Board',

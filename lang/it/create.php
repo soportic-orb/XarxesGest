@@ -10,6 +10,18 @@ return [
         'feeds' => 'Feed',
     ],
     'ideas' => [
+        'proposals' => [
+            'label' => 'Proposta IA',
+            'button' => 'Proponi dai trend',
+            'queued' => 'Stiamo cercando i trend di questa settimana. Le proposte compariranno nella bacheca tra qualche minuto.',
+            'missing_profile' => 'Non hai ancora compilato il profilo di questo brand. Per ricevere proposte dai trend, indica cosa fa il brand nelle impostazioni del workspace.',
+            'missing_profile_member' => 'Il profilo di questo brand non è ancora compilato. Per ricevere proposte dai trend, un amministratore del workspace deve indicare cosa fa il brand nelle impostazioni del workspace.',
+            'open_settings' => 'Apri le impostazioni',
+            'errors' => [
+                'no_brand_profile' => 'Indica cosa fa il brand nelle impostazioni del workspace per ricevere proposte.',
+                'failed' => 'Impossibile avviare la ricerca. Riprova.',
+            ],
+        ],
         'title' => 'Idee',
         'new' => 'Nuova idea',
         'board' => 'Bacheca',

@@ -10,6 +10,18 @@ return [
         'feeds' => 'Feeds',
     ],
     'ideas' => [
+        'proposals' => [
+            'label' => 'AI-voorstel',
+            'button' => 'Voorstellen uit trends',
+            'queued' => 'We zoeken de trends van deze week. De voorstellen verschijnen over een paar minuten op het bord.',
+            'missing_profile' => 'Je hebt het profiel van dit merk nog niet ingevuld. Voor voorstellen uit trends geef je in de workspace-instellingen aan wat het merk doet.',
+            'missing_profile_member' => 'Het profiel van dit merk is nog niet ingevuld. Voor voorstellen uit trends moet een workspacebeheerder in de workspace-instellingen aangeven wat het merk doet.',
+            'open_settings' => 'Instellingen openen',
+            'errors' => [
+                'no_brand_profile' => 'Geef in de workspace-instellingen aan wat het merk doet om voorstellen te krijgen.',
+                'failed' => 'De zoekopdracht kon niet starten. Probeer het opnieuw.',
+            ],
+        ],
         'title' => 'Ideeën',
         'new' => 'Nieuw idee',
         'board' => 'Bord',

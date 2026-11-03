@@ -236,4 +236,8 @@ return [
     'posts.composer.ai_image.aspects.square' => 12,
     'posts.composer.ai_image.aspects.portrait' => 12,
     'posts.composer.ai_image.aspects.landscape' => 12,
+    'create.ideas.proposals.button' => 26,
+    'create.ideas.proposals.label' => 18,
+    'create.ideas.proposals.open_settings' => 22,
+    'settings.workspace.brand_profile.save' => 26,
 ];

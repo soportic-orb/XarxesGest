@@ -10,6 +10,18 @@ return [
         'feeds' => 'Fonts',
     ],
     'ideas' => [
+        'proposals' => [
+            'label' => 'Proposta de la IA',
+            'button' => 'Proposa segons tendències',
+            'queued' => 'Estem buscant les tendències d\'aquesta setmana. Les propostes apareixeran al tauler en uns minuts.',
+            'missing_profile' => 'Encara no has omplert el perfil d\'aquesta marca. Per rebre propostes a partir de tendències, indica què fa la marca a la configuració del workspace.',
+            'missing_profile_member' => 'Encara no s\'ha omplert el perfil d\'aquesta marca. Per rebre propostes a partir de tendències, un administrador del workspace ha d\'indicar què fa la marca a la configuració del workspace.',
+            'open_settings' => 'Obre la configuració',
+            'errors' => [
+                'no_brand_profile' => 'Indica què fa la marca a la configuració del workspace per rebre propostes.',
+                'failed' => 'No s\'ha pogut iniciar la cerca. Torna-ho a provar.',
+            ],
+        ],
         'title' => 'Idees',
         'new' => 'Nova idea',
         'board' => 'Tauler',
