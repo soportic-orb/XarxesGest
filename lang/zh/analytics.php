@@ -114,6 +114,14 @@ return [
     ],
 
     'channel' => [
+        'best_times' => [
+            'title' => '最佳发布时间',
+            'info' => '按星期和小时显示你在此频道的帖子何时获得最多互动，以频道所在时区为准。数据足够时，生成队列发布时间也会参考这些数据。',
+            'based_on' => '基于最近 6 个月的 :count 篇帖子',
+            'not_enough' => '数据还不够：最近 6 个月已统计的帖子为 :count/:minimum 篇。继续发布，最佳时间就会显示在这里。',
+            'cell' => ':day :time · :count 篇帖子',
+            'timezone' => '时间为 :timezone',
+        ],
         'title' => '全部洞察',
         'page_title' => 'Insights · :channel',
         'unsupported_title' => '此平台暂无分析数据',

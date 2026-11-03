@@ -8,6 +8,7 @@ use App\Actions\Analytics\BuildChannelMetricSeries;
 use App\Actions\Analytics\BuildFollowerGrowthRateSeries;
 use App\Actions\Analytics\BuildInsightsExport;
 use App\Actions\Analytics\BuildWorkspaceAnalyticsReport;
+use App\Actions\Analytics\ComputeBestPostingTimes;
 use App\Actions\Analytics\ListAvailableChannelMetrics;
 use App\Actions\Analytics\ListChannelPublicationPerformance;
 use App\Actions\Analytics\ResolveAnalyticsAccountKey;
@@ -135,6 +136,7 @@ class ChannelController extends Controller
         ListChannelPublicationPerformance $performance,
         BuildChannelMetricSeries $series,
         BuildFollowerGrowthRateSeries $growthRate,
+        ComputeBestPostingTimes $bestPostingTimes,
     ): Response {
         $workspace = $request->user()->currentWorkspace;
         $this->authorize('view', $workspace);
@@ -206,6 +208,7 @@ class ChannelController extends Controller
                         : null,
                 ];
             }),
+            'bestTimes' => Inertia::defer(fn (): array => $bestPostingTimes->handle($account)->toArray()),
             'publications' => function () use ($resolve, $performance, $account, $accountKey, $period, $sort, $filter, $request): LengthAwarePaginator {
                 $current = data_get($resolve(), 'range');
 

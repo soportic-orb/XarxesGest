@@ -114,6 +114,14 @@ return [
     ],
 
     'channel' => [
+        'best_times' => [
+            'title' => '投稿に最適な時間',
+            'info' => 'このチャンネルの投稿が最もエンゲージメントを獲得した曜日と時間帯を、チャンネルのタイムゾーンで表示します。十分なデータがあれば、キューの投稿時間の自動生成にも使われます。',
+            'based_on' => '過去6か月の:count件の投稿に基づく',
+            'not_enough' => 'データがまだ足りません。過去6か月で計測済みの投稿は:minimum件中:count件です。投稿を続けると、ここに最適な時間が表示されます。',
+            'cell' => ':day :time · :count件の投稿',
+            'timezone' => ':timezoneの時間',
+        ],
         'title' => 'すべてのインサイト',
         'page_title' => 'Insights · :channel',
         'unsupported_title' => 'このネットワークの分析はありません',

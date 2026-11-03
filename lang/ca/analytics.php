@@ -114,6 +114,14 @@ return [
     ],
 
     'channel' => [
+        'best_times' => [
+            'title' => 'Millor moment per publicar',
+            'info' => 'Quan les teves publicacions d\'aquest canal han obtingut més interacció, per dia i hora, a la zona horària del canal. Quan hi ha prou dades, es fa servir per generar els horaris de publicació de la cua.',
+            'based_on' => 'Basat en :count publicacions dels últims 6 mesos',
+            'not_enough' => 'Encara no hi ha prou dades: :count de :minimum publicacions mesurades als últims 6 mesos. Continua publicant i aquí veuràs els teus millors moments.',
+            'cell' => ':day :time · :count publicacions',
+            'timezone' => 'Hores en :timezone',
+        ],
         'title' => 'Totes les estadístiques',
         'page_title' => 'Estadístiques · :channel',
         'unsupported_title' => 'No hi ha estadístiques per a aquesta xarxa',

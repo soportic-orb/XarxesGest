@@ -21,7 +21,7 @@ class RegeneratePostingSchedule
         return ReflowChannelQueue::withLock([$account->id], fn (): SocialAccount => DB::transaction(function () use ($account, $goal): SocialAccount {
             $account->update([
                 'posting_goal' => $goal,
-                'posting_schedule' => $this->generate->handle($account->platform, $goal),
+                'posting_schedule' => $this->generate->handle($account->platform, $goal, $account),
             ]);
 
             ReflowChannelQueue::handleLocked($account);

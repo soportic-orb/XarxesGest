@@ -114,6 +114,14 @@ return [
     ],
 
     'channel' => [
+        'best_times' => [
+            'title' => 'Momento migliore per postare',
+            'info' => 'Quando i tuoi post su questo canale hanno ottenuto più interazioni, per giorno e ora, nel fuso orario del canale. Quando ci sono abbastanza dati, la generazione degli orari di pubblicazione della coda li usa.',
+            'based_on' => 'In base a :count post degli ultimi 6 mesi',
+            'not_enough' => 'Dati ancora insufficienti: :count post misurati su :minimum negli ultimi 6 mesi. Continua a pubblicare e qui vedrai i tuoi momenti migliori.',
+            'cell' => ':day :time · :count post',
+            'timezone' => 'Orari in :timezone',
+        ],
         'title' => 'Tutti gli insight',
         'page_title' => 'Insights · :channel',
         'unsupported_title' => 'Nessuna analisi per questa rete',

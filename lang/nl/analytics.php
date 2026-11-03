@@ -114,6 +114,14 @@ return [
     ],
 
     'channel' => [
+        'best_times' => [
+            'title' => 'Beste tijd om te posten',
+            'info' => 'Wanneer je berichten op dit kanaal de meeste betrokkenheid kregen, per dag en uur, in de tijdzone van het kanaal. Als er genoeg gegevens zijn, gebruikt het genereren van de publicatietijden voor de wachtrij dit.',
+            'based_on' => 'Gebaseerd op :count berichten van de afgelopen 6 maanden',
+            'not_enough' => 'Nog niet genoeg gegevens: :count van de :minimum gemeten berichten in de afgelopen 6 maanden. Blijf posten, dan zie je hier je beste tijden.',
+            'cell' => ':day :time · :count berichten',
+            'timezone' => 'Tijden in :timezone',
+        ],
         'title' => 'Alle inzichten',
         'page_title' => 'Insights · :channel',
         'unsupported_title' => 'Geen analyses voor dit netwerk',

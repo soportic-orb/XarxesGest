@@ -114,6 +114,14 @@ return [
     ],
 
     'channel' => [
+        'best_times' => [
+            'title' => 'Mejor hora para publicar',
+            'info' => 'Cuándo tus publicaciones en este canal obtuvieron más interacción, por día y hora, en la zona horaria del canal. Al generar los horarios de publicación de la cola se usa este dato cuando hay suficientes datos.',
+            'based_on' => 'Basado en :count publicaciones de los últimos 6 meses',
+            'not_enough' => 'Aún no hay suficientes datos: :count de :minimum publicaciones medidas en los últimos 6 meses. Sigue publicando y aquí verás tus mejores horas.',
+            'cell' => ':day :time · :count publicaciones',
+            'timezone' => 'Horas en :timezone',
+        ],
         'title' => 'Todos los insights',
         'page_title' => 'Insights · :channel',
         'unsupported_title' => 'Sin analíticas para esta red',

@@ -114,6 +114,14 @@ return [
     ],
 
     'channel' => [
+        'best_times' => [
+            'title' => 'Najlepszy czas publikacji',
+            'info' => 'Kiedy posty na tym kanale miały największe zaangażowanie, według dnia i godziny, w strefie czasowej kanału. Gdy jest dość danych, korzysta z tego generowanie godzin publikacji dla kolejki.',
+            'based_on' => 'Na podstawie :count postów z ostatnich 6 miesięcy',
+            'not_enough' => 'Za mało danych: :count z :minimum postów z pomiarami w ostatnich 6 miesiącach. Publikuj dalej, a tutaj pojawią się najlepsze godziny.',
+            'cell' => ':day :time · postów: :count',
+            'timezone' => 'Godziny w strefie :timezone',
+        ],
         'title' => 'Wszystkie statystyki',
         'page_title' => 'Insights · :channel',
         'unsupported_title' => 'Brak statystyk dla tej sieci',
