@@ -2,6 +2,7 @@
 
 declare(strict_types=1);
 
+use App\Actions\Analytics\BuildInsightsExport;
 use App\Enums\SocialAccount\Platform;
 use App\Enums\User\Locale;
 use App\Jobs\Analytics\BootstrapAccountAnalytics;
@@ -107,7 +108,7 @@ test('the CSV export streams the summary, performance, followers and posts the p
 
     $response->assertOk()
         ->assertHeader('Content-Type', 'text/csv; charset=UTF-8')
-        ->assertDownload('trypost-insights-2026-09-30.csv');
+        ->assertDownload('socialgest-insights-2026-09-30.csv');
 
     $content = $response->streamedContent();
     $rows = insightsCsvRows($content);
@@ -141,7 +142,7 @@ test('the Markdown export renders each section as a table', function () {
 
     $response->assertOk()
         ->assertHeader('Content-Type', 'text/markdown; charset=UTF-8')
-        ->assertDownload('trypost-insights-2026-09-30.md');
+        ->assertDownload('socialgest-insights-2026-09-30.md');
 
     $content = $response->streamedContent();
 
@@ -152,6 +153,18 @@ test('the Markdown export renders each section as a table', function () {
         ->toContain("\n## Followers\n")
         ->toContain("\n## Posts\n")
         ->toContain('| 2026-09-16 09:30 | bravo | Facebook Page |');
+});
+
+test('the PDF export is a document with the compact tables', function () {
+    $response = $this->actingAs($this->user)->get(insightsExportRoute('pdf'));
+
+    $response->assertOk()
+        ->assertHeader('Content-Type', 'application/pdf')
+        ->assertDownload('socialgest-insights-2026-09-30.pdf');
+
+    expect($response->streamedContent())->toStartWith('%PDF')
+        ->and(data_get(app(BuildInsightsExport::class)->tables([], compact: true), '1.headers'))
+        ->toBe(['Channel', 'Network', 'Posts', 'Reactions', 'Comments', 'Eng. Rate', 'Impressions', 'Reach']);
 });
 
 test('the export applies the channel filter of the page', function () {

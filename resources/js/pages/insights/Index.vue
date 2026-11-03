@@ -1,6 +1,6 @@
 <script setup lang="ts">
-import { Head, router } from '@inertiajs/vue3';
-import { IconTrendingUp } from '@tabler/icons-vue';
+import { Head, Link, router } from '@inertiajs/vue3';
+import { IconReportAnalytics, IconTrendingUp } from '@tabler/icons-vue';
 import { computed, ref, watch } from 'vue';
 
 import AnalyticsRangePresets from '@/components/analytics/AnalyticsRangePresets.vue';
@@ -16,10 +16,12 @@ import TopPosts from '@/components/analytics/workspace/TopPosts.vue';
 import EmptyState from '@/components/EmptyState.vue';
 import HeaderTitle from '@/components/HeaderTitle.vue';
 import PostChannelFilter from '@/components/posts/PostChannelFilter.vue';
+import { Button } from '@/components/ui/button';
 import { useAnalyticsCoveragePoll } from '@/composables/useAnalyticsCoveragePoll';
 import AppLayout from '@/layouts/AppLayout.vue';
 import { accountColor } from '@/lib/analyticsColors';
 import { insights as insightsRoute } from '@/routes/app';
+import { index as reportsIndex } from '@/routes/app/insights/reports';
 import type {
     AnalyticsChannelOption,
     InsightsSyncCadence,
@@ -123,6 +125,21 @@ const accountColors = computed<Record<string, string>>(() => {
                             :cadence="sync"
                             :coverage="report.coverage"
                         />
+                        <Button
+                            variant="outline"
+                            class="max-sm:size-8 max-sm:px-0"
+                            as-child
+                        >
+                            <Link
+                                :href="reportsIndex.url()"
+                                data-testid="insights-monthly-reports"
+                            >
+                                <IconReportAnalytics aria-hidden="true" />
+                                <span class="max-sm:sr-only">{{
+                                    $t('analytics.reports.nav')
+                                }}</span>
+                            </Link>
+                        </Button>
                         <InsightsExportMenu
                             :query="{ ...rangeQuery(), ...filterQuery }"
                         />

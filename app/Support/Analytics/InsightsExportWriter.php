@@ -5,9 +5,11 @@ declare(strict_types=1);
 namespace App\Support\Analytics;
 
 use App\Enums\Analytics\ExportFormat;
+use App\Enums\User\Locale;
+use Barryvdh\DomPDF\Facade\Pdf;
 
 /**
- * Writes the sections built by BuildInsightsExport as CSV or Markdown.
+ * Writes the sections built by BuildInsightsExport as CSV, Markdown or PDF.
  */
 class InsightsExportWriter
 {
@@ -20,7 +22,24 @@ class InsightsExportWriter
         match ($format) {
             ExportFormat::Csv => self::csv($export, $stream),
             ExportFormat::Markdown => self::markdown($export, $stream),
+            ExportFormat::Pdf => fwrite($stream, self::pdf($export)),
         };
+    }
+
+    /**
+     * The export as a landscape A4 PDF, with the summary Claude wrote for a
+     * monthly report above the tables when there is one.
+     *
+     * @param  array{title: string, meta: list<array{0: string, 1: string}>, sections: list<array{title: string, headers: list<string>, rows: iterable<list<int|float|string|null>>}>}  $export
+     * @param  array{headline: string, highlights: list<string>, recommendations: list<string>}|null  $summary
+     */
+    public static function pdf(array $export, ?array $summary = null): string
+    {
+        return Pdf::loadView('pdf.report', [
+            'export' => $export,
+            'summary' => $summary,
+            'direction' => Locale::tryFrom(app()->getLocale())?->direction() ?? 'ltr',
+        ])->setPaper('a4', 'landscape')->output();
     }
 
     /**

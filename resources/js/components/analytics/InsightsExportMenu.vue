@@ -3,6 +3,7 @@ import {
     IconChevronDown,
     IconDownload,
     IconFileText,
+    IconFileTypePdf,
     IconMarkdown,
 } from '@tabler/icons-vue';
 import { computed } from 'vue';
@@ -42,6 +43,12 @@ const formats = computed(() => [
         label: 'analytics.insights.export.markdown',
         icon: IconMarkdown,
         href: hrefFor('md'),
+    },
+    {
+        format: 'pdf',
+        label: 'analytics.insights.export.pdf',
+        icon: IconFileTypePdf,
+        href: hrefFor('pdf'),
     },
 ]);
 </script>

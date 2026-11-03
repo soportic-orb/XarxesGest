@@ -8,6 +8,7 @@ enum ExportFormat: string
 {
     case Csv = 'csv';
     case Markdown = 'md';
+    case Pdf = 'pdf';
 
     /**
      * @return list<string>
@@ -22,6 +23,13 @@ enum ExportFormat: string
         return match ($this) {
             self::Csv => 'text/csv; charset=UTF-8',
             self::Markdown => 'text/markdown; charset=UTF-8',
+            self::Pdf => 'application/pdf',
         };
+    }
+
+    /** A PDF has a page width: its tables keep fewer columns and rows. */
+    public function isCompact(): bool
+    {
+        return $this === self::Pdf;
     }
 }

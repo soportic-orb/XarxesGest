@@ -13,6 +13,7 @@ use App\Models\Workspace;
 use App\Support\Analytics\EngagementRate;
 use Carbon\CarbonImmutable;
 use Generator;
+use Illuminate\Support\Str;
 
 /**
  * Turns the Insights report the page shows into translated export sections.
@@ -25,15 +26,24 @@ class BuildInsightsExport
         'reactions', 'comments', 'engagement_rate', 'reposts', 'impressions', 'clicks', 'views', 'shares', 'saves', 'reach',
     ];
 
+    /** The columns a page-wide document (the PDF) keeps of each table. */
+    private const array COMPACT_METRICS = ['posts', 'reactions', 'comments', 'engagement_rate', 'impressions', 'reach'];
+
+    /** The most recent posts a page-wide document lists; the CSV and Markdown keep them all. */
+    public const int COMPACT_POST_LIMIT = 100;
+
     public function __construct(private readonly BuildPublicationAnalyticsReport $publications) {}
 
     /**
      * @param  array<string, mixed>  $report  The report built for the page.
      * @param  list<string>|null  $accountKeys
+     * @param  bool  $compact  Fewer columns and at most COMPACT_POST_LIMIT posts, for a document with a page width.
      * @return array{title: string, meta: list<array{0: string, 1: string}>, sections: list<array{title: string, headers: list<string>, rows: iterable<list<int|float|string|null>>}>}
      */
-    public function execute(Workspace $workspace, array $report, DateRange $range, ?array $accountKeys, string $timezone, ?PublicationFilter $filter = null): array
+    public function execute(Workspace $workspace, array $report, DateRange $range, ?array $accountKeys, string $timezone, ?PublicationFilter $filter = null, bool $compact = false): array
     {
+        $postMetrics = $compact ? array_values(array_intersect(self::POST_METRICS, self::COMPACT_METRICS)) : self::POST_METRICS;
+
         return [
             'title' => __('analytics.title'),
             'meta' => [
@@ -42,23 +52,38 @@ class BuildInsightsExport
                 [__('analytics.insights.export.generated_at'), now($timezone)->format('Y-m-d H:i')],
             ],
             'sections' => [
-                $this->summary($report),
-                $this->performance($report),
-                $this->followers($report),
+                ...$this->tables($report, $compact),
                 [
                     'title' => __('analytics.dashboard.posts'),
                     'headers' => [
                         __('analytics.insights.export.published_at'),
                         __('analytics.dashboard.channel'),
                         __('analytics.insights.export.network'),
-                        __('analytics.insights.export.content_type'),
+                        ...($compact ? [] : [__('analytics.insights.export.content_type')]),
                         __('analytics.insights.export.text'),
-                        __('analytics.insights.export.link'),
-                        ...array_map(fn (string $metric): string => $this->metricLabel($metric), self::POST_METRICS),
+                        ...($compact ? [] : [__('analytics.insights.export.link')]),
+                        ...array_map(fn (string $metric): string => $this->metricLabel($metric), $postMetrics),
                     ],
-                    'rows' => $this->posts($workspace, $range, $accountKeys, $timezone, $filter),
+                    'rows' => $this->posts($workspace, $range, $accountKeys, $timezone, $filter, $compact ? $postMetrics : null),
                 ],
             ],
+        ];
+    }
+
+    /**
+     * The summary, per-channel performance and followers tables of a report,
+     * translated in the current locale. A monthly report renders its stored
+     * values through this too.
+     *
+     * @param  array<string, mixed>  $report
+     * @return list<array{title: string, headers: list<string>, rows: list<list<int|float|string|null>>}>
+     */
+    public function tables(array $report, bool $compact = false): array
+    {
+        return [
+            $this->summary($report),
+            $this->performance($report, $compact),
+            $this->followers($report),
         ];
     }
 
@@ -99,19 +124,23 @@ class BuildInsightsExport
      * @param  array<string, mixed>  $report
      * @return array{title: string, headers: list<string>, rows: list<list<int|float|string|null>>}
      */
-    private function performance(array $report): array
+    private function performance(array $report, bool $compact): array
     {
+        $metrics = $compact
+            ? array_values(array_intersect(BuildPublicationAnalyticsReport::PERFORMANCE_METRICS, self::COMPACT_METRICS))
+            : BuildPublicationAnalyticsReport::PERFORMANCE_METRICS;
+
         return [
             'title' => __('analytics.dashboard.performance'),
             'headers' => [
                 __('analytics.dashboard.channel'),
                 __('analytics.insights.export.network'),
-                ...array_map(fn (string $metric): string => $this->metricLabel($metric), BuildPublicationAnalyticsReport::PERFORMANCE_METRICS),
+                ...array_map(fn (string $metric): string => $this->metricLabel($metric), $metrics),
             ],
             'rows' => array_map(fn (array $row): array => [
                 $this->accountName($row),
                 $this->network(data_get($row, 'platform')),
-                ...array_map(fn (string $metric): int|float|null => data_get($row, "{$metric}.value"), BuildPublicationAnalyticsReport::PERFORMANCE_METRICS),
+                ...array_map(fn (string $metric): int|float|null => data_get($row, "{$metric}.value"), $metrics),
             ], (array) data_get($report, 'performance', [])),
         ];
     }
@@ -141,13 +170,15 @@ class BuildInsightsExport
 
     /**
      * @param  list<string>|null  $accountKeys
+     * @param  list<string>|null  $compactMetrics  The metric columns of a compact table, which also drops the content type and link and stops at COMPACT_POST_LIMIT rows.
      * @return Generator<int, list<int|float|string|null>>
      */
-    private function posts(Workspace $workspace, DateRange $range, ?array $accountKeys, string $timezone, ?PublicationFilter $filter): Generator
+    private function posts(Workspace $workspace, DateRange $range, ?array $accountKeys, string $timezone, ?PublicationFilter $filter, ?array $compactMetrics = null): Generator
     {
         $rows = $this->publications->query($workspace, $range->startsAt(), $range->endsAt(), $accountKeys, $filter)
             ->orderByDesc('publication.provider_published_at')
             ->orderBy('publication.id')
+            ->when($compactMetrics !== null, fn ($query) => $query->limit(self::COMPACT_POST_LIMIT))
             ->cursor();
 
         foreach ($rows as $row) {
@@ -165,9 +196,24 @@ class BuildInsightsExport
                 'reach' => $this->integer($row->reach_count),
             ];
 
+            $publishedAt = CarbonImmutable::parse($row->provider_published_at, 'UTC')->setTimezone($timezone)->format('Y-m-d H:i');
+            $channel = $this->accountName(['username' => $row->account_username, 'name' => $row->account_display_name, 'platform' => $row->platform]);
+
+            if ($compactMetrics !== null) {
+                yield [
+                    $publishedAt,
+                    $channel,
+                    $this->network($row->platform),
+                    Str::limit((string) $row->excerpt, 160),
+                    ...array_values(array_intersect_key($values, array_flip($compactMetrics))),
+                ];
+
+                continue;
+            }
+
             yield [
-                CarbonImmutable::parse($row->provider_published_at, 'UTC')->setTimezone($timezone)->format('Y-m-d H:i'),
-                $this->accountName(['username' => $row->account_username, 'name' => $row->account_display_name, 'platform' => $row->platform]),
+                $publishedAt,
+                $channel,
                 $this->network($row->platform),
                 __("analytics.detail.content_types.{$row->content_type}"),
                 $row->excerpt,

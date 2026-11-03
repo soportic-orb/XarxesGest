@@ -321,3 +321,37 @@ export interface BestPostingTimes {
     grid: BestPostingTimeSlot[][];
     windows: { day: number; hour: number }[];
 }
+
+/** A monthly report in the list (`MonthlyReportResource`). */
+export interface MonthlyReportListItem {
+    id: string;
+    /** `YYYY-MM` */
+    month: string;
+    headline: string | null;
+    posts: number | null;
+    generated_at: string;
+}
+
+/** A table of a report document: translated headers and raw cells. */
+export interface ReportDocumentSection {
+    title: string;
+    headers: string[];
+    rows: (string | number | null)[][];
+}
+
+/** The summary Claude wrote for a monthly report. */
+export interface MonthlyReportSummary {
+    headline: string;
+    highlights: string[];
+    recommendations: string[];
+}
+
+/** A monthly report with its summary and tables (`MonthlyReportController@show`). */
+export interface MonthlyReportDetail extends MonthlyReportListItem {
+    summary: MonthlyReportSummary | null;
+    document: {
+        title: string;
+        meta: [string, string][];
+        sections: ReportDocumentSection[];
+    };
+}

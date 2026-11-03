@@ -18,6 +18,7 @@ use App\Models\IdeaStage;
 use App\Models\Invite;
 use App\Models\Media;
 use App\Models\MediaSourceConnection;
+use App\Models\MonthlyReport;
 use App\Models\NotificationPreference;
 use App\Models\Offer;
 use App\Models\Plan;
@@ -136,6 +137,7 @@ class AppServiceProvider extends ServiceProvider
             'webhookLog' => WebhookLog::class,
             'workspace' => Workspace::class,
             'workspaceLabel' => WorkspaceLabel::class,
+            'monthlyReport' => MonthlyReport::class,
             'workspaceSignature' => WorkspaceSignature::class,
         ]);
     }
