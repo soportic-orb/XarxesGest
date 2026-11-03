@@ -8,7 +8,7 @@ return [
         'tagline' => 'Enviat per l\'equip de :brand',
         'manage_notifications' => 'Gestiona les notificacions',
         'signoff' => 'Salutacions cordials,',
-        'team' => 'L\'equip de TryPost',
+        'team' => 'L\'equip de SocialGest',
     ],
 
     'account_disconnected' => [
@@ -19,7 +19,7 @@ return [
         'intro' => 'El compte següent s\'ha desconnectat del workspace :workspace.',
         'reasons_title' => 'Això pot haver passat perquè:',
         'reason_expired' => 'El teu token d\'accés ha caducat',
-        'reason_revoked' => 'Has revocat l\'accés a TryPost',
+        'reason_revoked' => 'Has revocat l\'accés a SocialGest',
         'reason_error' => 'Hi ha hagut un error d\'autenticació',
         'reconnect_cta' => 'Torna a connectar el teu compte per continuar programant i publicant publicacions.',
         'button' => 'Torna a connectar el compte',
@@ -120,7 +120,7 @@ return [
         'heading' => 'La teva publicació s\'ha publicat',
         'body' => 'La teva publicació al workspace :workspace s\'ha publicat correctament.',
         'button' => 'Mostra a la xarxa',
-        'open_in_app' => 'Obre a TryPost',
+        'open_in_app' => 'Obre a SocialGest',
     ],
 
     'webhook_paused' => [
@@ -140,7 +140,7 @@ return [
         'intro' => 'Els comptes socials següents del teu workspace <strong>:workspace</strong> s\'han desconnectat i cal tornar-los a connectar:',
         'reasons_title' => 'Això pot haver passat perquè:',
         'reason_expired' => 'Els tokens d\'accés han caducat',
-        'reason_revoked' => 'Has revocat l\'accés a TryPost a la plataforma',
+        'reason_revoked' => 'Has revocat l\'accés a SocialGest a la plataforma',
         'reason_changed' => 'La plataforma ha canviat els seus requisits d\'autenticació',
         'reconnect_cta' => 'Torna a connectar aquests comptes per continuar programant i publicant publicacions.',
         'button' => 'Torna a connectar els comptes',

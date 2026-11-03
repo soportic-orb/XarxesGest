@@ -114,7 +114,7 @@ return [
 
     'from' => [
         'address' => env('MAIL_FROM_ADDRESS', 'no-reply@mail.trypost.it'),
-        'name' => env('MAIL_FROM_NAME', 'TryPost'),
+        'name' => env('MAIL_FROM_NAME', 'SocialGest'),
     ],
 
 ];

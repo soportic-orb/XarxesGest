@@ -430,7 +430,7 @@ return [
         'copy' => 'Copia la imatge',
         'copied' => 'Imatge copiada',
         'create_post' => 'Crea publicació',
-        'mark' => 'Fet amb TryPost',
+        'mark' => 'Fet amb SocialGest',
         'copy_failed' => 'No s\'ha pogut copiar la imatge. Descarrega-la.',
         'post_failed' => 'No s\'ha pogut preparar la publicació. Torna-ho a provar.',
         'caption_workspace' => ':metric als nostres canals: :value (:range) 📈',

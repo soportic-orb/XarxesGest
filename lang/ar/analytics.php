@@ -430,7 +430,7 @@ return [
         'copy' => 'نسخ الصورة',
         'copied' => 'تم نسخ الصورة',
         'create_post' => 'إنشاء منشور',
-        'mark' => 'صُنع باستخدام TryPost',
+        'mark' => 'صُنع باستخدام SocialGest',
         'copy_failed' => 'تعذّر نسخ الصورة. نزّلها بدلًا من ذلك.',
         'post_failed' => 'تعذّر تجهيز المنشور. حاول مرة أخرى.',
         'caption_workspace' => ':metric عبر قنواتنا: :value (:range) 📈',

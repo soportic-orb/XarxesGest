@@ -114,7 +114,7 @@ return [
             'subtitle' => '从适用于大多数账号的格式开始。',
         ],
         'see_all' => '查看全部',
-        'by_trypost' => '来自 TryPost',
+        'by_trypost' => '来自 SocialGest',
         'by_author' => '作者：:name',
         'copy' => '复制模板',
         'copied' => '已复制',

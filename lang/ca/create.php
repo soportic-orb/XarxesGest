@@ -114,7 +114,7 @@ return [
             'subtitle' => 'Comença amb els formats que funcionen per a la majoria de comptes.',
         ],
         'see_all' => 'Mostra-ho tot',
-        'by_trypost' => 'Per TryPost',
+        'by_trypost' => 'Per SocialGest',
         'by_author' => 'Per :name',
         'copy' => 'Copia la plantilla',
         'copied' => 'Copiat',

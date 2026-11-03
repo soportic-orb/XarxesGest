@@ -1,7 +1,7 @@
 <script setup lang="ts">
 withDefaults(
     defineProps<{
-        /** `full` is the mark and the "trypost.it" wordmark, `mark` the round mark alone. */
+        /** `full` is the mark and the "SocialGest" wordmark, `mark` the round mark alone. */
         variant?: 'full' | 'mark';
     }>(),
     { variant: 'full' },
@@ -12,7 +12,7 @@ withDefaults(
     <span
         class="inline-flex shrink-0 items-center gap-[0.32em] font-logo leading-none font-bold tracking-[-0.01em] text-foreground"
         role="img"
-        aria-label="TryPost"
+        aria-label="SocialGest"
         data-testid="app-logo"
     >
         <svg
@@ -29,6 +29,6 @@ withDefaults(
                 fill="#F39200"
             />
         </svg>
-        <span v-if="variant === 'full'" aria-hidden="true">trypost.it</span>
+        <span v-if="variant === 'full'" aria-hidden="true">SocialGest</span>
     </span>
 </template>

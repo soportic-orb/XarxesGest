@@ -430,7 +430,7 @@ return [
         'copy' => 'Kopiuj obraz',
         'copied' => 'Obraz skopiowany',
         'create_post' => 'Utwórz post',
-        'mark' => 'Stworzone w TryPost',
+        'mark' => 'Stworzone w SocialGest',
         'copy_failed' => 'Nie udało się skopiować obrazu. Pobierz go.',
         'post_failed' => 'Nie udało się przygotować posta. Spróbuj ponownie.',
         'caption_workspace' => ':metric na naszych kanałach: :value (:range) 📈',

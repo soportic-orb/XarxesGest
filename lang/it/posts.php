@@ -81,8 +81,8 @@ return [
             'edit_in_canva' => 'Modifica :name in Canva',
             'errors' => [
                 'import_failed' => 'Impossibile importare il file. Riprova.',
-                'popup_blocked' => 'Il browser ha bloccato la finestra. Consenti i pop-up per TryPost e riprova.',
-                'scope_not_granted' => 'TryPost ha bisogno di accedere al file che scegli. Riprova e consenti l\'accesso.',
+                'popup_blocked' => 'Il browser ha bloccato la finestra. Consenti i pop-up per SocialGest e riprova.',
+                'scope_not_granted' => 'SocialGest ha bisogno di accedere al file che scegli. Riprova e consenti l\'accesso.',
                 'session_expired' => 'La sessione è scaduta. Riapri la fonte.',
                 'video_not_ready' => 'Google Photos sta ancora elaborando questo video. Riprova tra qualche minuto.',
                 'google_connect_failed' => 'Impossibile connettersi a Google. Riprova.',
@@ -384,7 +384,7 @@ return [
                 'play' => 'Ascolta',
                 'pause' => 'Pausa',
                 'remove' => 'Rimuovi musica',
-                'part_hint' => 'Instagram non permette a TryPost di scegliere quale parte del brano viene riprodotta.',
+                'part_hint' => 'Instagram non permette a SocialGest di scegliere quale parte del brano viene riprodotta.',
                 'volume' => 'Volume',
                 'video_volume' => 'Video',
                 'audio_volume' => 'Musica',
@@ -1041,7 +1041,7 @@ return [
         ],
         'created_by' => 'Creato da :name :when',
         'welcome' => [
-            'title' => 'Benvenuto su TryPost 👋',
+            'title' => 'Benvenuto su SocialGest 👋',
             'description' => 'Collega un canale per iniziare a pianificare e pubblicare i tuoi post.',
             'invite' => 'Invita il tuo team',
             'connect_more' => 'Collega altri canali',

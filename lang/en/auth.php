@@ -20,8 +20,8 @@ return [
     'throttle' => 'Too many login attempts. Please try again in :seconds seconds.',
 
     'flash' => [
-        'welcome' => 'Welcome to TryPost!',
-        'welcome_trial' => 'Welcome to TryPost! Your trial has started.',
+        'welcome' => 'Welcome to SocialGest!',
+        'welcome_trial' => 'Welcome to SocialGest! Your trial has started.',
     ],
 
     'legal' => 'By continuing, you agree to our <a href=":terms_url" target="_blank">Terms of Service</a> and <a href=":privacy_url" target="_blank">Privacy Policy</a>.',
@@ -60,7 +60,7 @@ return [
     'github_email_unavailable' => 'Unable to retrieve your email from GitHub. Make your GitHub email public or grant the email scope, then try again.',
 
     'login' => [
-        'title' => 'Log in to TryPost',
+        'title' => 'Log in to SocialGest',
         'page_title' => 'Log in',
         'email' => 'Email address',
         'password' => 'Password',
@@ -74,7 +74,7 @@ return [
     ],
 
     'register' => [
-        'title' => 'Create a TryPost account',
+        'title' => 'Create a SocialGest account',
         'page_title' => 'Register',
         'name' => 'Name',
         'name_placeholder' => 'Full name',

@@ -20,8 +20,8 @@ return [
     'throttle' => 'Massa intents d\'inici de sessió. Torna-ho a provar d\'aquí a :seconds segons.',
 
     'flash' => [
-        'welcome' => 'Et donem la benvinguda a TryPost!',
-        'welcome_trial' => 'Et donem la benvinguda a TryPost! El teu període de prova ha començat.',
+        'welcome' => 'Et donem la benvinguda a SocialGest!',
+        'welcome_trial' => 'Et donem la benvinguda a SocialGest! El teu període de prova ha començat.',
     ],
 
     'legal' => 'En continuar, acceptes les nostres <a href=":terms_url" target="_blank">Condicions del servei</a> i la nostra <a href=":privacy_url" target="_blank">Política de privacitat</a>.',
@@ -60,7 +60,7 @@ return [
     'github_email_unavailable' => 'No s\'ha pogut obtenir el teu correu electrònic de GitHub. Fes públic el teu correu de GitHub o concedeix l\'abast de correu electrònic i torna-ho a provar.',
 
     'login' => [
-        'title' => 'Inicia sessió a TryPost',
+        'title' => 'Entra a SocialGest',
         'page_title' => 'Inicia la sessió',
         'email' => 'Adreça electrònica',
         'password' => 'Contrasenya',
@@ -74,7 +74,7 @@ return [
     ],
 
     'register' => [
-        'title' => 'Crea un compte de TryPost',
+        'title' => 'Crea un compte de SocialGest',
         'page_title' => 'Registre',
         'name' => 'Nom',
         'name_placeholder' => 'Nom complet',

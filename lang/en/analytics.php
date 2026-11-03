@@ -430,7 +430,7 @@ return [
         'copy' => 'Copy image',
         'copied' => 'Image copied',
         'create_post' => 'Create post',
-        'mark' => 'Made with TryPost',
+        'mark' => 'Made with SocialGest',
         'copy_failed' => 'Couldn\'t copy the image. Download it instead.',
         'post_failed' => 'Couldn\'t prepare the post. Try again.',
         'caption_workspace' => ':metric across our channels: :value (:range) 📈',

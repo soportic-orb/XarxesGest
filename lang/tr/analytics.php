@@ -430,7 +430,7 @@ return [
         'copy' => 'Görseli kopyala',
         'copied' => 'Görsel kopyalandı',
         'create_post' => 'Gönderi oluştur',
-        'mark' => 'TryPost ile yapıldı',
+        'mark' => 'SocialGest ile yapıldı',
         'copy_failed' => 'Görsel kopyalanamadı. Bunun yerine indir.',
         'post_failed' => 'Gönderi hazırlanamadı. Tekrar dene.',
         'caption_workspace' => 'Kanallarımızda :metric: :value (:range) 📈',

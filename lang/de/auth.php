@@ -20,8 +20,8 @@ return [
     'throttle' => 'Zu viele Anmeldeversuche. Bitte versuche es in :seconds Sekunden erneut.',
 
     'flash' => [
-        'welcome' => 'Willkommen bei TryPost!',
-        'welcome_trial' => 'Willkommen bei TryPost! Deine Testphase hat begonnen.',
+        'welcome' => 'Willkommen bei SocialGest!',
+        'welcome_trial' => 'Willkommen bei SocialGest! Deine Testphase hat begonnen.',
     ],
 
     'legal' => 'Indem du fortfährst, stimmst du unseren <a href=":terms_url" target="_blank">Nutzungsbedingungen</a> und unserer <a href=":privacy_url" target="_blank">Datenschutzerklärung</a> zu.',
@@ -60,7 +60,7 @@ return [
     'github_email_unavailable' => 'Deine E-Mail-Adresse konnte nicht von GitHub abgerufen werden. Mache deine GitHub-E-Mail-Adresse öffentlich oder erteile die Berechtigung für den E-Mail-Zugriff und versuche es dann erneut.',
 
     'login' => [
-        'title' => 'Bei TryPost anmelden',
+        'title' => 'Bei SocialGest anmelden',
         'page_title' => 'Anmelden',
         'email' => 'E-Mail-Adresse',
         'password' => 'Passwort',
@@ -74,7 +74,7 @@ return [
     ],
 
     'register' => [
-        'title' => 'TryPost-Konto erstellen',
+        'title' => 'SocialGest-Konto erstellen',
         'page_title' => 'Registrieren',
         'name' => 'Name',
         'name_placeholder' => 'Vollständiger Name',

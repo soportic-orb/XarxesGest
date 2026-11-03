@@ -99,7 +99,7 @@ return [
             ],
             'permissions' => [
                 'lead' => 'Tots els permisos seleccionats per a totes les pàgines i comptes d\'Instagram',
-                'rest' => 'en connectar, fins i tot els que no connectaràs a TryPost.',
+                'rest' => 'en connectar, fins i tot els que no connectaràs a SocialGest.',
             ],
         ],
         'learn_how' => 'Descobreix com.',
@@ -121,8 +121,8 @@ return [
         'close' => 'Tanca',
         'title_single' => 'Connecta el teu compte',
         'title_select' => 'Selecciona comptes',
-        'subtitle_single' => 'Tria el compte on TryPost publicarà a :network.',
-        'subtitle_select' => 'Tria els comptes on TryPost publicarà a :network.',
+        'subtitle_single' => 'Tria el compte on SocialGest publicarà a :network.',
+        'subtitle_select' => 'Tria els comptes on SocialGest publicarà a :network.',
         'selected' => ':count seleccionats',
         'select_all' => 'Selecciona-ho tot',
         'connected' => 'Connectat',
@@ -153,7 +153,7 @@ return [
             ],
             'missing_permission' => [
                 'title' => 'Cal un permís',
-                'description' => 'TryPost necessita permís per publicar les teves publicacions. Torna a connectar i deixa aquest permís marcat.',
+                'description' => 'SocialGest necessita permís per publicar les teves publicacions. Torna a connectar i deixa aquest permís marcat.',
             ],
             'expired' => [
                 'title' => 'Aquesta connexió ha caducat',
@@ -170,7 +170,7 @@ return [
             'start_again' => 'Torna a començar',
         ],
         'errors' => [
-            'bluesky_email_unconfirmed' => 'Confirma el teu correu electrònic a la configuració de Bluesky i torna a connectar el teu compte. TryPost necessita un correu confirmat per publicar vídeos.',
+            'bluesky_email_unconfirmed' => 'Confirma el teu correu electrònic a la configuració de Bluesky i torna a connectar el teu compte. SocialGest necessita un correu confirmat per publicar vídeos.',
             'error_connecting' => 'Error en connectar el compte. Torna-ho a provar.',
             'network_taken' => 'Aquest workspace ja té un compte per a aquesta xarxa. Desconnecta\'l primer.',
             'wrong_account' => 'Aquest és un compte diferent. Autoritza el que estàs tornant a connectar.',
@@ -185,7 +185,7 @@ return [
             'page_not_found' => 'No s\'ha trobat la pàgina.',
             'channel_not_found' => 'No s\'ha trobat el canal.',
             'pages_read_incomplete' => 'No hem pogut acabar de llegir les teves pàgines. Torna-ho a provar d\'aquí a un moment.',
-            'publish_permission_missing' => 'TryPost necessita permís per publicar les teves publicacions. Torna a connectar i deixa aquest permís marcat.',
+            'publish_permission_missing' => 'SocialGest necessita permís per publicar les teves publicacions. Torna a connectar i deixa aquest permís marcat.',
             'cancelled' => 'Connexió cancel·lada.',
             'pages_missing_permission' => 'Hem trobat pàgines, però cap on puguis publicar. Necessites un rol a la mateixa pàgina i tots els permisos acceptats.',
             'no_facebook_pages' => 'No s\'ha trobat cap pàgina de Facebook. Has de ser administrador d\'almenys una pàgina.',
