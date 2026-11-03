@@ -36,6 +36,29 @@ return [
             'load_more' => 'Load more',
             'error' => 'Unsplash isn\'t available right now. Please try again in a few minutes.',
         ],
+        'ai_image' => [
+            'title' => 'Generate an image with AI',
+            'description' => 'Describe the image you want, or write the description from your post. You can edit it before generating.',
+            'prompt_label' => 'Image description',
+            'prompt_placeholder' => 'A bright coworking space where a team plans the week on a whiteboard, editorial photo',
+            'write_from_post' => 'Write from my post',
+            'aspect_label' => 'Shape',
+            'aspects' => [
+                'square' => 'Square',
+                'portrait' => 'Vertical',
+                'landscape' => 'Horizontal',
+            ],
+            'generate' => 'Generate',
+            'regenerate' => 'Generate again',
+            'use_image' => 'Add to post',
+            'generating' => 'Generating the image. This can take up to a minute.',
+            'preview_alt' => 'Generated image',
+            'errors' => [
+                'content_required' => 'Write your post first to create the description from it.',
+                'prompt_failed' => 'Couldn\'t write the description. Try again.',
+                'generation_failed' => 'Couldn\'t generate the image. Try again or change the description.',
+            ],
+        ],
         'link_preview' => [
             'remove' => 'Remove link preview',
             'replace_with_media' => 'Replace link preview with media',
@@ -43,6 +66,7 @@ return [
         ],
         'media_sources' => [
             'upload' => 'Upload from computer',
+            'ai' => 'Generate with AI',
             'more' => 'More media sources',
             'select_from' => 'Select from :source',
             'importing' => 'Importing…',

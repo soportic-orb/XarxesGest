@@ -7,4 +7,5 @@ namespace App\Enums\PostHog;
 enum AiEvent: string
 {
     case AssistUsed = 'ai.assist_used';
+    case ImageGenerated = 'ai.image_generated';
 }

@@ -23,6 +23,7 @@ withDefaults(
 const emit = defineEmits<{
     (event: 'import-started', payload: { importId: string; label: string }): void;
     (event: 'open-unsplash'): void;
+    (event: 'open-ai-image'): void;
     (event: 'upload'): void;
     (event: 'select-emoji', emoji: string): void;
     (
@@ -68,6 +69,7 @@ const selectEmoji = (emoji: string): void => {
             :disabled-reason="$t('posts.composer.media_not_supported')"
             @import-started="emit('import-started', $event)"
             @open-unsplash="emit('open-unsplash')"
+            @open-ai-image="emit('open-ai-image')"
             @upload="requestUpload"
         />
         <span class="mx-1.5 h-6 w-px bg-border" aria-hidden="true" />

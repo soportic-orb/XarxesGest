@@ -20,7 +20,7 @@ enum Source: string
     /** @return list<self> */
     public static function pickerSources(): array
     {
-        return [self::Canva, self::GoogleDrive, self::GooglePhotos, self::Unsplash];
+        return [self::Ai, self::Canva, self::GoogleDrive, self::GooglePhotos, self::Unsplash];
     }
 
     public function isEnabled(): bool
@@ -36,8 +36,19 @@ enum Source: string
             self::Canva => (bool) config('trypost.media_sources.canva.enabled')
                 && filled(config('services.canva.client_id'))
                 && filled(config('services.canva.client_secret')),
-            self::Ai => false,
+            self::Ai => self::imageProviderConfigured(),
         };
+    }
+
+    /**
+     * AI images go through laravel/ai's image provider (`ai.default_for_images`),
+     * offered only once that provider has its API key.
+     */
+    private static function imageProviderConfigured(): bool
+    {
+        $provider = (string) config('ai.default_for_images');
+
+        return filled(config("ai.providers.{$provider}.key"));
     }
 
     /**

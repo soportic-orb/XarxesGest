@@ -36,6 +36,29 @@ return [
             'load_more' => '加载更多',
             'error' => 'Unsplash 当前不可用，请几分钟后重试。',
         ],
+        'ai_image' => [
+            'title' => '用 AI 生成图片',
+            'description' => '描述你想要的图片，或根据帖子生成描述。生成前可以先编辑。',
+            'prompt_label' => '图片描述',
+            'prompt_placeholder' => '明亮的共享办公空间里，团队在白板上规划本周工作，编辑风格照片',
+            'write_from_post' => '根据帖子生成',
+            'aspect_label' => '形状',
+            'aspects' => [
+                'square' => '方形',
+                'portrait' => '竖版',
+                'landscape' => '横版',
+            ],
+            'generate' => '生成',
+            'regenerate' => '重新生成',
+            'use_image' => '添加到帖子',
+            'generating' => '正在生成图片，最长可能需要一分钟。',
+            'preview_alt' => '已生成的图片',
+            'errors' => [
+                'content_required' => '请先写好帖子，再据此生成描述。',
+                'prompt_failed' => '无法生成描述，请重试。',
+                'generation_failed' => '无法生成图片，请重试或修改描述。',
+            ],
+        ],
         'link_preview' => [
             'remove' => '移除链接预览',
             'replace_with_media' => '用媒体替换链接预览',
@@ -43,6 +66,7 @@ return [
         ],
         'media_sources' => [
             'upload' => '从电脑上传',
+            'ai' => '用 AI 生成',
             'more' => '更多媒体来源',
             'select_from' => '从 :source 选择',
             'importing' => '正在导入…',

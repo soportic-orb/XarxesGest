@@ -1,6 +1,6 @@
 <script setup lang="ts">
 import { usePage } from '@inertiajs/vue3';
-import { IconPhotoPlus, IconUpload } from '@tabler/icons-vue';
+import { IconPhotoPlus, IconSparkles, IconUpload } from '@tabler/icons-vue';
 import Canva from '@thesvg/vue/canva';
 import GoogleDrive from '@thesvg/vue/google-drive-2026';
 import GooglePhotos from '@thesvg/vue/google-photos';
@@ -55,10 +55,12 @@ withDefaults(
 const emit = defineEmits<{
     (event: 'import-started', payload: { importId: string; label: string }): void;
     (event: 'open-unsplash'): void;
+    (event: 'open-ai-image'): void;
     (event: 'upload'): void;
 }>();
 
 const ICONS: Record<SourceKey, Component> = {
+    ai: IconSparkles,
     canva: Canva,
     google_drive: GoogleDrive,
     google_photos: GooglePhotos,
@@ -170,6 +172,7 @@ const handlers: Partial<
         });
     },
     unsplash: () => emit('open-unsplash'),
+    ai: () => emit('open-ai-image'),
 };
 
 const sources = computed<MediaSourceOption[]>(() =>
@@ -313,7 +316,11 @@ const pickCanvaPreset = (
                             :is="ICONS[option.source]"
                             :class="['text-foreground', ICON_CLASSES[option.source]]"
                         />
-                        {{ option.label }}
+                        {{
+                            option.source === 'ai'
+                                ? $t('posts.composer.media_sources.ai')
+                                : option.label
+                        }}
                     </DropdownMenuItem>
                 </template>
         </DropdownMenuContent>

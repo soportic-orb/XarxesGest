@@ -3,6 +3,8 @@
 declare(strict_types=1);
 
 use App\Enums\Analytics\ExportFormat;
+use App\Http\Controllers\App\AiImageController;
+use App\Http\Controllers\App\AiImagePromptController;
 use App\Http\Controllers\App\ApiKeyController;
 use App\Http\Controllers\App\BillingController;
 use App\Http\Controllers\App\CanvaController;
@@ -270,6 +272,12 @@ Route::middleware(['auth', EnsureAccountReady::class, EnsureHasWorkspace::class]
     Route::post('posts/ai/assist', PostAiAssistantController::class)
         ->middleware('throttle:10,1')
         ->name('app.posts.ai.assist');
+    Route::post('media/ai/prompt', [AiImagePromptController::class, 'store'])
+        ->middleware('throttle:10,1')
+        ->name('app.media.ai.prompt');
+    Route::post('media/ai', [AiImageController::class, 'store'])
+        ->middleware('throttle:10,1')
+        ->name('app.media.ai.store');
     Route::post('posts/ai/alt-text', MediaAltTextController::class)
         ->middleware('throttle:10,1')
         ->name('app.posts.ai.alt-text');

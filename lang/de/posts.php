@@ -36,6 +36,29 @@ return [
             'load_more' => 'Mehr laden',
             'error' => 'Unsplash ist gerade nicht erreichbar. Bitte versuche es in ein paar Minuten erneut.',
         ],
+        'ai_image' => [
+            'title' => 'Bild mit KI erstellen',
+            'description' => 'Beschreibe das gewünschte Bild oder lass die Beschreibung aus deinem Beitrag schreiben. Du kannst sie vor dem Erstellen bearbeiten.',
+            'prompt_label' => 'Bildbeschreibung',
+            'prompt_placeholder' => 'Ein heller Coworking-Space, in dem ein Team die Woche an einem Whiteboard plant, redaktionelles Foto',
+            'write_from_post' => 'Aus Beitrag schreiben',
+            'aspect_label' => 'Format',
+            'aspects' => [
+                'square' => 'Quadrat',
+                'portrait' => 'Hochkant',
+                'landscape' => 'Querformat',
+            ],
+            'generate' => 'Erstellen',
+            'regenerate' => 'Neu erstellen',
+            'use_image' => 'Zum Beitrag hinzufügen',
+            'generating' => 'Das Bild wird erstellt. Das kann bis zu einer Minute dauern.',
+            'preview_alt' => 'Erstelltes Bild',
+            'errors' => [
+                'content_required' => 'Schreibe zuerst deinen Beitrag, um die Beschreibung daraus zu erstellen.',
+                'prompt_failed' => 'Die Beschreibung konnte nicht geschrieben werden. Versuche es erneut.',
+                'generation_failed' => 'Das Bild konnte nicht erstellt werden. Versuche es erneut oder ändere die Beschreibung.',
+            ],
+        ],
         'link_preview' => [
             'remove' => 'Linkvorschau entfernen',
             'replace_with_media' => 'Linkvorschau durch Medien ersetzen',
@@ -43,6 +66,7 @@ return [
         ],
         'media_sources' => [
             'upload' => 'Vom Computer hochladen',
+            'ai' => 'Mit KI erstellen',
             'more' => 'Weitere Medienquellen',
             'select_from' => 'Aus :source auswählen',
             'importing' => 'Wird importiert…',
