@@ -27,6 +27,9 @@ echo "==> PHP dependencies"
 $PHP "$(command -v composer)" install --no-dev --no-interaction --prefer-dist --optimize-autoloader
 
 echo "==> Frontend build"
+# The previous deploy's `optimize` cached routes and config; Wayfinder reads
+# routes through artisan, so a stale cache hides every new route from the build.
+$PHP artisan optimize:clear
 $PHP artisan wayfinder:generate --with-form
 npm ci --no-audit --no-fund
 npm run build
