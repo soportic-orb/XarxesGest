@@ -1,9 +1,9 @@
 #!/usr/bin/env bash
 # XarxesGest — deploy / update script, run on the server as the CloudPanel
 # site user from the site root:
-#   cd ~/htdocs/xarxesgest.soportic.es && bash deploy/cloudpanel/deploy.sh
+#   cd ~/htdocs/socialgest.soportic.es && bash deploy/cloudpanel/deploy.sh
 # Requirements: PHP 8.4 CLI, Composer, Node.js 22 (nvm), Supervisor programs
-# from deploy/cloudpanel/supervisor-xarxesgest.conf.
+# from deploy/cloudpanel/supervisor-socialgest.conf.
 set -euo pipefail
 
 PHP="${PHP_BIN:-php8.4}"

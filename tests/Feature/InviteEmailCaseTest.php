@@ -158,7 +158,7 @@ test('the migration keeps one invite per account when emails collide by case', f
 
     expect(Invite::query()->orderBy('email')->pluck('id')->all())->toBe([$ids[1], $ids[2], $ids[4]])
         ->and(Invite::query()->orderBy('email')->pluck('email')->all())->toBe(['dave@acme.com', 'erin@acme.com', 'fay@acme.com']);
-})->skip(fn (): bool => DB::getDriverName() === 'mysql', 'MySQL compares emails case-insensitively, so the unique index never held a case collision.');
+})->skip(fn (): bool => in_array(DB::getDriverName(), ['mysql', 'mariadb'], true), 'MySQL and MariaDB compare emails case-insensitively, so the unique index never held a case collision.');
 
 /**
  * @param  list<array{email: string, account_id: string, accepted_at: mixed, created_at: mixed}>  $rows

@@ -32,14 +32,14 @@ class CreateAdminCommand extends Command
     {
         $name = $this->option('name') ?: text('Name', required: true);
         $email = $this->option('email') ?: text('Email', required: true);
-        // Interactive terminals get a hidden prompt; scripts can pipe the
-        // password on stdin so it never appears in the shell history.
-        // XARXESGEST_ADMIN_PASSWORD is for automated provisioning.
-        $plainPassword = match (true) {
-            filled(getenv('XARXESGEST_ADMIN_PASSWORD')) => (string) getenv('XARXESGEST_ADMIN_PASSWORD'),
-            stream_isatty(STDIN) => password('Password (min. 12 characters)', required: true),
-            default => trim((string) fgets(STDIN)),
-        };
+        $plainPassword = $this->resolvePassword();
+
+        if (blank($plainPassword)) {
+            $this->error('No password received. In a shell where PHP does not see a terminal, pass it in XARXESGEST_ADMIN_PASSWORD:');
+            $this->line('  read -rsp "Password: " P && echo && XARXESGEST_ADMIN_PASSWORD="$P" php artisan xarxesgest:create-admin --name="..." --email=...; unset P');
+
+            return self::FAILURE;
+        }
 
         $validator = Validator::make(
             ['name' => $name, 'email' => $email, 'password' => $plainPassword],
@@ -76,5 +76,20 @@ class CreateAdminCommand extends Command
         $this->info("Owner account created for {$email}.");
 
         return self::SUCCESS;
+    }
+
+    /**
+     * XARXESGEST_ADMIN_PASSWORD (automated provisioning) wins; a terminal gets
+     * a hidden prompt; otherwise the password is read from piped stdin. Some
+     * hosts (CloudPanel over `su -`) report no terminal and an empty stdin, so
+     * an empty result is reported with the environment variable as the way out.
+     */
+    private function resolvePassword(): string
+    {
+        return match (true) {
+            filled(getenv('XARXESGEST_ADMIN_PASSWORD')) => (string) getenv('XARXESGEST_ADMIN_PASSWORD'),
+            stream_isatty(STDIN) => password('Password (min. 12 characters)', required: true),
+            default => trim((string) fgets(STDIN)),
+        };
     }
 }
