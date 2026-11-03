@@ -114,6 +114,14 @@ return [
     ],
 
     'channel' => [
+        'best_times' => [
+            'title' => 'Meilleur moment pour publier',
+            'info' => 'Les moments où vos publications sur ce canal ont obtenu le plus d\'engagement, par jour et par heure, dans le fuseau horaire du canal. La génération des horaires de publication de la file d\'attente s\'en sert dès qu\'il y a assez de données.',
+            'based_on' => 'D\'après :count publications des 6 derniers mois',
+            'not_enough' => 'Pas encore assez de données : :count publications mesurées sur :minimum requises ces 6 derniers mois. Continuez à publier et vos meilleurs moments s\'afficheront ici.',
+            'cell' => ':day :time · :count publications',
+            'timezone' => 'Heures en :timezone',
+        ],
         'title' => 'Tous les insights',
         'page_title' => 'Insights · :channel',
         'unsupported_title' => 'Aucune statistique pour ce réseau',

@@ -114,6 +114,14 @@ return [
     ],
 
     'channel' => [
+        'best_times' => [
+            'title' => 'Melhor horário para postar',
+            'info' => 'Quando seus posts neste canal tiveram mais engajamento, por dia e hora, no fuso horário do canal. Ao gerar os horários de postagem da fila, isso é usado quando há dados suficientes.',
+            'based_on' => 'Com base em :count posts dos últimos 6 meses',
+            'not_enough' => 'Ainda não há dados suficientes: :count de :minimum posts medidos nos últimos 6 meses. Continue postando e seus melhores horários aparecerão aqui.',
+            'cell' => ':day :time · :count posts',
+            'timezone' => 'Horários em :timezone',
+        ],
         'title' => 'Todos os insights',
         'page_title' => 'Insights · :channel',
         'unsupported_title' => 'Sem analytics para esta rede',

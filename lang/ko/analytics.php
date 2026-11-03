@@ -114,6 +114,14 @@ return [
     ],
 
     'channel' => [
+        'best_times' => [
+            'title' => '최적의 게시 시간',
+            'info' => '이 채널의 게시물이 요일과 시간별로 참여를 가장 많이 얻은 때를 채널 시간대 기준으로 보여 줍니다. 데이터가 충분하면 대기열의 게시 시간을 만들 때도 사용됩니다.',
+            'based_on' => '최근 6개월 게시물 :count개 기준',
+            'not_enough' => '아직 데이터가 부족해요. 최근 6개월간 측정된 게시물이 :minimum개 중 :count개예요. 계속 게시하면 여기에 최적의 시간이 표시돼요.',
+            'cell' => ':day :time · 게시물 :count개',
+            'timezone' => '시간대: :timezone',
+        ],
         'title' => '모든 인사이트',
         'page_title' => 'Insights · :channel',
         'unsupported_title' => '이 네트워크는 분석을 제공하지 않습니다',

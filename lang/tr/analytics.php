@@ -114,6 +114,14 @@ return [
     ],
 
     'channel' => [
+        'best_times' => [
+            'title' => 'Paylaşım için en iyi zaman',
+            'info' => 'Bu kanaldaki gönderilerin gün ve saate göre en çok etkileşimi ne zaman aldığını kanalın saat diliminde gösterir. Yeterli veri olunca kuyruğun paylaşım saatleri oluşturulurken bu veri kullanılır.',
+            'based_on' => 'Son 6 aydaki :count gönderiye göre',
+            'not_enough' => 'Henüz yeterli veri yok: son 6 ayda ölçülen gönderi sayısı :count / :minimum. Paylaşmaya devam et, en iyi saatlerin burada görünecek.',
+            'cell' => ':day :time · :count gönderi',
+            'timezone' => 'Saatler :timezone diliminde',
+        ],
         'title' => 'Tüm içgörüler',
         'page_title' => 'Insights · :channel',
         'unsupported_title' => 'Bu ağ için analiz yok',

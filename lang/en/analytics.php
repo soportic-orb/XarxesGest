@@ -114,6 +114,14 @@ return [
     ],
 
     'channel' => [
+        'best_times' => [
+            'title' => 'Best time to post',
+            'info' => 'When your posts on this channel got the most engagement, by day and hour, in the channel\'s time zone. Generating the queue\'s posting times uses it once there is enough data.',
+            'based_on' => 'Based on :count posts from the last 6 months',
+            'not_enough' => 'Not enough data yet: :count of :minimum measured posts in the last 6 months. Keep posting and your best times will show here.',
+            'cell' => ':day :time · :count posts',
+            'timezone' => 'Times in :timezone',
+        ],
         'title' => 'All Insights',
         'page_title' => 'Insights · :channel',
         'unsupported_title' => 'No analytics for this network',

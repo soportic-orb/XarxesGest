@@ -114,6 +114,14 @@ return [
     ],
 
     'channel' => [
+        'best_times' => [
+            'title' => 'Beste Zeit zum Posten',
+            'info' => 'Wann deine Beiträge in diesem Kanal die meiste Interaktion erhalten haben, nach Tag und Stunde, in der Zeitzone des Kanals. Sobald genug Daten da sind, nutzt das Erstellen der Veröffentlichungszeiten für die Warteschlange diese Auswertung.',
+            'based_on' => 'Basierend auf :count Beiträgen der letzten 6 Monate',
+            'not_enough' => 'Noch nicht genug Daten: :count von :minimum ausgewerteten Beiträgen der letzten 6 Monate. Veröffentliche weiter, dann siehst du hier deine besten Zeiten.',
+            'cell' => ':day :time · :count Beiträge',
+            'timezone' => 'Zeiten in :timezone',
+        ],
         'title' => 'Alle Insights',
         'page_title' => 'Insights · :channel',
         'unsupported_title' => 'Keine Analysen für dieses Netzwerk',

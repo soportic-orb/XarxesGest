@@ -306,3 +306,18 @@ export interface UnsupportedPublicationAnalytics {
     unsupported: true;
     reason: string;
 }
+
+export interface BestPostingTimeSlot {
+    score: number | null;
+    count: number;
+}
+
+export interface BestPostingTimes {
+    sample_size: number;
+    minimum_sample: number;
+    reliable: boolean;
+    timezone: string;
+    /** [day 0 = Sunday][hour 0–23] */
+    grid: BestPostingTimeSlot[][];
+    windows: { day: number; hour: number }[];
+}

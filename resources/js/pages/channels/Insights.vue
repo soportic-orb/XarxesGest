@@ -4,6 +4,7 @@ import { IconChartBar, IconChartBarOff } from '@tabler/icons-vue';
 import { computed, ref, watch } from 'vue';
 
 import AnalyticsRangePresets from '@/components/analytics/AnalyticsRangePresets.vue';
+import BestPostingTimesCard from '@/components/analytics/channel/BestPostingTimesCard.vue';
 import ChannelMetricsCard from '@/components/analytics/channel/ChannelMetricsCard.vue';
 import ChannelPublicationTable from '@/components/analytics/channel/ChannelPublicationTable.vue';
 import PostTypeFilter from '@/components/analytics/channel/PostTypeFilter.vue';
@@ -22,6 +23,7 @@ import { showsPostTypeFilter } from '@/lib/channelInsights';
 import { insights } from '@/routes/app/channels';
 import type {
     AnalyticsReport,
+    BestPostingTimes,
     ChannelInsightsFilters,
     ChannelMetricSeries,
     ChannelPublicationPage,
@@ -44,6 +46,7 @@ const props = defineProps<{
     labels?: { id: string; name: string; color: string }[];
     contentTypes?: ContentTypeOption[];
     metricSeries?: ChannelMetricSeries;
+    bestTimes?: BestPostingTimes;
 }>();
 
 useAnalyticsCoveragePoll(() => props.report?.coverage, {
@@ -271,6 +274,7 @@ watch(selectedTypes, applyFilters, { deep: true });
                         :series="metricSeries"
                         :channel="shareChannel"
                     />
+                    <BestPostingTimesCard :best-times="bestTimes" />
                 </template>
             </template>
         </div>
