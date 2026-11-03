@@ -36,6 +36,29 @@ return [
             'load_more' => 'Cargar más',
             'error' => 'Unsplash no está disponible ahora. Inténtalo de nuevo en unos minutos.',
         ],
+        'ai_image' => [
+            'title' => 'Genera una imagen con IA',
+            'description' => 'Describe la imagen que quieres o escribe la descripción a partir de tu publicación. Puedes editarla antes de generar.',
+            'prompt_label' => 'Descripción de la imagen',
+            'prompt_placeholder' => 'Un espacio de coworking luminoso donde un equipo planifica la semana en una pizarra, foto editorial',
+            'write_from_post' => 'Escribir desde el post',
+            'aspect_label' => 'Formato',
+            'aspects' => [
+                'square' => 'Cuadrado',
+                'portrait' => 'Vertical',
+                'landscape' => 'Horizontal',
+            ],
+            'generate' => 'Generar',
+            'regenerate' => 'Generar de nuevo',
+            'use_image' => 'Añadir al post',
+            'generating' => 'Generando la imagen. Puede tardar hasta un minuto.',
+            'preview_alt' => 'Imagen generada',
+            'errors' => [
+                'content_required' => 'Escribe primero tu publicación para crear la descripción a partir de ella.',
+                'prompt_failed' => 'No se pudo escribir la descripción. Inténtalo de nuevo.',
+                'generation_failed' => 'No se pudo generar la imagen. Inténtalo de nuevo o cambia la descripción.',
+            ],
+        ],
         'link_preview' => [
             'remove' => 'Quitar vista previa del enlace',
             'replace_with_media' => 'Reemplazar vista previa por multimedia',
@@ -43,6 +66,7 @@ return [
         ],
         'media_sources' => [
             'upload' => 'Subir desde el equipo',
+            'ai' => 'Generar con IA',
             'more' => 'Más fuentes de medios',
             'select_from' => 'Seleccionar de :source',
             'importing' => 'Importando…',

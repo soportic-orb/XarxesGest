@@ -36,6 +36,29 @@ return [
             'load_more' => 'Carrega\'n més',
             'error' => 'Unsplash no està disponible ara mateix. Torna-ho a provar d\'aquí a uns minuts.',
         ],
+        'ai_image' => [
+            'title' => 'Genera una imatge amb IA',
+            'description' => 'Descriu la imatge que vols o escriu la descripció a partir de la teva publicació. Pots editar-la abans de generar.',
+            'prompt_label' => 'Descripció de la imatge',
+            'prompt_placeholder' => 'Un espai de coworking lluminós on un equip planifica la setmana en una pissarra, foto editorial',
+            'write_from_post' => 'Escriu des del text',
+            'aspect_label' => 'Forma',
+            'aspects' => [
+                'square' => 'Quadrat',
+                'portrait' => 'Vertical',
+                'landscape' => 'Horitzontal',
+            ],
+            'generate' => 'Genera',
+            'regenerate' => 'Genera de nou',
+            'use_image' => 'Afegeix a la publicació',
+            'generating' => 'Generant la imatge. Pot trigar fins a un minut.',
+            'preview_alt' => 'Imatge generada',
+            'errors' => [
+                'content_required' => 'Escriu primer la teva publicació per crear-ne la descripció.',
+                'prompt_failed' => 'No s\'ha pogut escriure la descripció. Torna-ho a provar.',
+                'generation_failed' => 'No s\'ha pogut generar la imatge. Torna-ho a provar o canvia la descripció.',
+            ],
+        ],
         'link_preview' => [
             'remove' => 'Elimina la vista prèvia de l\'enllaç',
             'replace_with_media' => 'Substitueix la vista prèvia per mèdia',
@@ -43,6 +66,7 @@ return [
         ],
         'media_sources' => [
             'upload' => 'Puja des de l\'ordinador',
+            'ai' => 'Genera amb IA',
             'more' => 'Més fonts multimèdia',
             'select_from' => 'Selecciona de :source',
             'importing' => 'Important…',

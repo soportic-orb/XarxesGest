@@ -36,6 +36,29 @@ return [
             'load_more' => 'さらに読み込む',
             'error' => '現在 Unsplash を利用できません。数分後にもう一度お試しください。',
         ],
+        'ai_image' => [
+            'title' => 'AIで画像を生成',
+            'description' => 'ほしい画像を説明するか、投稿から説明文を作成できます。生成前に編集もできます。',
+            'prompt_label' => '画像の説明',
+            'prompt_placeholder' => '明るいコワーキングスペースで、チームがホワイトボードに今週の予定を書き出している、エディトリアル写真',
+            'write_from_post' => '投稿から作成',
+            'aspect_label' => '形',
+            'aspects' => [
+                'square' => '正方形',
+                'portrait' => '縦長',
+                'landscape' => '横長',
+            ],
+            'generate' => '生成',
+            'regenerate' => '再生成',
+            'use_image' => '投稿に追加',
+            'generating' => '画像を生成しています。最大1分ほどかかります。',
+            'preview_alt' => '生成された画像',
+            'errors' => [
+                'content_required' => '説明文を作成するには、先に投稿を書いてください。',
+                'prompt_failed' => '説明文を作成できませんでした。もう一度お試しください。',
+                'generation_failed' => '画像を生成できませんでした。もう一度試すか、説明を変更してください。',
+            ],
+        ],
         'link_preview' => [
             'remove' => 'リンクプレビューを削除',
             'replace_with_media' => 'リンクプレビューをメディアに置き換え',
@@ -43,6 +66,7 @@ return [
         ],
         'media_sources' => [
             'upload' => 'パソコンからアップロード',
+            'ai' => 'AIで生成',
             'more' => 'その他のメディアソース',
             'select_from' => ':source から選択',
             'importing' => 'インポート中…',

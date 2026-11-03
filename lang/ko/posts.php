@@ -36,6 +36,29 @@ return [
             'load_more' => '더 불러오기',
             'error' => '지금은 Unsplash를 사용할 수 없습니다. 몇 분 후에 다시 시도해 주세요.',
         ],
+        'ai_image' => [
+            'title' => 'AI로 이미지 생성',
+            'description' => '원하는 이미지를 설명하거나 게시물을 바탕으로 설명을 작성하세요. 생성하기 전에 수정할 수 있어요.',
+            'prompt_label' => '이미지 설명',
+            'prompt_placeholder' => '팀이 화이트보드로 한 주를 계획하는 밝은 코워킹 스페이스, 에디토리얼 사진',
+            'write_from_post' => '게시물로 작성',
+            'aspect_label' => '모양',
+            'aspects' => [
+                'square' => '정사각형',
+                'portrait' => '세로',
+                'landscape' => '가로',
+            ],
+            'generate' => '생성',
+            'regenerate' => '다시 생성',
+            'use_image' => '게시물에 추가',
+            'generating' => '이미지를 생성하는 중이에요. 최대 1분 정도 걸릴 수 있어요.',
+            'preview_alt' => '생성된 이미지',
+            'errors' => [
+                'content_required' => '게시물을 먼저 작성하면 그 내용으로 설명을 만들 수 있어요.',
+                'prompt_failed' => '설명을 작성하지 못했어요. 다시 시도해 주세요.',
+                'generation_failed' => '이미지를 생성하지 못했어요. 다시 시도하거나 설명을 바꿔 보세요.',
+            ],
+        ],
         'link_preview' => [
             'remove' => '링크 미리보기 제거',
             'replace_with_media' => '링크 미리보기를 미디어로 바꾸기',
@@ -43,6 +66,7 @@ return [
         ],
         'media_sources' => [
             'upload' => '컴퓨터에서 업로드',
+            'ai' => 'AI로 생성',
             'more' => '더 많은 미디어 소스',
             'select_from' => ':source에서 선택',
             'importing' => '가져오는 중…',

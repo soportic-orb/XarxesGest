@@ -49,6 +49,7 @@ import CharacterCounter from '@/components/CharacterCounter.vue';
 import EmptyState from '@/components/EmptyState.vue';
 import FilterEmptyState from '@/components/FilterEmptyState.vue';
 import LabelFilter from '@/components/labels/LabelFilter.vue';
+import AiImageDialog from '@/components/media/AiImageDialog.vue';
 import MediaTray from '@/components/media/MediaTray.vue';
 import UnsplashDialog from '@/components/media/UnsplashDialog.vue';
 import PlatformLogo from '@/components/PlatformLogo.vue';
@@ -712,6 +713,17 @@ const openUnsplash = (
     unsplashReplyKey.value = replyKey;
     unsplashOpen.value = true;
 };
+const aiImageOpen = ref(false);
+const aiImagePostContent = ref('');
+const openAiImage = (
+    groupKey: string | null,
+    replyKey: string | null = null,
+): void => {
+    unsplashGroupKey.value = groupKey;
+    unsplashReplyKey.value = replyKey;
+    aiImagePostContent.value = htmlToPlainText(contentOf(groupKey));
+    aiImageOpen.value = true;
+};
 const onUnsplashPicked = (item: MediaItem): void => {
     if (unsplashGroupKey.value !== null && unsplashReplyKey.value !== null) {
         setReplyMedia(unsplashGroupKey.value, unsplashReplyKey.value, (media) =>
@@ -1262,6 +1274,8 @@ const onGroupImportStarted = (
 ): void => mediaImport.track(groupMediaUploader(group), started);
 const openGroupUnsplash = (group: NetworkGroup): void =>
     openUnsplash(group.key, activeReply(group)?.key ?? null);
+const openGroupAiImage = (group: NetworkGroup): void =>
+    openAiImage(group.key, activeReply(group)?.key ?? null);
 const onGroupMediaDropped = (event: DragEvent, group: NetworkGroup): void => {
     if (!activeReply(group)) {
         onMediaDropped(event, group.key);
@@ -2610,6 +2624,7 @@ const onDialogOpenChange = (value: boolean): void => {
                                     :media-disabled="!acceptsMedia(null)"
                                     @import-started="onImportStarted($event, null)"
                                     @open-unsplash="openUnsplash(null)"
+                                    @open-ai-image="openAiImage(null)"
                                     @upload="pickBaseFiles"
                                     @select-emoji="appendEmoji($event, null)"
                                     @select-signature="appendSignature($event, null)"
@@ -2968,6 +2983,7 @@ const onDialogOpenChange = (value: boolean): void => {
                                             onGroupImportStarted($event, group)
                                         "
                                         @open-unsplash="openGroupUnsplash(group)"
+                                        @open-ai-image="openGroupAiImage(group)"
                                         @upload="pickGroupFiles(group)"
                                         @select-emoji="
                                             appendEmoji($event, group.key)
@@ -3479,6 +3495,11 @@ const onDialogOpenChange = (value: boolean): void => {
     />
     <UnsplashDialog
         v-model:open="unsplashOpen"
+        @picked="onUnsplashPicked"
+    />
+    <AiImageDialog
+        v-model:open="aiImageOpen"
+        :post-content="aiImagePostContent"
         @picked="onUnsplashPicked"
     />
     <ComposerDiscardDialog

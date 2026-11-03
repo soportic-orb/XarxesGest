@@ -18,6 +18,8 @@ function mediaSourceConfigure(array $overrides = []): void
         'trypost.media_sources.google_drive.enabled' => true,
         'trypost.media_sources.google_photos.enabled' => true,
         'trypost.media_sources.canva.enabled' => true,
+        'ai.default_for_images' => 'openai',
+        'ai.providers.openai.key' => null,
     ], $overrides));
 }
 
@@ -27,7 +29,15 @@ function mediaSourceEnabled(): array
 }
 
 test('the picker sources are listed in menu order', function () {
-    expect(Source::pickerSources())->toBe([Source::Canva, Source::GoogleDrive, Source::GooglePhotos, Source::Unsplash]);
+    expect(Source::pickerSources())->toBe([Source::Ai, Source::Canva, Source::GoogleDrive, Source::GooglePhotos, Source::Unsplash]);
+});
+
+test('ai images are offered once the image provider has its key', function () {
+    mediaSourceConfigure(['ai.providers.openai.key' => 'sk-test']);
+    expect(mediaSourceEnabled())->toBe(['ai']);
+
+    mediaSourceConfigure(['ai.default_for_images' => 'gemini', 'ai.providers.openai.key' => 'sk-test', 'ai.providers.gemini.key' => null]);
+    expect(mediaSourceEnabled())->toBe([]);
 });
 
 test('no picker source is enabled when every key is empty', function () {

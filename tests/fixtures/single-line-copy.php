@@ -228,4 +228,12 @@ return [
     'welcome.personas.startup' => 10,
     'welcome.software.none' => 28,
     'welcome.software.other' => 7,
+    'posts.composer.media_sources.ai' => 24,
+    'posts.composer.ai_image.write_from_post' => 26,
+    'posts.composer.ai_image.generate' => 14,
+    'posts.composer.ai_image.regenerate' => 22,
+    'posts.composer.ai_image.use_image' => 24,
+    'posts.composer.ai_image.aspects.square' => 12,
+    'posts.composer.ai_image.aspects.portrait' => 12,
+    'posts.composer.ai_image.aspects.landscape' => 12,
 ];

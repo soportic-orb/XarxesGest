@@ -36,6 +36,29 @@ return [
             'load_more' => 'Meer laden',
             'error' => 'Unsplash is nu niet beschikbaar. Probeer het over een paar minuten opnieuw.',
         ],
+        'ai_image' => [
+            'title' => 'Maak een afbeelding met AI',
+            'description' => 'Beschrijf de afbeelding die je wilt, of laat de beschrijving schrijven op basis van je bericht. Je kunt hem aanpassen voordat je genereert.',
+            'prompt_label' => 'Beschrijving van de afbeelding',
+            'prompt_placeholder' => 'Een lichte coworkingruimte waar een team de week plant op een whiteboard, redactionele foto',
+            'write_from_post' => 'Schrijf vanuit bericht',
+            'aspect_label' => 'Vorm',
+            'aspects' => [
+                'square' => 'Vierkant',
+                'portrait' => 'Staand',
+                'landscape' => 'Liggend',
+            ],
+            'generate' => 'Genereren',
+            'regenerate' => 'Opnieuw genereren',
+            'use_image' => 'Toevoegen aan bericht',
+            'generating' => 'De afbeelding wordt gemaakt. Dit kan tot een minuut duren.',
+            'preview_alt' => 'Gegenereerde afbeelding',
+            'errors' => [
+                'content_required' => 'Schrijf eerst je bericht om er de beschrijving van te maken.',
+                'prompt_failed' => 'De beschrijving kon niet worden geschreven. Probeer het opnieuw.',
+                'generation_failed' => 'De afbeelding kon niet worden gemaakt. Probeer het opnieuw of pas de beschrijving aan.',
+            ],
+        ],
         'link_preview' => [
             'remove' => 'Linkvoorbeeld verwijderen',
             'replace_with_media' => 'Linkvoorbeeld vervangen door media',
@@ -43,6 +66,7 @@ return [
         ],
         'media_sources' => [
             'upload' => 'Uploaden vanaf computer',
+            'ai' => 'Genereren met AI',
             'more' => 'Meer mediabronnen',
             'select_from' => 'Selecteren uit :source',
             'importing' => 'Importeren…',

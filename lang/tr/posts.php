@@ -36,6 +36,29 @@ return [
             'load_more' => 'Daha fazla yükle',
             'error' => 'Unsplash şu anda kullanılamıyor. Lütfen birkaç dakika sonra tekrar deneyin.',
         ],
+        'ai_image' => [
+            'title' => 'Yapay zekayla görsel oluştur',
+            'description' => 'İstediğin görseli anlat ya da açıklamayı gönderinden yazdır. Oluşturmadan önce düzenleyebilirsin.',
+            'prompt_label' => 'Görsel açıklaması',
+            'prompt_placeholder' => 'Bir ekibin haftayı beyaz tahtada planladığı aydınlık bir ortak çalışma alanı, editoryal fotoğraf',
+            'write_from_post' => 'Gönderimden yaz',
+            'aspect_label' => 'Şekil',
+            'aspects' => [
+                'square' => 'Kare',
+                'portrait' => 'Dikey',
+                'landscape' => 'Yatay',
+            ],
+            'generate' => 'Oluştur',
+            'regenerate' => 'Yeniden oluştur',
+            'use_image' => 'Gönderiye ekle',
+            'generating' => 'Görsel oluşturuluyor. Bu bir dakikaya kadar sürebilir.',
+            'preview_alt' => 'Oluşturulan görsel',
+            'errors' => [
+                'content_required' => 'Açıklamayı gönderiden oluşturmak için önce gönderini yaz.',
+                'prompt_failed' => 'Açıklama yazılamadı. Tekrar dene.',
+                'generation_failed' => 'Görsel oluşturulamadı. Tekrar dene ya da açıklamayı değiştir.',
+            ],
+        ],
         'link_preview' => [
             'remove' => 'Bağlantı önizlemesini kaldır',
             'replace_with_media' => 'Bağlantı önizlemesini medyayla değiştir',
@@ -43,6 +66,7 @@ return [
         ],
         'media_sources' => [
             'upload' => 'Bilgisayardan yükle',
+            'ai' => 'Yapay zekayla oluştur',
             'more' => 'Daha fazla medya kaynağı',
             'select_from' => ':source kaynağından seç',
             'importing' => 'İçe aktarılıyor…',

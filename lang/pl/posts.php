@@ -36,6 +36,29 @@ return [
             'load_more' => 'Wczytaj więcej',
             'error' => 'Unsplash jest teraz niedostępny. Spróbuj ponownie za kilka minut.',
         ],
+        'ai_image' => [
+            'title' => 'Wygeneruj obraz z AI',
+            'description' => 'Opisz obraz, który chcesz, albo napisz opis na podstawie posta. Możesz go edytować przed generowaniem.',
+            'prompt_label' => 'Opis obrazu',
+            'prompt_placeholder' => 'Jasna przestrzeń coworkingowa, w której zespół planuje tydzień na tablicy, zdjęcie redakcyjne',
+            'write_from_post' => 'Napisz na podstawie posta',
+            'aspect_label' => 'Kształt',
+            'aspects' => [
+                'square' => 'Kwadrat',
+                'portrait' => 'Pionowo',
+                'landscape' => 'Poziomo',
+            ],
+            'generate' => 'Generuj',
+            'regenerate' => 'Generuj ponownie',
+            'use_image' => 'Dodaj do posta',
+            'generating' => 'Generowanie obrazu. Może to potrwać do minuty.',
+            'preview_alt' => 'Wygenerowany obraz',
+            'errors' => [
+                'content_required' => 'Najpierw napisz posta, aby utworzyć z niego opis.',
+                'prompt_failed' => 'Nie udało się napisać opisu. Spróbuj ponownie.',
+                'generation_failed' => 'Nie udało się wygenerować obrazu. Spróbuj ponownie lub zmień opis.',
+            ],
+        ],
         'link_preview' => [
             'remove' => 'Usuń podgląd linku',
             'replace_with_media' => 'Zastąp podgląd linku multimediami',
@@ -43,6 +66,7 @@ return [
         ],
         'media_sources' => [
             'upload' => 'Prześlij z komputera',
+            'ai' => 'Wygeneruj z AI',
             'more' => 'Więcej źródeł multimediów',
             'select_from' => 'Wybierz z :source',
             'importing' => 'Importowanie…',

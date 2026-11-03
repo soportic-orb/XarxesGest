@@ -36,6 +36,29 @@ return [
             'load_more' => 'Charger plus',
             'error' => 'Unsplash n\'est pas disponible pour le moment. Réessayez dans quelques minutes.',
         ],
+        'ai_image' => [
+            'title' => 'Générer une image avec l\'IA',
+            'description' => 'Décris l\'image que tu veux, ou fais écrire la description à partir de ta publication. Tu peux la modifier avant de générer.',
+            'prompt_label' => 'Description de l\'image',
+            'prompt_placeholder' => 'Un espace de coworking lumineux où une équipe planifie la semaine sur un tableau blanc, photo éditoriale',
+            'write_from_post' => 'Écrire depuis ma publi',
+            'aspect_label' => 'Format',
+            'aspects' => [
+                'square' => 'Carré',
+                'portrait' => 'Vertical',
+                'landscape' => 'Horizontal',
+            ],
+            'generate' => 'Générer',
+            'regenerate' => 'Générer à nouveau',
+            'use_image' => 'Ajouter à la publi',
+            'generating' => 'Génération de l\'image. Cela peut prendre jusqu\'à une minute.',
+            'preview_alt' => 'Image générée',
+            'errors' => [
+                'content_required' => 'Écris d\'abord ta publication pour en tirer la description.',
+                'prompt_failed' => 'Impossible de rédiger la description. Réessaie.',
+                'generation_failed' => 'Impossible de générer l\'image. Réessaie ou modifie la description.',
+            ],
+        ],
         'link_preview' => [
             'remove' => 'Retirer l’aperçu du lien',
             'replace_with_media' => 'Remplacer l’aperçu par un média',
@@ -43,6 +66,7 @@ return [
         ],
         'media_sources' => [
             'upload' => 'Importer depuis l\'ordinateur',
+            'ai' => 'Générer avec l\'IA',
             'more' => 'Plus de sources de médias',
             'select_from' => 'Sélectionner depuis :source',
             'importing' => 'Importation…',
