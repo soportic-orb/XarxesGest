@@ -1,169 +1,214 @@
-# Desplegament de XarxesGest a CloudPanel
+# Desplegament de SocialGest a CloudPanel
 
-Guia pas a pas per instal·lar XarxesGest (fork de TryPost) a `https://xarxesgest.soportic.es` en un VPS amb CloudPanel, sense Docker. Els fitxers de suport són a `deploy/cloudpanel/`.
+Guia pas a pas per instal·lar SocialGest (XarxesGest, fork de TryPost) a `https://socialgest.soportic.es` en un VPS amb CloudPanel, sense Docker. És el procés seguit a la instal·lació real de novembre de 2026. Els fitxers de suport són a `deploy/cloudpanel/`.
 
-**Requisits del servidor:** 2 vCPU, 4 GB de RAM, 40 GB de disc lliure com a mínim. Ubuntu 24.04 o Debian 12 amb CloudPanel 2.x. Cal accés `root` per SSH per als passos 3 i 6.
+A les ordres, `soportic-socialgest` és l'usuari del lloc a CloudPanel. Si en fas servir un altre, canvia'l.
+
+**Requisits:** 2 vCPU, 4 GB de RAM lliures i 25 GB de disc lliure com a mínim. Ubuntu 24.04 amb CloudPanel 2.x. Cal accés `root` per SSH.
 
 ---
 
-## 1. DNS
+## 1. Comprovacions del servidor
 
-Crea un registre **A** `xarxesgest.soportic.es` que apunti a la IP del VPS (i AAAA si fas servir IPv6).
-
-## 2. Lloc i base de dades (panell de CloudPanel)
-
-1. **Sites → Add Site → Create a PHP Site**
-   - Application: **Laravel 12** (serveix també per a Laravel 13)
-   - Domain: `xarxesgest.soportic.es`
-   - PHP: **8.4**
-   - Apunta't el nom d'usuari del lloc (a la guia en diem `SITE_USER`).
-2. **Sites → xarxesgest.soportic.es → SSL/TLS → New Let's Encrypt Certificate.**
-3. **Databases → Add Database**: base de dades `xarxesgest`, usuari `xarxesgest` i una contrasenya forta. Cal **MySQL 8.x** (la que instal·la CloudPanel per defecte); no s'ha provat amb MariaDB.
-4. **Sites → xarxesgest.soportic.es → PHP Settings**:
-   - `memory_limit` = 512M
-   - `upload_max_filesize` i `post_max_size` = 1024M (vídeos de Reels)
-   - `max_execution_time` = 300
-
-## 3. Paquets del servidor (SSH com a root)
+Com a `root`:
 
 ```bash
-apt-get update && apt-get install -y redis-server supervisor ffmpeg git unzip
+lsb_release -ds; nproc; free -h | head -2; df -h / | tail -1; php8.4 -m | grep -E '^(bcmath|intl|gd|imagick|redis|pdo_mysql|zip|mbstring)$'; mysql --version
+```
+
+- Han de sortir les vuit extensions de PHP. **`imagick` és imprescindible**: sense ella el calendari dona error 500. Si en falta alguna: `apt-get install -y php8.4-<extensió> && systemctl restart php8.4-fpm`.
+- CloudPanel sol instal·lar **MariaDB 10.11**. L'app hi funciona: la suite de backend hi passa sencera, excepte els tests d'HEIC, que depenen de la llibreria del sistema. Al `.env` cal `DB_CONNECTION=mariadb`. Amb MySQL 8, cal `mysql`.
+
+## 2. Paquets del servidor
+
+Com a `root`:
+
+```bash
+apt-get update && apt-get install -y supervisor redis-server && systemctl enable --now supervisor redis-server
 ```
 
 ```bash
-systemctl enable --now redis-server supervisor
+systemctl is-active supervisor redis-server; redis-cli ping; ss -ltnp | grep -E ':(6379|8080|8090)\b'
 ```
 
-L'app necessita aquestes extensions PHP: `bcmath`, `intl`, `gd`, **`imagick`** (sense ella el calendari dona error 500), `redis`, `pdo_mysql`, `zip` i `mbstring`. El PHP 8.4 de CloudPanel les sol portar totes; comprova-ho amb:
+El port **8080** el fa servir l'Nginx de CloudPanel per al bloc intern del vhost. Per això Reverb escolta al **8090**, que ha d'estar lliure.
+
+## 3. DNS, lloc i certificat (panell de CloudPanel)
+
+1. Al DNS del domini, crea un registre **A** `socialgest` que apunti a la IP del VPS. Si el domini passa per Cloudflare, posa'l **sense proxy** (núvol gris).
+2. **Sites → Add Site → Create a PHP Site**: Application **Laravel 12**, que serveix per a Laravel 13; domini `socialgest.soportic.es`; PHP **8.4**; Site User `soportic-socialgest`.
+3. **Sites → socialgest.soportic.es → SSL/TLS → New Let's Encrypt Certificate.**
+4. **Sites → socialgest.soportic.es → PHP Settings**: `memory_limit` 512M, `max_execution_time` 300, `upload_max_filesize` 1024M i `post_max_size` 1024M.
+
+Comprovació, com a `root`:
 
 ```bash
-php8.4 -m | grep -E 'bcmath|intl|^gd|imagick|redis|pdo_mysql|zip|mbstring'
+echo "DNS: $(dig +short socialgest.soportic.es) | VPS: $(curl -4 -s ifconfig.me)"
 ```
 
-Han de sortir les vuit. Si en falta alguna, instal·la el paquet corresponent (p. ex. `apt-get install -y php8.4-imagick`) i reinicia PHP-FPM (`systemctl restart php8.4-fpm`).
+## 4. Codi
 
-## 4. Codi i dependències (SSH com a `SITE_USER`)
-
-Entra com a usuari del lloc (`su - SITE_USER` o SSH directe) i instal·la Node 22 amb nvm (només serveix per compilar el frontend):
+Com a usuari del lloc:
 
 ```bash
-curl -o- https://raw.githubusercontent.com/nvm-sh/nvm/v0.40.3/install.sh | bash && source ~/.nvm/nvm.sh && nvm install 22
+su - soportic-socialgest
 ```
 
-Clona el repositori al directori del lloc. CloudPanel hi crea un `index.php` de mostra; l'esborrem primer:
+Node 22, que només serveix per compilar el frontend:
 
 ```bash
-cd ~/htdocs && rm -rf xarxesgest.soportic.es && git clone https://github.com/soportic-orb/xarxesgest.git xarxesgest.soportic.es && cd xarxesgest.soportic.es
+curl -o- https://raw.githubusercontent.com/nvm-sh/nvm/v0.40.3/install.sh | bash && source ~/.nvm/nvm.sh && nvm install 22 && node -v
 ```
 
-> El repositori és privat: fes servir una *deploy key* (Settings → Deploy keys a GitHub) o un token d'accés amb permís de lectura.
-
-Configura l'entorn:
+Clona el repositori dins del directori del lloc. Així es conserven els permisos que hi posa CloudPanel:
 
 ```bash
-cp deploy/cloudpanel/env.production.example .env && nano .env
+cd ~/htdocs/socialgest.soportic.es && rm -rf public && git clone https://github.com/soportic-orb/XarxesGest.git . && git checkout main && git log --oneline -1
 ```
 
-Omple com a mínim: `DB_PASSWORD`, `MAIL_*`, `REVERB_APP_ID`/`KEY`/`SECRET` (valors aleatoris, p. ex. `openssl rand -hex 16`), `ANTHROPIC_API_KEY` i les claus de les xarxes (pas 7). Després instal·la les dependències PHP i genera les claus:
+## 5. Base de dades i `.env`
+
+1. **Sites → socialgest.soportic.es → Databases → Add Database**: base de dades i usuari `socialgest`. Copia la contrasenya.
+2. Crea el `.env` a partir de la plantilla i genera'n les claus de Reverb:
 
 ```bash
-php8.4 /usr/local/bin/composer install --no-dev --no-interaction --optimize-autoloader
+cp deploy/cloudpanel/env.production.example .env && sed -i "s/^REVERB_APP_ID=.*/REVERB_APP_ID=$(shuf -i 100000-999999 -n1)/; s/^REVERB_APP_KEY=.*/REVERB_APP_KEY=$(openssl rand -hex 16)/; s/^REVERB_APP_SECRET=.*/REVERB_APP_SECRET=$(openssl rand -hex 32)/" .env
 ```
+
+3. Edita'l amb `nano .env` i omple com a mínim:
+   - `DB_PASSWORD`;
+   - `HORIZON_ALLOWED_EMAILS`, amb el teu correu;
+   - `ANTHROPIC_API_KEY`;
+   - `MAIL_*` (vegeu el pas 9).
+
+   Si la contrasenya té caràcters especials, posa-la entre cometes.
+
+4. Dependències, clau de l'app, claus d'OAuth i comprovació de la base de dades. `composer install` necessita que el `.env` ja existeixi, perquè en acabar arrenca Laravel:
 
 ```bash
-php8.4 artisan key:generate && php8.4 artisan passport:keys --show
+php8.4 /usr/local/bin/composer install --no-dev --no-interaction --optimize-autoloader 2>&1 | tail -3 && php8.4 artisan key:generate --force && php8.4 artisan passport:keys && php8.4 artisan db:show 2>&1 | head -4
 ```
 
-Copia les dues claus que mostra l'última comanda a `PASSPORT_PRIVATE_KEY` i `PASSPORT_PUBLIC_KEY` del `.env` (en una sola línia, amb `\n` literals) i esborra els fitxers `storage/oauth-*.key`.
+Les claus de Passport es queden a `storage/oauth-*.key`, i Passport les llegeix si `PASSPORT_*_KEY` és buit. No cal copiar-les al `.env`.
 
-Primer desplegament (instal·la dependències, compila, migra la base de dades i escalfa les memòries cau):
+## 6. Primer desplegament i usuari propietari
 
 ```bash
-DEPLOY_BRANCH=main bash deploy/cloudpanel/deploy.sh
+bash deploy/cloudpanel/deploy.sh 2>&1 | tee ~/deploy-primer.log | grep -E "^==>|ERROR|FAIL|failed"
 ```
 
-Crea el teu usuari propietari (el registre públic està desactivat; la resta d'usuaris s'hi afegeixen per invitació):
+Han de sortir les etapes `==> …` fins a `==> Done`. Els avisos de `horizon:terminate` i `reverb:restart` del primer cop són normals.
+
+Crea el teu usuari. El registre públic està tancat; la resta d'usuaris s'hi afegeixen per invitació. A CloudPanel, PHP no detecta el terminal com a interactiu dins d'un `su -`, així que la contrasenya es passa per una variable d'entorn:
 
 ```bash
-php8.4 artisan xarxesgest:create-admin --name="Octavi Rodríguez" --email=octavirodriguezblanco@gmail.com
+read -rsp "Contrasenya (mín. 12 caràcters): " P && echo && XARXESGEST_ADMIN_PASSWORD="$P" php8.4 artisan xarxesgest:create-admin --name="Nom Cognom" --email=correu@soportic.es; unset P
 ```
 
-> No facis servir `db:seed --class=UserSeeder`: crea un usuari `admin@trypost.it` amb la contrasenya `password`.
+No facis servir `db:seed --class=UserSeeder`: crea `admin@trypost.it` amb la contrasenya `password`.
 
-## 5. Nginx: websockets i mida de pujada
+## 7. Nginx (panell de CloudPanel)
 
-A **Sites → xarxesgest.soportic.es → Vhost**, enganxa el contingut de `deploy/cloudpanel/nginx-vhost-snippet.conf` dins del bloc `server { listen 443 … }`, abans de `location / {`, i desa.
+Edita el vhost a **Sites → socialgest.soportic.es → Vhost**. No l'editis a `/etc/nginx`, perquè CloudPanel el regenera. La plantilla té dos blocs `server`: un de **públic** (80/443), que ho passa tot a un d'**intern** (8080), que és el que executa PHP. Els canvis, amb el text exacte, són a `deploy/cloudpanel/nginx-vhost-snippet.conf`:
 
-## 6. Processos en segon pla (SSH com a root)
+1. **Bloc públic, abans de `location / {`:** el `location /app`, que porta els websockets cap a Reverb (8090), i `client_max_body_size 1024m;`.
+2. **Bloc públic, dins de `location / {`**, després de la línia de `X-Forwarded-For`: les capçaleres `X-Forwarded-Proto` i `X-Forwarded-Port`.
+3. **Bloc intern, després de les línies `listen 8080`:** `client_max_body_size 1024m;`.
+
+## 8. Processos en segon pla i cron
+
+Com a `root`:
 
 ```bash
-sed "s/SITE_USER/<el-teu-site-user>/g" /home/<el-teu-site-user>/htdocs/xarxesgest.soportic.es/deploy/cloudpanel/supervisor-xarxesgest.conf > /etc/supervisor/conf.d/xarxesgest.conf
+sed 's/SITE_USER/soportic-socialgest/g' /home/soportic-socialgest/htdocs/socialgest.soportic.es/deploy/cloudpanel/supervisor-socialgest.conf > /etc/supervisor/conf.d/socialgest.conf && mkdir -p /home/soportic-socialgest/logs && chown soportic-socialgest: /home/soportic-socialgest/logs && supervisorctl reread && supervisorctl update
 ```
+
+**Cron:** a **Sites → socialgest.soportic.es → Cron Jobs**, afegeix una tasca amb `*` als cinc camps i aquesta ordre:
+
+```
+php8.4 /home/soportic-socialgest/htdocs/socialgest.soportic.es/artisan schedule:run >> /dev/null 2>&1
+```
+
+Comprovació, com a `root`:
 
 ```bash
-supervisorctl reread && supervisorctl update && supervisorctl status
+cd /home/soportic-socialgest/htdocs/socialgest.soportic.es && supervisorctl status | grep xarxesgest; nginx -t 2>&1 | tail -1; KEY=$(grep ^REVERB_APP_KEY= .env | cut -d= -f2) && curl -s -o /dev/null -w "websocket: %{http_code}\n" --http1.1 --max-time 5 -H "Connection: Upgrade" -H "Upgrade: websocket" -H "Sec-WebSocket-Version: 13" -H "Sec-WebSocket-Key: dGhlIHNhbXBsZSBub25jZQ==" "https://socialgest.soportic.es/app/$KEY?protocol=7"; sudo -u soportic-socialgest php8.4 artisan horizon:status
 ```
 
-Han d'aparèixer `xarxesgest-horizon` i `xarxesgest-reverb` en estat `RUNNING`.
+Ha de sortir:
+- els dos processos en estat `RUNNING`;
+- `syntax is ok`;
+- `websocket: 101`;
+- `Horizon is running.`
 
-**Cron:** a **Sites → xarxesgest.soportic.es → Cron Jobs**, afegeix:
+## 9. Correu (SMTP)
 
-- Frequency: `* * * * *`
-- Command: `php8.4 /home/SITE_USER/htdocs/xarxesgest.soportic.es/artisan schedule:run >> /dev/null 2>&1`
+Laravel 13 llegeix `MAIL_SCHEME`, no `MAIL_ENCRYPTION`: deixa'l buit per al port 587 (STARTTLS) i posa `smtps` per al 465. `MAIL_FROM_ADDRESS` ha de ser un remitent que el compte SMTP pugui fer servir.
 
-## 7. Connexió amb les xarxes
+Prova d'enviament:
 
-URL de retorn (*redirect URI*) que cal registrar a cada portal:
+```bash
+php8.4 artisan tinker --execute 'Illuminate\Support\Facades\Mail::raw("Prova de correu de SocialGest.", fn ($m) => $m->to("correu@soportic.es")->subject("Prova SMTP SocialGest")); echo "enviat\n";'
+```
+
+## 10. Xarxes socials
+
+URL de retorn (*redirect URI*) de cada xarxa:
 
 | Xarxa | Portal | Redirect URI |
 |---|---|---|
-| LinkedIn (perfil i pàgines) | https://www.linkedin.com/developers/apps | `https://xarxesgest.soportic.es/accounts/linkedin/callback` |
-| X | https://developer.x.com | `https://xarxesgest.soportic.es/accounts/x/callback` |
-| Instagram (Instagram Login) | https://developers.facebook.com/apps | `https://xarxesgest.soportic.es/accounts/instagram/callback` |
+| LinkedIn | https://www.linkedin.com/developers/apps | `https://socialgest.soportic.es/accounts/linkedin/callback` |
+| X | https://developer.x.com | `https://socialgest.soportic.es/accounts/x/callback` |
+| Instagram | https://developers.facebook.com/apps | `https://socialgest.soportic.es/accounts/instagram/callback` |
 
 **LinkedIn**
-1. Crea l'app associada a la pàgina d'empresa de Soportic (cal verificar-la des de la pàgina).
-2. Productes: *Sign In with LinkedIn using OpenID Connect* i *Share on LinkedIn* (immediats) → perfil personal.
-3. Sol·licita **Community Management API** per a les pàgines de Torns, SysRevAI, etc. Necessitaràs: política de privacitat publicada, un vídeo de l'app en funcionament i la descripció de l'ús (gestió de les pàgines pròpies). Fes-ho tan aviat com l'app estigui en línia.
-4. Copia el *Client ID* i el *Client Secret* a `LINKEDIN_CLIENT_ID` i `LINKEDIN_CLIENT_SECRET`.
+
+1. **App 1 (perfil personal):** productes *Sign In with LinkedIn using OpenID Connect* i *Share on LinkedIn*, que s'aproven a l'instant. Posa'n el Client ID i el secret a `LINKEDIN_CLIENT_ID` i `LINKEDIN_CLIENT_SECRET`.
+2. **App 2 (pàgines d'empresa):** LinkedIn exigeix que la *Community Management API* sigui **l'únic producte** de la seva app. Crea'n una de nova i demana-hi només aquest producte.
+3. TryPost fa servir una sola app de LinkedIn i, quan les pàgines estan activades, demana també els permisos de les pàgines. Per això la plantilla porta `LINKEDIN_PAGE_ENABLED=false` fins que l'app 2 estigui aprovada i l'app hi estigui adaptada.
 
 **X**
-1. Crea un projecte i una app al portal de desenvolupadors i carrega crèdits de pagament per ús.
-2. *User authentication settings*: OAuth 2.0, tipus **Web App**, permisos **Read and write**, *Callback URI* i *Website URL* com a la taula.
-3. Copia el *Client ID* i el *Client Secret* d'OAuth 2.0 a `X_CLIENT_ID` i `X_CLIENT_SECRET`.
-4. Decideix `X_DEFUSE_LINKS` (vegeu el `.env`) i posa un límit de despesa al portal de X.
+
+1. Crea un projecte i una app, carrega crèdits i posa un límit de despesa mensual.
+2. A *User authentication settings*: **Read and write**, **Web App, Automated App or Bot** i la redirect URI.
+3. Copia el **Client ID** i el **Client Secret d'OAuth 2.0**, no els d'OAuth 1.0a. El secret només es mostra una vegada.
+4. Decideix el valor de `X_DEFUSE_LINKS`.
 
 **Instagram**
-1. Comprova que cada compte d'Instagram és **professional** (Empresa o Creador).
-2. Crea una app de tipus *Business* i afegeix-hi el producte **Instagram → API setup with Instagram login**.
-3. Afegeix cada compte d'Instagram de les marques com a **Instagram Tester** (*App roles → Roles*) i accepta la invitació des de l'app d'Instagram de cada compte (*Configuració → Apps i llocs web → Invitacions de tester*). Així no cal passar *App Review*.
-4. Copia l'*Instagram App ID* i l'*Instagram App Secret* a `INSTAGRAM_CLIENT_ID` i `INSTAGRAM_CLIENT_SECRET`.
 
-Després de canviar el `.env`:
+1. Cada compte ha de ser **professional** (Empresa o Creador).
+2. Crea una app amb el cas d'ús *Manage messaging & content on Instagram* i obre **Use cases → Customize → API setup with Instagram login**. En panells antics, el camí és **Instagram → API setup with Instagram login**.
+3. A *Set up Instagram business login → Business login settings*, posa la redirect URI.
+4. Copia l'**Instagram app ID** i l'**Instagram app secret** d'aquesta pàgina, no els d'*App settings → Basic*.
+5. Afegeix cada compte com a **Instagram Tester** (*App roles → Roles*) i accepta la invitació des de cada compte d'Instagram. Així no cal passar *App Review*.
 
-```bash
-php8.4 artisan optimize && php8.4 artisan horizon:terminate
-```
-
-## 8. Primeres proves
-
-1. Entra a `https://xarxesgest.soportic.es` amb l'usuari del pas 4 i tria **Català** a les preferències si no surt per defecte.
-2. Crea un *workspace* per marca (Torns, SysRevAI…).
-3. A cada workspace, connecta els canals: LinkedIn, Instagram i X.
-4. Publica ara mateix una publicació de prova a cada xarxa i comprova-la a la xarxa.
-5. Programa'n una per d'aquí a 5 minuts i comprova que surt sola (això valida el cron i Horizon).
-6. A l'editor, fes servir l'**assistent d'IA** (reescriure, escurçar, generar) per validar la connexió amb Claude.
-7. A **Horizon** (`https://xarxesgest.soportic.es/horizon`) no hi ha d'haver feines fallides.
-
-## 9. Actualitzacions
-
-Cada vegada que es fusionin canvis a `main`:
+Després de cada canvi al `.env`:
 
 ```bash
-cd ~/htdocs/xarxesgest.soportic.es && bash deploy/cloudpanel/deploy.sh
+php8.4 artisan optimize >/dev/null && php8.4 artisan horizon:terminate
 ```
 
-Incorporar versions noves de TryPost (a la màquina de desenvolupament, no al servidor):
+## 11. Proves
+
+1. Entra a l'app i crea un workspace per marca.
+2. Connecta els canals de cada marca.
+3. Fes una publicació **ara mateix** i una de **programada a 5 minuts**. La programada valida el cron i Horizon.
+4. Prova l'**assistent d'IA** de l'editor, que valida Claude.
+5. Comprova que a `/horizon` no hi ha feines fallides.
+
+**Problemes trobats a la instal·lació real:**
+- **Avatars o imatges trencats:** cal `FILESYSTEM_DISK=public`. Si hi ha fitxers desats a `storage/app/private`, copia'ls a `storage/app/public`.
+- **El navegador diu «no segur»:** si `curl` des de fora verifica el certificat bé, és el navegador, que recorda una excepció de quan encara no hi havia certificat. Tanca'l del tot, o prova en una finestra privada.
+
+## 12. Actualitzacions
+
+Cada vegada que es fusionin canvis a `main`, com a `soportic-socialgest`:
+
+```bash
+cd ~/htdocs/socialgest.soportic.es && bash deploy/cloudpanel/deploy.sh
+```
+
+Per incorporar versions noves de TryPost, fes-ho a la màquina de desenvolupament, no al servidor:
 
 ```bash
 git remote add upstream https://github.com/trypostit/trypost.git
@@ -173,8 +218,10 @@ git remote add upstream https://github.com/trypostit/trypost.git
 git fetch upstream --tags && git merge upstream/main
 ```
 
-Llegeix abans les notes de la versió de TryPost: algunes (com la 2.0) demanen passos manuals de migració.
+Abans, llegeix les notes de la versió de TryPost: algunes, com la 2.0, demanen passos manuals.
 
-## 10. Còpies de seguretat
+## 13. Còpies de seguretat
 
-A **Sites → xarxesgest.soportic.es → Backups** (fitxers) i **Databases → Backups** (MySQL), activa còpies diàries remotes (S3, Dropbox, Google Drive, SFTP…). Inclou sobretot `.env` i `storage/app` (la mèdia de les publicacions).
+A **Admin Area → Backups**, activa les còpies remotes (S3, Dropbox, Google Drive, SFTP…). Han d'incloure la base de dades `socialgest`, el `.env` i `storage/app/public`.
+
+Sense el `.env` no es poden desxifrar els tokens de les xarxes connectades, perquè estan xifrats amb l'`APP_KEY`.
