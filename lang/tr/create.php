@@ -10,6 +10,18 @@ return [
         'feeds' => 'Akışlar',
     ],
     'ideas' => [
+        'proposals' => [
+            'label' => 'Yapay zeka önerisi',
+            'button' => 'Trendlerden öner',
+            'queued' => 'Bu haftanın trendleri aranıyor. Öneriler birkaç dakika içinde panoda görünecek.',
+            'missing_profile' => 'Bu markanın profilini henüz doldurmadınız. Trendlerden öneri almak için çalışma alanı ayarlarında markanın ne yaptığını belirtin.',
+            'missing_profile_member' => 'Bu markanın profili henüz doldurulmadı. Trendlerden öneri almak için çalışma alanı yöneticisinin ayarlarda markanın ne yaptığını belirtmesi gerekiyor.',
+            'open_settings' => 'Ayarları aç',
+            'errors' => [
+                'no_brand_profile' => 'Öneri almak için çalışma alanı ayarlarında markanın ne yaptığını belirtin.',
+                'failed' => 'Arama başlatılamadı. Tekrar deneyin.',
+            ],
+        ],
         'title' => 'Fikirler',
         'new' => 'Yeni fikir',
         'board' => 'Pano',

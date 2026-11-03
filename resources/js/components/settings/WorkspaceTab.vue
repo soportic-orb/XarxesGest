@@ -3,6 +3,9 @@ import { Form } from '@inertiajs/vue3';
 
 import WorkspaceController from '@/actions/App/Http/Controllers/App/WorkspaceController';
 import PhotoUpload from '@/components/PhotoUpload.vue';
+import BrandProfileSection, {
+    type BrandProfile,
+} from '@/components/settings/BrandProfileSection.vue';
 import DeleteWorkspace from '@/components/settings/DeleteWorkspace.vue';
 import SettingsField from '@/components/settings/SettingsField.vue';
 import SettingsSection from '@/components/settings/SettingsSection.vue';
@@ -17,6 +20,7 @@ interface Workspace {
     name: string;
     has_logo: boolean;
     logo_url: string | null;
+    brand_profile?: BrandProfile | null;
 }
 
 defineProps<{
@@ -73,6 +77,10 @@ const { canManageBilling } = useWorkspaceAbilities();
                 </Button>
             </Form>
         </SettingsSection>
+
+        <Separator />
+
+        <BrandProfileSection :profile="workspace.brand_profile ?? null" />
 
         <template v-if="canManageBilling">
             <Separator />

@@ -10,6 +10,18 @@ return [
         'feeds' => 'Feeds',
     ],
     'ideas' => [
+        'proposals' => [
+            'label' => 'Proposta da IA',
+            'button' => 'Propor por tendências',
+            'queued' => 'Buscando as tendências desta semana. As propostas vão aparecer no quadro em alguns minutos.',
+            'missing_profile' => 'Você ainda não preencheu o perfil desta marca. Para receber propostas a partir de tendências, informe o que a marca faz nas configurações do workspace.',
+            'missing_profile_member' => 'O perfil desta marca ainda não foi preenchido. Para receber propostas a partir de tendências, um administrador do workspace precisa informar o que a marca faz nas configurações do workspace.',
+            'open_settings' => 'Abrir configurações',
+            'errors' => [
+                'no_brand_profile' => 'Informe o que a marca faz nas configurações do workspace para receber propostas.',
+                'failed' => 'Não foi possível iniciar a busca. Tente novamente.',
+            ],
+        ],
         'title' => 'Ideias',
         'new' => 'Nova ideia',
         'board' => 'Quadro',

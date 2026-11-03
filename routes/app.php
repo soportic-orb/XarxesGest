@@ -20,6 +20,7 @@ use App\Http\Controllers\App\GoogleMediaController;
 use App\Http\Controllers\App\GooglePhotosSessionController;
 use App\Http\Controllers\App\IdeaController;
 use App\Http\Controllers\App\IdeaGenerateController;
+use App\Http\Controllers\App\IdeaProposalController;
 use App\Http\Controllers\App\IdeaStageController;
 use App\Http\Controllers\App\InsightsController;
 use App\Http\Controllers\App\InstagramAudioController;
@@ -57,6 +58,7 @@ use App\Http\Controllers\App\Settings\SessionController;
 use App\Http\Controllers\App\UnsplashController;
 use App\Http\Controllers\App\WebhookController;
 use App\Http\Controllers\App\WelcomeController;
+use App\Http\Controllers\App\WorkspaceBrandProfileController;
 use App\Http\Controllers\App\WorkspaceController;
 use App\Http\Controllers\App\WorkspaceCreationCheckController;
 use App\Http\Controllers\App\WorkspaceInviteController;
@@ -213,6 +215,7 @@ Route::middleware(['auth', EnsureAccountReady::class, EnsureHasWorkspace::class]
 
     Route::get('settings/workspace', [WorkspaceController::class, 'settings'])->name('app.workspace.settings');
     Route::put('settings/workspace', [WorkspaceController::class, 'updateSettings'])->name('app.workspace.settings.update');
+    Route::put('settings/workspace/brand-profile', [WorkspaceBrandProfileController::class, 'update'])->name('app.workspace.brand-profile.update');
     Route::post('settings/workspace/logo', [WorkspaceController::class, 'uploadLogo'])->name('app.workspace.upload-logo');
     Route::delete('settings/workspace/logo', [WorkspaceController::class, 'deleteLogo'])->name('app.workspace.delete-logo');
 
@@ -353,6 +356,7 @@ Route::middleware(['auth', EnsureAccountReady::class, EnsureHasWorkspace::class]
     Route::get('create/ideas', [IdeaController::class, 'index'])->name('app.create.ideas.index');
     Route::get('create/ideas/new', [IdeaController::class, 'create'])->name('app.create.ideas.create');
     Route::post('create/ideas/generate', IdeaGenerateController::class)->middleware('throttle:10,1')->name('app.create.ideas.generate');
+    Route::post('create/ideas/proposals', [IdeaProposalController::class, 'store'])->middleware('throttle:3,60')->name('app.create.ideas.proposals.store');
     Route::get('create/ideas/{idea}', [IdeaController::class, 'show'])->whereUuid('idea')->name('app.create.ideas.show');
     Route::post('create/ideas', [IdeaController::class, 'store'])->name('app.create.ideas.store');
     Route::delete('create/ideas', [IdeaController::class, 'bulkDestroy'])->name('app.create.ideas.bulk-destroy');

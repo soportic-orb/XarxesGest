@@ -10,6 +10,18 @@ return [
         'feeds' => 'Kanały RSS',
     ],
     'ideas' => [
+        'proposals' => [
+            'label' => 'Propozycja AI',
+            'button' => 'Zaproponuj z trendów',
+            'queued' => 'Szukamy trendów z tego tygodnia. Propozycje pojawią się na tablicy za kilka minut.',
+            'missing_profile' => 'Profil tej marki nie jest jeszcze uzupełniony. Aby dostać propozycje z trendów, opisz w ustawieniach przestrzeni roboczej, czym zajmuje się marka.',
+            'missing_profile_member' => 'Profil tej marki nie jest jeszcze uzupełniony. Aby dostać propozycje z trendów, administrator przestrzeni roboczej musi opisać w jej ustawieniach, czym zajmuje się marka.',
+            'open_settings' => 'Otwórz ustawienia',
+            'errors' => [
+                'no_brand_profile' => 'Opisz w ustawieniach przestrzeni roboczej, czym zajmuje się marka, aby dostać propozycje.',
+                'failed' => 'Nie udało się uruchomić wyszukiwania. Spróbuj ponownie.',
+            ],
+        ],
         'title' => 'Pomysły',
         'new' => 'Nowy pomysł',
         'board' => 'Tablica',

@@ -26,7 +26,26 @@ class Workspace extends Model
         'account_id',
         'user_id',
         'name',
+        'brand_profile',
     ];
+
+    /** Keys of `brand_profile`, each a short free text the AI prompts read. */
+    public const array BRAND_PROFILE_FIELDS = ['business', 'audience', 'tone', 'topics', 'references'];
+
+    protected function casts(): array
+    {
+        return [
+            'brand_profile' => 'array',
+        ];
+    }
+
+    /**
+     * Trend proposals need at least what the brand does.
+     */
+    public function hasBrandProfile(): bool
+    {
+        return filled(data_get($this->brand_profile, 'business'));
+    }
 
     protected $appends = ['has_logo', 'logo_url'];
 

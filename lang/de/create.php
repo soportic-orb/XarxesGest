@@ -10,6 +10,18 @@ return [
         'feeds' => 'Feeds',
     ],
     'ideas' => [
+        'proposals' => [
+            'label' => 'KI-Vorschlag',
+            'button' => 'Vorschläge aus Trends',
+            'queued' => 'Wir suchen die Trends dieser Woche. Die Vorschläge erscheinen in ein paar Minuten im Board.',
+            'missing_profile' => 'Du hast das Profil dieser Marke noch nicht ausgefüllt. Für Vorschläge aus Trends gib in den Workspace-Einstellungen an, was die Marke macht.',
+            'missing_profile_member' => 'Das Profil dieser Marke ist noch nicht ausgefüllt. Für Vorschläge aus Trends muss ein Workspace-Admin in den Workspace-Einstellungen angeben, was die Marke macht.',
+            'open_settings' => 'Einstellungen öffnen',
+            'errors' => [
+                'no_brand_profile' => 'Gib in den Workspace-Einstellungen an, was die Marke macht, um Vorschläge zu erhalten.',
+                'failed' => 'Die Suche konnte nicht gestartet werden. Versuch es erneut.',
+            ],
+        ],
         'title' => 'Ideen',
         'new' => 'Neue Idee',
         'board' => 'Board',

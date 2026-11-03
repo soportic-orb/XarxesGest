@@ -13,6 +13,7 @@ import IdeaBoard from '@/components/create/ideas/IdeaBoard.vue';
 import IdeaEditorDialog from '@/components/create/ideas/IdeaEditorDialog.vue';
 import IdeaGallery from '@/components/create/ideas/IdeaGallery.vue';
 import IdeasToolbar from '@/components/create/ideas/IdeasToolbar.vue';
+import TrendProposalsButton from '@/components/create/ideas/TrendProposalsButton.vue';
 import EmptyState from '@/components/EmptyState.vue';
 import { Button } from '@/components/ui/button';
 import AppLayout from '@/layouts/AppLayout.vue';
@@ -51,6 +52,7 @@ const props = defineProps<{
     stages: IdeaStage[];
     unassigned_count: number;
     hasData: boolean;
+    hasBrandProfile: boolean;
     labels: IdeaLabel[];
     filters: IdeaFilters;
     editor: IdeaEditorState | null;
@@ -564,6 +566,7 @@ const galleryCards = computed(() => props.ideas?.data ?? []);
                 </Button>
             </div>
             <div v-else class="flex items-center gap-2">
+                <TrendProposalsButton :has-brand-profile="hasBrandProfile" />
                 <GenerateIdeasDialog @use="useGeneratedIdea" />
                 <Button
                     variant="outline"

@@ -40,6 +40,7 @@ class BuildIdeasPageProps
                 $filters,
             )->count(),
             'hasData' => $workspace->ideas()->exists(),
+            'hasBrandProfile' => $workspace->hasBrandProfile(),
             'labels' => $workspace->labels()->orderBy('name')->get(['id', 'name', 'color']),
             'filters' => $filters,
             'editor' => $editor,
